@@ -21,7 +21,9 @@ Then run the `scripts/post-gen_service.sh` script to ensure the service returns 
 
 Then I highly advise the following steps:
 1. Ensure all of the service's functions are error tested.
-2. 
+2. Ensure all of the controller's functions are error tested.
+4. Ensure all of the module's endpoints are error tested.
+5. Create and use the module in the `main.ts` file.
 
 My setup:
 ```

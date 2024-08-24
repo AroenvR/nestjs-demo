@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FooController } from './foo.controller';
-import { FooService } from './foo.service';
-import { CreateFooDto } from './dto/create-foo.dto';
-import { UpdateFooDto } from './dto/update-foo.dto';
+import { FooController } from '../../foo/FooController';
+import { FooService } from '../../foo/FooService';
+import { CreateFooDto } from '../../foo/dto/CreateFooDto';
+import { UpdateFooDto } from '../../foo/dto/UpdateFooDto';
 
 describe('FooController', () => {
     let controller: FooController;
