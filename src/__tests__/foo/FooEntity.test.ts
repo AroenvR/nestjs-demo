@@ -1,15 +1,15 @@
-import { FooEntity } from "../../foo/entities/FooEntity"
+import { FooEntity } from '../../foo/entities/FooEntity';
 
-describe("FooEntity", () => {
-    let entity: FooEntity;
+describe('FooEntity', () => {
+	let entity: FooEntity;
 
-    beforeEach(() => {
-        entity = new FooEntity();
-    });
+	beforeEach(() => {
+		entity = new FooEntity();
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it("should be defined", () => {
-        expect(entity).toBeDefined();
-    });
+	it('should be defined', () => {
+		expect(entity).toBeDefined();
+	});
 });

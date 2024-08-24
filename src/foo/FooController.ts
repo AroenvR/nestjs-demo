@@ -5,30 +5,30 @@ import { UpdateFooDto } from './dto/UpdateFooDto';
 
 @Controller('foo')
 export class FooController {
-    constructor(private readonly fooService: FooService) { }
+	constructor(private readonly fooService: FooService) {}
 
-    @Post()
-    create(@Body() createFooDto: CreateFooDto) {
-        return this.fooService.create(createFooDto);
-    }
+	@Post()
+	create(@Body() createFooDto: CreateFooDto) {
+		return this.fooService.create(createFooDto);
+	}
 
-    @Get()
-    findAll() {
-        return this.fooService.findAll();
-    }
+	@Get()
+	findAll() {
+		return this.fooService.findAll();
+	}
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.fooService.findOne(+id);
-    }
+	@Get(':id')
+	findOne(@Param('id') id: string) {
+		return this.fooService.findOne(+id);
+	}
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateFooDto: UpdateFooDto) {
-        return this.fooService.update(+id, updateFooDto);
-    }
+	@Patch(':id')
+	update(@Param('id') id: string, @Body() updateFooDto: UpdateFooDto) {
+		return this.fooService.update(+id, updateFooDto);
+	}
 
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.fooService.remove(+id);
-    }
+	@Delete(':id')
+	remove(@Param('id') id: string) {
+		return this.fooService.remove(+id);
+	}
 }
