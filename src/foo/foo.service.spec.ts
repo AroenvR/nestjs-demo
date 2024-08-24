@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FooService } from './foo.service';
+import { CreateFooDto } from './dto/create-foo.dto';
+import { UpdateFooDto } from './dto/update-foo.dto';
 
 describe('FooService', () => {
 	let service: FooService;
@@ -15,12 +17,38 @@ describe('FooService', () => {
 	// --------------------------------------------------
 
 	it('should be defined', () => {
-		expect(service).toBeDefined();
+		expect(() => service).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('finds all foos', () => {
-		expect(() => service.findAll()).toThrow('Method not implemented');
+	it('creates a Foo', () => {
+		const dto = new CreateFooDto();
+		expect(() => service.create(dto)).toThrow('Method not yet implemented');
+	});
+
+	// --------------------------------------------------
+
+	it('finds all Foos', () => {
+		expect(() => service.findAll()).toThrow('Method not yet implemented');
+	});
+
+	// --------------------------------------------------
+
+	it('finds one Foo', () => {
+		expect(() => service.findOne(1)).toThrow('Method not yet implemented');
+	});
+
+	// --------------------------------------------------
+
+	it('updates a Foo', () => {
+		const dto = new UpdateFooDto();
+		expect(() => service.update(1, dto)).toThrow('Method not yet implemented');
+	});
+
+	// --------------------------------------------------
+
+	it('removes a Foo', () => {
+		expect(() => service.remove(1)).toThrow('Method not yet implemented');
 	});
 });

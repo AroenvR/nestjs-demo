@@ -17,7 +17,11 @@ src/
 │   ├──foo.service.spec.ts
 │   └──foo.service.ts
 ```
+Then run the `scripts/post-gen_service.sh` script to ensure the service returns errors in stead of strings.
 
+Then I highly advise the following steps:
+1. Ensure all of the service's functions are error tested.
+2. 
 
 My setup:
 ```
