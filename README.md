@@ -1,3 +1,36 @@
+# Using the NestJS CLI
+A Quick guide on how to efficiently use the NestJS CLI.
+
+## Creating a CRUD API
+Use the `nest g resource foo` command to create the following setup:  
+```
+src/
+├── foo/
+│   ├── dto/
+│   │   ├── create-foo.dto.ts
+│   │   └── update-foo.dto.ts
+│   ├── entities/
+│   │   └── foo.entity.ts
+│   ├──foo.controller.spec.ts
+│   ├──foo.controller.ts
+│   ├──foo.module.ts
+│   ├──foo.service.spec.ts
+│   └──foo.service.ts
+```
+
+
+My setup:
+```
+npm run start:dev
+
+npm run test:watch
+
+Thunder Client on the side
+```
+I'm using Thunder Client by thunderclient.com to test the API.
+
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
