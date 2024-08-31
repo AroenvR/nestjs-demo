@@ -1,16 +1,24 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { FooModule } from "./foo/FooModule";
-// import { LogAdapter } from "./logging/LogAdapter";
 import { LoggerMiddleware } from "./middleware/LoggerMiddleware";
-import { LogAdapterModule } from "./logging/LogAdapterModule";
+import { LoggerModule } from "./logging/LoggerModule";
+import { APP_FILTER } from "@nestjs/core";
+import { AllExceptionsFilter } from "./filters/AllExceptionsFilter";
+
+const exceptionFilterProvider = {
+    provide: APP_FILTER,
+    useClass: AllExceptionsFilter,
+}
 
 @Module({
-    imports: [LogAdapterModule, FooModule],
+    imports: [LoggerModule, FooModule],
     controllers: [],
-    providers: [],
+    providers: [
+        exceptionFilterProvider,
+    ],
     exports: []
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule { // TODO: Document & Test
 
     /**
      * Apply middleware to the Express App.

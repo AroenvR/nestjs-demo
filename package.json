@@ -8,7 +8,7 @@
     "scripts": {
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"src/__tests__/**/*.ts\"",
-        "app:dev": "npm run start",
+        "app": "npm run start:dev",
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
@@ -28,7 +28,8 @@
         "dotenv": "^16.4.5",
         "reflect-metadata": "^0.2.0",
         "rxjs": "^7.8.1",
-        "ts-log-adapter": "^1.0.4"
+        "ts-istruthy": "^1.0.2",
+        "ts-log-adapter": "^1.0.11"
     },
     "devDependencies": {
         "@nestjs/cli": "^10.0.0",

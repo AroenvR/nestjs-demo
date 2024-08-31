@@ -2,33 +2,44 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FooService } from './FooService';
 import { CreateFooDto } from './dto/CreateFooDto';
 import { UpdateFooDto } from './dto/UpdateFooDto';
+import { LogAdapter } from 'src/logging/LogAdapter';
 
 @Controller('foo')
 export class FooController {
-	constructor(private readonly fooService: FooService) {}
+    private readonly name = 'FooController';
 
-	@Post()
-	create(@Body() createFooDto: CreateFooDto) {
-		return this.fooService.create(createFooDto);
-	}
+    constructor(
+        // private readonly logger: LogAdapter,
+        private readonly fooService: FooService
+    ) { }
 
-	@Get()
-	findAll() {
-		return this.fooService.findAll();
-	}
+    @Post()
+    create(@Body() createFooDto: CreateFooDto) {
+        // this.logger.info(`${this.name}: Creating a new Foo entity.`);
+        return this.fooService.create(createFooDto);
+    }
 
-	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.fooService.findOne(+id);
-	}
+    @Get()
+    findAll() {
+        // this.logger.info(`${this.name}: Finding all Foo entities.`);
+        return this.fooService.findAll();
+    }
 
-	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateFooDto: UpdateFooDto) {
-		return this.fooService.update(+id, updateFooDto);
-	}
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        // this.logger.info(`${this.name}: Finding a Foo entity with ID: ${id}`);
+        return this.fooService.findOne(+id);
+    }
 
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.fooService.remove(+id);
-	}
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() updateFooDto: UpdateFooDto) {
+        // this.logger.info(`${this.name}: Updating Foo entity with ID: ${id}`);
+        return this.fooService.update(+id, updateFooDto);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+        // this.logger.info(`${this.name}: Deleting Foo entity with ID: ${id}`);
+        return this.fooService.remove(+id);
+    }
 }
