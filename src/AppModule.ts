@@ -24,6 +24,6 @@ export class AppModule implements NestModule { // TODO: Document & Test
      * Apply middleware to the Express App.
      */
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LoggerMiddleware).forRoutes('*');
+        consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set
     }
 }

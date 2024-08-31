@@ -1,4 +1,4 @@
-import { LoggerService, LogLevel } from "@nestjs/common";
+import { Injectable, LoggerService, LogLevel, Scope } from "@nestjs/common";
 import { ILogger } from "ts-log-adapter";
 
 /**
@@ -41,5 +41,9 @@ export class LogAdapter implements LoggerService { // TODO: Document & Test & Im
 
     setLogLevels(levels: LogLevel[]) {
         throw new Error("Method not implemented.");
+    }
+
+    getLogger(): ILogger {
+        return this.logger;
     }
 }

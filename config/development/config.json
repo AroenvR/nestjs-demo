@@ -1,0 +1,17 @@
+{
+    "logging": {
+        "appName": "Nest_App",
+        "driver": "winston",
+        "enableCorrelation": true,
+        "level": "debug",
+        "console": true,
+        "file": {
+            "enabled": false
+        },
+        "http": {
+            "enabled": false
+        },
+        "useWhitelist": false,
+        "prefixWhitelist": []
+    }
+}

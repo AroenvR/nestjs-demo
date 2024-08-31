@@ -1,8 +1,8 @@
 import { Global, Module } from "@nestjs/common";
 import { LogAdapter } from "./LogAdapter";
-import { ILoggerConfig, LoggerConfigurator, LoggerFactory } from "ts-log-adapter";
+import { CorrelationManager, ILoggerConfig, LoggerConfigurator, LoggerFactory } from "ts-log-adapter";
 
-const defaultConfig: ILoggerConfig = { // TODO: Get from config file.
+const defaultConfig: ILoggerConfig = {
     appName: 'NestJS_API',
     driver: 'winston',
     enableCorrelation: true,
@@ -24,8 +24,9 @@ const defaultConfig: ILoggerConfig = { // TODO: Get from config file.
         {
             provide: LogAdapter,
             useFactory: () => {
+                const correlationManager = new CorrelationManager();
                 const config = new LoggerConfigurator({ loader: 'object', config: defaultConfig }).loadConfiguration();
-                const logger = new LoggerFactory().initialize(config);
+                const logger = new LoggerFactory().initialize(config, correlationManager);
                 return new LogAdapter(logger);
             },
         },
