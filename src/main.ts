@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { FooModule } from './foo/FooModule';
+import { AppModule } from './AppModule';
+import { LogAdapter } from './logging/LogAdapter';
 
 async function bootstrap() {
-	// TODO's:
-	/*
+    // TODO's:
+    /*
         Implement custom logger
         Implement middlewares for at least logging and error handling with later cors, helmet, rate limit, sanitizing, JWT validation, cookie validation
         Add linting to all test commands
@@ -18,7 +20,9 @@ async function bootstrap() {
         Implement a database connection repository
     */
 
-	const app = await NestFactory.create(FooModule);
-	await app.listen(3000);
+    const app = await NestFactory.create(AppModule, {
+        logger: new LogAdapter()
+    });
+    await app.listen(3000);
 }
 bootstrap();
