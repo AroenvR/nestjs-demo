@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateFooDto } from './dto/CreateFooDto';
 import { UpdateFooDto } from './dto/UpdateFooDto';
-import { LogAdapter } from 'src/logging/LogAdapter';
+import { LogAdapter } from '../logging/LogAdapter';
 
 @Injectable()
 export class FooService {

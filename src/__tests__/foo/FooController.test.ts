@@ -3,12 +3,14 @@ import { FooController } from '../../foo/FooController';
 import { FooService } from '../../foo/FooService';
 import { CreateFooDto } from '../../foo/dto/CreateFooDto';
 import { UpdateFooDto } from '../../foo/dto/UpdateFooDto';
+import { LoggerModule } from '../../logging/LoggerModule';
 
 describe('FooController', () => {
     let controller: FooController;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
+            imports: [LoggerModule],
             controllers: [FooController],
             providers: [FooService],
         }).compile();

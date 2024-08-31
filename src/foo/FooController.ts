@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FooService } from './FooService';
 import { CreateFooDto } from './dto/CreateFooDto';
 import { UpdateFooDto } from './dto/UpdateFooDto';
-import { LogAdapter } from 'src/logging/LogAdapter';
+import { LogAdapter } from '../logging/LogAdapter';
 
 @Controller('foo')
 export class FooController {
