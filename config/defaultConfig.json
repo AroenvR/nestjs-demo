@@ -1,10 +1,10 @@
 {
     "logging": {
-        "appName": "TEST",
+        "appName": "Nest_App",
         "driver": "winston",
         "enableCorrelation": true,
-        "level": "verbose",
-        "console": true,
+        "level": "debug",
+        "console": false,
         "file": {
             "enabled": false
         },

@@ -1,6 +1,6 @@
 // src/filters/http-exception.filter.ts
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-import { LogAdapter } from 'src/logging/LogAdapter';
+import { LogAdapter } from '../logging/LogAdapter';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter { // TODO: Document & Test

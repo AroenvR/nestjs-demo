@@ -1,0 +1,17 @@
+{
+    "appName": "TEST",
+    "driver": "winston",
+    "enableCorrelation": true,
+    "level": "verbose",
+    "console": false,
+    "file": {
+        "enabled": true,
+        "path": "logs",
+        "name": "test.log"
+    },
+    "http": {
+        "enabled": false
+    },
+    "useWhitelist": false,
+    "prefixWhitelist": []
+}

@@ -2,7 +2,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Request, Response, NextFunction } from 'express';
-import { LogAdapter } from 'src/logging/LogAdapter';
+import { LogAdapter } from '../logging/LogAdapter';
 import { isTruthy } from 'ts-istruthy';
 
 @Injectable()
