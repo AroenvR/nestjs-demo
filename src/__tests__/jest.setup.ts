@@ -9,6 +9,6 @@ if (!exists) throw new Error(`Test environment file not found: ${testEnvPath}`);
 else dotenv.config({ path: '.env.test' });
 
 afterAll(() => {
-    jest.clearAllTimers();
-    jest.restoreAllMocks();
+	jest.clearAllTimers();
+	jest.restoreAllMocks();
 });

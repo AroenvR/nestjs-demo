@@ -3,8 +3,8 @@ import { AppModule } from './AppModule';
 import { LogAdapter } from './logging/LogAdapter';
 
 async function bootstrap() {
-    // TODO's:
-    /*
+	// TODO's:
+	/*
         Implement custom logger
         Implement middlewares for at least logging and error handling with later cors, helmet, rate limit, sanitizing, JWT validation, cookie validation
         Add linting to all test commands
@@ -19,13 +19,13 @@ async function bootstrap() {
         Implement a database connection repository
     */
 
-    const app = await NestFactory.create(AppModule, {
-        bufferLogs: true,
-    });
+	const app = await NestFactory.create(AppModule, {
+		bufferLogs: true,
+	});
 
-    const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
-    app.useLogger(logger); // Set the custom logger for the entire application
+	const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
+	app.useLogger(logger); // Set the custom logger for the entire application
 
-    await app.listen(3000);
+	await app.listen(3000);
 }
 bootstrap();

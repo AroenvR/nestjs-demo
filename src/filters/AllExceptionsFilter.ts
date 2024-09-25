@@ -3,42 +3,35 @@ import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from
 import { LogAdapter } from '../logging/LogAdapter';
 
 @Catch()
-export class AllExceptionsFilter implements ExceptionFilter { // TODO: Document & Test
-    private readonly name = 'AllExceptionsFilter';
+export class AllExceptionsFilter implements ExceptionFilter {
+	// TODO: Document & Test
+	private readonly name = 'AllExceptionsFilter';
 
-    constructor(private readonly logger: LogAdapter) { }
+	constructor(private readonly logger: LogAdapter) {}
 
-    catch(exception: unknown, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
-        const request = ctx.getRequest();
+	catch(exception: unknown, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const response = ctx.getResponse();
+		const request = ctx.getRequest();
 
-        const status =
-            exception instanceof HttpException
-                ? exception.getStatus()
-                : HttpStatus.INTERNAL_SERVER_ERROR;
+		const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const message =
-            exception instanceof HttpException
-                ? exception.getResponse()
-                : exception;
+		const message = exception instanceof HttpException ? exception.getResponse() : exception;
 
-        const errorResponse = {
-            statusCode: status,
-            timestamp: Date.now(),
-            path: request.url,
-            message,
-        };
+		const errorResponse = {
+			statusCode: status,
+			timestamp: Date.now(),
+			path: request.url,
+			message,
+		};
 
-        // Log the stack trace or the error message
-        if (exception instanceof Error) {
-            this.logger.warn(`${this.name}: API exception occurred: ${exception.message}`);
-            this.logger.debug(`${this.name}: Stack trace: ${exception.stack}`);
-        }
+		// Log the stack trace or the error message
+		if (exception instanceof Error) {
+			this.logger.warn(`${this.name}: API exception occurred: ${exception.message}`);
+			this.logger.debug(`${this.name}: Stack trace: ${exception.stack}`);
+		} else this.logger.debug(`Exception thrown: ${JSON.stringify(exception)}`);
 
-        else this.logger.debug(`Exception thrown: ${JSON.stringify(exception)}`);
-
-        // Send the response
-        response.status(status).json(errorResponse);
-    }
+		// Send the response
+		response.status(status).json(errorResponse);
+	}
 }

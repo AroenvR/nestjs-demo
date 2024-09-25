@@ -5,44 +5,44 @@ import { FooModule } from '../../foo/FooModule';
 import { LoggerModule } from '../../logging/LoggerModule';
 
 describe('FooModule (e2e)', () => {
-    let app: INestApplication;
+	let app: INestApplication;
 
-    beforeEach(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [LoggerModule, FooModule],
-        }).compile();
+	beforeEach(async () => {
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			imports: [LoggerModule, FooModule],
+		}).compile();
 
-        app = moduleFixture.createNestApplication();
-        await app.init();
-    });
+		app = moduleFixture.createNestApplication();
+		await app.init();
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('/foo (POST)', () => {
-        return request(app.getHttpServer()).post('/foo').send({}).expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
-    });
+	it('/foo (POST)', () => {
+		return request(app.getHttpServer()).post('/foo').send({}).expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('/foo (GET)', () => {
-        return request(app.getHttpServer()).get('/foo').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
-    });
+	it('/foo (GET)', () => {
+		return request(app.getHttpServer()).get('/foo').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('/foo/:id (GET)', () => {
-        return request(app.getHttpServer()).get('/foo/1').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
-    });
+	it('/foo/:id (GET)', () => {
+		return request(app.getHttpServer()).get('/foo/1').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('/foo/:id (PATCH)', () => {
-        return request(app.getHttpServer()).get('/foo/1').send({}).expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
-    });
+	it('/foo/:id (PATCH)', () => {
+		return request(app.getHttpServer()).get('/foo/1').send({}).expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('/foo/:id (DELETE)', () => {
-        return request(app.getHttpServer()).get('/foo/1').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
-    });
+	it('/foo/:id (DELETE)', () => {
+		return request(app.getHttpServer()).get('/foo/1').expect(400).expect({ statusCode: 400, message: 'Method not yet implemented!' });
+	});
 });
