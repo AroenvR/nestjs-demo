@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './AppModule';
 import { LogAdapter } from './logging/LogAdapter';

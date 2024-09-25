@@ -1,0 +1,18 @@
+{
+    "appName": "NEST_DEV",
+    "driver": "winston",
+    "enableCorrelation": true,
+    "level": "verbose",
+    "console": true,
+    "file": {
+        "enabled": true,
+        "path": "logs",
+        "name": "TIMESTAMPED",
+        "_comment": "TIMESTAMPED means that the log file will be named APP_NAME.TIMESTAMP.log"
+    },
+    "http": {
+        "enabled": false
+    },
+    "useWhitelist": false,
+    "prefixWhitelist": []
+}
