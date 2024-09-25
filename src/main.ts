@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { FooModule } from './foo/FooModule';
+import { AppModule } from './AppModule';
+import { LogAdapter } from './logging/LogAdapter';
 
 async function bootstrap() {
 	// TODO's:
@@ -18,7 +19,13 @@ async function bootstrap() {
         Implement a database connection repository
     */
 
-	const app = await NestFactory.create(FooModule);
+	const app = await NestFactory.create(AppModule, {
+		bufferLogs: true,
+	});
+
+	const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
+	app.useLogger(logger); // Set the custom logger for the entire application
+
 	await app.listen(3000);
 }
 bootstrap();
