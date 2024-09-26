@@ -42,9 +42,13 @@ describe('LogAdapter', () => {
 		logAdapter = new LogAdapter(mockILogger);
 	});
 
+	// --------------------------------------------------
+
 	it('should be defined', () => {
 		expect(logAdapter).toBeDefined();
 	});
+
+	// --------------------------------------------------
 
 	describe('logging methods', () => {
 		it('should call verbose method of ILogger', () => {
@@ -56,6 +60,8 @@ describe('LogAdapter', () => {
 			expect(mockILogger.verbose).toHaveBeenCalledWith(message, metadata);
 		});
 
+		// --------------------------------------------------
+
 		it('should call debug method of ILogger', () => {
 			const message = 'Test debug message';
 			const metadata = { key: 'value' };
@@ -64,6 +70,8 @@ describe('LogAdapter', () => {
 
 			expect(mockILogger.debug).toHaveBeenCalledWith(message, metadata);
 		});
+
+		// --------------------------------------------------
 
 		it('should call info method of ILogger', () => {
 			const message = 'Test info message';
@@ -74,6 +82,8 @@ describe('LogAdapter', () => {
 			expect(mockILogger.info).toHaveBeenCalledWith(message, metadata);
 		});
 
+		// --------------------------------------------------
+
 		it('should call log method of ILogger', () => {
 			const message = 'Test log message';
 			const metadata = { key: 'value' };
@@ -82,6 +92,8 @@ describe('LogAdapter', () => {
 
 			expect(mockILogger.log).toHaveBeenCalledWith(message, metadata);
 		});
+
+		// --------------------------------------------------
 
 		it('should call warn method of ILogger', () => {
 			const message = 'Test warn message';
@@ -92,6 +104,8 @@ describe('LogAdapter', () => {
 			expect(mockILogger.warn).toHaveBeenCalledWith(message, metadata);
 		});
 
+		// --------------------------------------------------
+
 		it('should call error method of ILogger', () => {
 			const message = 'Test error message';
 			const metadata = { key: 'value' };
@@ -100,6 +114,8 @@ describe('LogAdapter', () => {
 
 			expect(mockILogger.error).toHaveBeenCalledWith(message, metadata);
 		});
+
+		// --------------------------------------------------
 
 		it('should call fatal method of ILogger as critical', () => {
 			const message = 'Test fatal message';
@@ -135,6 +151,8 @@ describe('LogAdapter', () => {
 			expect(mockILogger.info).toHaveBeenCalledWith(`${prefix}: ${message}`, metadata);
 		});
 
+		// --------------------------------------------------
+
 		it('should preserve config and correlationManager', () => {
 			const prefix = 'Prefix';
 			const prefixedLogger = logAdapter.getPrefixedLogger(prefix);
@@ -142,6 +160,8 @@ describe('LogAdapter', () => {
 			expect(prefixedLogger.config).toBe(mockILogger.config);
 			expect(prefixedLogger.correlationManager).toBe(mockILogger.correlationManager);
 		});
+
+		// --------------------------------------------------
 
 		it('should prefix all logging methods', () => {
 			const prefix = 'Prefix';
