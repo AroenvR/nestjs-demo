@@ -1,4 +1,5 @@
 import { ILoggerConfig } from 'ts-log-adapter';
+import { TDatabaseConfig } from './database/TDatabaseConfig';
 
 /**
  * The application's configuration interface.
@@ -6,6 +7,7 @@ import { ILoggerConfig } from 'ts-log-adapter';
  */
 export interface IAppConfig {
 	logging: ILoggerConfig;
+	database: TDatabaseConfig;
 }
 
 /**
@@ -27,5 +29,9 @@ export const defaultServerConfig: IAppConfig = {
 		useWhitelist: false,
 		prefixWhitelist: [],
 	},
+	database: {
+		driver: 'sqlite',
+		database: ':memory:',
+		synchronize: true,
+	},
 };
-// TODO: import from .env and json files.
