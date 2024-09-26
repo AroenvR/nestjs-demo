@@ -1,5 +1,5 @@
 {
-    "appName": "TEST",
+    "appName": "API_TEST",
     "driver": "winston",
     "enableCorrelation": true,
     "level": "verbose",
@@ -7,7 +7,7 @@
     "file": {
         "enabled": true,
         "path": "logs",
-        "name": "test.log"
+        "name": "TEST_NAME.test.log"
     },
     "http": {
         "enabled": false

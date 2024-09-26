@@ -7,9 +7,7 @@ import { LogAdapter } from './logging/LogAdapter';
 async function bootstrap() {
 	// TODO's:
 	/*
-        Implement custom logger
-        Implement middlewares for at least logging and error handling with later cors, helmet, rate limit, sanitizing, JWT validation, cookie validation
-        Add linting to all test commands
+        Implement middlewares for cors, helmet, rate limit, sanitizing, JWT validation, cookie validation
         Implement a Task manager
         Implement a Queue manager
         Implement configuration loader

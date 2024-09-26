@@ -1,19 +1,20 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { FooModule } from './foo/FooModule';
 import { LoggerMiddleware } from './middleware/LoggerMiddleware';
 import { LoggerModule } from './logging/LoggerModule';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/AllExceptionsFilter';
-
-const exceptionFilterProvider = {
-	provide: APP_FILTER,
-	useClass: AllExceptionsFilter,
-};
+import { DatabaseModule } from './database/DatabaseModule';
+import { TemplateModule } from './template/TemplateModule';
 
 @Module({
-	imports: [LoggerModule, FooModule],
+	imports: [LoggerModule, DatabaseModule, TemplateModule],
 	controllers: [],
-	providers: [exceptionFilterProvider],
+	providers: [
+		{
+			provide: APP_FILTER,
+			useClass: AllExceptionsFilter,
+		},
+	],
 	exports: [],
 })
 export class AppModule implements NestModule {
