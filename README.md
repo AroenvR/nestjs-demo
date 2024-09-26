@@ -1,42 +1,3 @@
-# Using the NestJS CLI
-A Quick guide on how to efficiently use the NestJS CLI.
-
-## Creating a CRUD API
-Use the `nest g resource foo` command to create the following setup:  
-```
-src/
-├── foo/
-│   ├── dto/
-│   │   ├── create-foo.dto.ts
-│   │   └── update-foo.dto.ts
-│   ├── entities/
-│   │   └── foo.entity.ts
-│   ├──foo.controller.spec.ts
-│   ├──foo.controller.ts
-│   ├──foo.module.ts
-│   ├──foo.service.spec.ts
-│   └──foo.service.ts
-```
-Then run the `scripts/post-gen_service.sh` script to ensure the service returns errors in stead of strings.
-
-Then I highly advise the following steps:
-1. Ensure all of the service's functions are error tested.
-2. Ensure all of the controller's functions are error tested.
-4. Ensure all of the module's endpoints are error tested.
-5. Create and use the module in the `main.ts` file.
-
-My setup:
-```
-npm run start:dev
-
-npm run test:watch
-
-Thunder Client on the side
-```
-I'm using Thunder Client by thunderclient.com to test the API.
-
-
-
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -62,43 +23,44 @@ I'm using Thunder Client by thunderclient.com to test the API.
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a pre-configured [NestJS](https://nestjs.com/) template with middlewares, logging, database connection, quick-and-easy endpoint implementation, ...
 
 ## Project setup
-
+#### Clone the repository with
 ```bash
-$ npm install
+git clone https://github.com/AroenvR/nestjs-demo.git
+```
+
+### Enter the new directory
+```
+cd nestjs-demo
+```
+
+#### Install dependencies
+```bash
+npm install
 ```
 
 ## Compile and run the project
-
 ```bash
 # development
-$ npm run start
+npm run start
 
 # watch mode
-$ npm run start:dev
+npm run start:dev
 
 # production mode
-$ npm run start:prod
+npm run start:prod
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+## Running tests
+Execute `npm run test` to run all tests once.  
+Execute `npm run test:watch` to run all tests on watch, rerunning on each file change.  
+Execute `npm run test SomeFile.test.ts` to run a specific test once.  
+Execute `npm run test:watch SomeFile.test.ts` to run a specific test on watch, rerunning on each file change.  
+Execute `npm run test:coverage` to run all test once with a coverage report.
 
 ## Resources
-
 Check out a few resources that may come in handy when working with NestJS:
 
 - Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
@@ -109,16 +71,20 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Support
+## Quickly creating a new API endpoint
+Check out the [templates](./src//template/) and [template test](./src/__tests__/template/) directories for quickly creating a new endpoint.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## My development setup
+```bash
+npm run start:dev
+```
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run test:watch
+```
+[Thunder Client](thunderclient.com) to manually test the API's endpoints.  
+[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Nest, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
