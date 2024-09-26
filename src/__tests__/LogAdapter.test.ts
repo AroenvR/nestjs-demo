@@ -1,5 +1,3 @@
-// log-adapter.spec.ts
-
 import { LogAdapter } from '../logging/LogAdapter';
 import { ILogger } from 'ts-log-adapter';
 
@@ -18,7 +16,7 @@ describe('LogAdapter', () => {
 				file: {
 					enabled: true,
 					path: 'logs',
-					name: 'TEST_NAME.test.log',
+					name: 'LogAdapter.test.log',
 				},
 				http: {
 					enabled: false,
@@ -127,6 +125,8 @@ describe('LogAdapter', () => {
 		});
 	});
 
+	// --------------------------------------------------
+
 	describe('getLogger', () => {
 		it('should return the underlying ILogger instance', () => {
 			const logger = logAdapter.getLogger();
@@ -134,6 +134,8 @@ describe('LogAdapter', () => {
 			expect(logger).toBe(mockILogger);
 		});
 	});
+
+	// --------------------------------------------------
 
 	describe('getPrefixedLogger', () => {
 		it('should return a prefixed ILogger', () => {

@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 		TypeOrmModule.forRootAsync({
 			useFactory: () => ({
 				type: 'sqlite', // get driver from config file
-				database: ':memory:', // get connection string from config file
+				database: 'dev.db', // get connection string from config file
 				autoLoadEntities: true,
 				synchronize: true, // get from config file => DO NOT ENABLE THIS IN PRODUCTION !!!
 			}),
