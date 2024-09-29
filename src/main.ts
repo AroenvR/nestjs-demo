@@ -5,8 +5,8 @@ import { AppModule } from './AppModule';
 import { LogAdapter } from './logging/LogAdapter';
 
 async function bootstrap() {
-    // TODO's:
-    /*
+	// TODO's:
+	/*
         Implement JWT authentication
         Create middlewares for:
         - Validating JWT tokens
@@ -25,13 +25,13 @@ async function bootstrap() {
         Implement a custom session storage
     */
 
-    const app = await NestFactory.create(AppModule, {
-        bufferLogs: true,
-    });
+	const app = await NestFactory.create(AppModule, {
+		bufferLogs: true,
+	});
 
-    const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
-    app.useLogger(logger); // Set the custom logger for the entire application
+	const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
+	app.useLogger(logger); // Set the custom logger for the entire application
 
-    await app.listen(3000);
+	await app.listen(3000);
 }
 bootstrap();
