@@ -17,11 +17,14 @@ import { TemplateModule } from './template/TemplateModule';
 	],
 	exports: [],
 })
+/**
+ * The root application module.
+ * Imports essential modules, applies global middleware, and registers global exception filters.
+ */
 export class AppModule implements NestModule {
-	// TODO: Document & Test
-
 	/**
 	 * Apply middleware to the Express App.
+	 * @param consumer - The middleware consumer to apply middleware.
 	 */
 	configure(consumer: MiddlewareConsumer) {
 		consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set

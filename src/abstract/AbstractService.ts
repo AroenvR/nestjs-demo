@@ -4,7 +4,8 @@ import { LogAdapter } from '../logging/LogAdapter';
 import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 
 /**
- * TODO
+ * An abstract service class that provides basic CRUD operations.
+ * A default implementation will only throw the `Method not implemented` exception.
  */
 export abstract class AbstractService {
 	protected logger: ILogger;

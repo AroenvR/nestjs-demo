@@ -1,10 +1,12 @@
-// src/filters/http-exception.filter.ts
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { LogAdapter } from '../logging/LogAdapter';
 
 @Catch()
+/**
+ * A global exception filter that catches all exceptions thrown in the application.
+ * Logs exception details and sends a standardized JSON error response without any sensitive data.
+ */
 export class AllExceptionsFilter implements ExceptionFilter {
-	// TODO: Document & Test
 	private readonly name = 'AllExceptionsFilter';
 
 	constructor(private readonly logger: LogAdapter) {}

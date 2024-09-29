@@ -29,4 +29,4 @@ import { defaultServerConfig } from '../IServerConfig';
 	],
 	exports: [LogAdapter],
 })
-export class LoggerModule {} // TODO: Document & Test
+export class LoggerModule {}

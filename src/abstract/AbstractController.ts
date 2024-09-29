@@ -5,7 +5,7 @@ import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractService } from './AbstractService';
 
 /**
- * TODO
+ * An abstract controller class that provides basic CRUD operations.
  */
 export abstract class AbstractController {
 	protected logger: ILogger;

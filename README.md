@@ -23,7 +23,9 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
-This is a pre-configured [NestJS](https://nestjs.com/) template with middlewares, logging, database connection, quick-and-easy endpoint implementation, ...
+This is a pre-configured [NestJS](https://nestjs.com/) template with middlewares, logging, database connection, quick-and-easy endpoint implementation, ...  
+It features an expansive testing suite with a 100% coverage.  
+It generates no linting errors / warnings.  
 
 ## Project setup
 #### Clone the repository with
@@ -72,7 +74,11 @@ Check out a few resources that may come in handy when working with NestJS:
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
 ## Quickly creating a new API endpoint
-Check out the [templates](./src//template/) and [template test](./src/__tests__/template/) directories for quickly creating a new endpoint.
+Two abstract classes were created for quickly setting up new endpoints.  
+1. [AbstractController](./src/abstract/AbstractController.ts) for all generic CRUD requests (GET / POST / PATCH / DELETE)  
+2. An accompanying [AbstractService](./src/abstract/AbstractService.ts) for connecting to a database. The abstract class only throws a HttpException with METHOD_NOT_IMPLEMENTED as it would be dangerous to accidentally create a fully functional endpoint.
+
+For an example of how to easily set up a new endpoint, refer to the [templates](./src/template/) and [template test](./src/__tests__/template/) directories. They can be utilized for creating new endpoints with the Abstract classes (just copy-paste the templates & change the names).
 
 ## My development setup
 ```bash
