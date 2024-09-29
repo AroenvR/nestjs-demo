@@ -3,7 +3,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
 /**
- * The options for loading the logger configuration settings.
+ * The options for loading the configuration settings.
  * @property loader The loader to use for loading the configuration settings.
  * @property path The path to the configuration file.
  * @property config The configuration settings to load.
@@ -24,8 +24,8 @@ export type TLoadOpts<Config> =
 /**
  * Class responsible for loading and providing configuration settings.
  */
-export class Configurator<Config> {
-	private readonly name = 'Configurator';
+export class ConfigurationLoader<Config> {
+	private readonly name = 'ConfigurationLoader';
 	private _opts: TLoadOpts<Config> | null = null;
 	private _config: Config | null = null;
 	private jsonSchema: object;
@@ -53,6 +53,8 @@ export class Configurator<Config> {
 			this.validateConfig(this.config);
 			return this.config;
 		}
+
+		if (!this.opts) throw new Error(`${this.name}: No configuration options were provided.`);
 
 		// Load the configuration based on the provided options.
 		switch (this.opts.loader) {

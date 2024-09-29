@@ -1,9 +1,10 @@
-import { Configurator, TLoadOpts } from '../../configurator/Configurator';
+import { ConfigurationLoader, TLoadOpts } from '../../config_loader/ConfigurationLoader';
 import fs from 'fs-extra';
 
 jest.mock('fs-extra');
 
-describe('Configurator', () => {
+const testName = 'ConfigurationLoader';
+describe(testName, () => {
 	const mockFs = fs as jest.Mocked<typeof fs>;
 	const testSchema = {
 		type: 'object',
@@ -19,7 +20,7 @@ describe('Configurator', () => {
 		value: number;
 	};
 
-	let configurator: Configurator<TestConfig>;
+	let configLoader: ConfigurationLoader<TestConfig>;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -32,9 +33,9 @@ describe('Configurator', () => {
 			process.env['CONFIG_PATH'] = '/path/to/config.json';
 			mockFs.readFileSync.mockReturnValue(JSON.stringify(configData));
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', null);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', null);
 
-			const config = configurator.loadConfiguration();
+			const config = configLoader.loadConfiguration();
 
 			expect(mockFs.readFileSync).toHaveBeenCalledWith('/path/to/config.json', 'utf8');
 			expect(config).toEqual(configData);
@@ -50,9 +51,9 @@ describe('Configurator', () => {
 			};
 			mockFs.readFileSync.mockReturnValue(JSON.stringify(configData));
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', opts);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', opts);
 
-			const config = configurator.loadConfiguration();
+			const config = configLoader.loadConfiguration();
 
 			expect(mockFs.readFileSync).toHaveBeenCalledWith('/path/to/config.json', 'utf8');
 			expect(config).toEqual(configData);
@@ -67,9 +68,9 @@ describe('Configurator', () => {
 				config: configData,
 			};
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', opts);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', opts);
 
-			const config = configurator.loadConfiguration();
+			const config = configLoader.loadConfiguration();
 
 			expect(mockFs.readFileSync).not.toHaveBeenCalled();
 			expect(config).toEqual(configData);
@@ -84,17 +85,17 @@ describe('Configurator', () => {
 				config: invalidConfigData as any,
 			};
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', opts);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', opts);
 
-			expect(() => configurator.loadConfiguration()).toThrow('Configurator: Configuration did not pass JSON Schema validation:');
+			expect(() => configLoader.loadConfiguration()).toThrow(`${testName}: Configuration did not pass JSON Schema validation:`);
 		});
 
 		// --------------------------------------------------
 
 		it('should throw an error if no loader options are provided and no environment variable is set', () => {
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', null);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', null);
 
-			expect(() => configurator.loadConfiguration()).toThrow('Configurator: Configuration has not been loaded.');
+			expect(() => configLoader.loadConfiguration()).toThrow(`${testName}: No configuration options were provided.`);
 		});
 
 		// --------------------------------------------------
@@ -102,9 +103,9 @@ describe('Configurator', () => {
 		it('should throw an error if an invalid loader is specified', () => {
 			const opts = { loader: 'invalid' } as any;
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', opts);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', opts);
 
-			expect(() => configurator.loadConfiguration()).toThrow('Configurator: A loader must be specified.');
+			expect(() => configLoader.loadConfiguration()).toThrow(`${testName}: A loader must be specified.`);
 		});
 	});
 
@@ -114,9 +115,9 @@ describe('Configurator', () => {
 		it('should validate a correct configuration', () => {
 			const configData = { key: 'test', value: 42 };
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', null);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', null);
 
-			const result = configurator.validateConfig(configData);
+			const result = configLoader.validateConfig(configData);
 
 			expect(result).toBe(true);
 		});
@@ -126,10 +127,10 @@ describe('Configurator', () => {
 		it('should throw an error for invalid configuration', () => {
 			const invalidConfigData = { key: 'test' }; // Missing 'value'
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', null);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', null);
 
-			expect(() => configurator.validateConfig(invalidConfigData as any)).toThrow(
-				'Configurator: Configuration did not pass JSON Schema validation:',
+			expect(() => configLoader.validateConfig(invalidConfigData as any)).toThrow(
+				`${testName}: Configuration did not pass JSON Schema validation:`,
 			);
 		});
 	});
@@ -144,18 +145,18 @@ describe('Configurator', () => {
 				config: configData,
 			};
 
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', opts);
-			configurator.loadConfiguration();
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', opts);
+			configLoader.loadConfiguration();
 
-			expect(configurator.config).toEqual(configData);
+			expect(configLoader.config).toEqual(configData);
 		});
 
 		// --------------------------------------------------
 
 		it('should throw an error if configuration is not loaded', () => {
-			configurator = new Configurator<TestConfig>(testSchema, 'CONFIG_PATH', null);
+			configLoader = new ConfigurationLoader<TestConfig>(testSchema, 'CONFIG_PATH', null);
 
-			expect(() => configurator.config).toThrow('Configurator: Configuration has not been loaded.');
+			expect(() => configLoader.config).toThrow(`${testName}: Configuration has not been loaded.`);
 		});
 	});
 });

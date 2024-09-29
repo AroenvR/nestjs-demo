@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Configurator, TLoadOpts } from '../configurator/Configurator';
+import { ConfigurationLoader, TLoadOpts } from '../config_loader/ConfigurationLoader';
 import { TDatabaseConfig } from './TDatabaseConfig';
 import { defaultServerConfig } from '../IServerConfig';
 import { databaseJSONSchema } from './DatabaseJsonSchema';
 
 const fallbackDbConfig: TLoadOpts<TDatabaseConfig> = { loader: 'object', config: defaultServerConfig.database };
-const databaseConfig = new Configurator(databaseJSONSchema, 'DATABASE_CONFIG', fallbackDbConfig).loadConfiguration();
+const databaseConfig = new ConfigurationLoader(databaseJSONSchema, 'DATABASE_CONFIG', fallbackDbConfig).loadConfiguration();
 
 @Module({
 	imports: [
