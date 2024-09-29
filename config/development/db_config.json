@@ -1,0 +1,5 @@
+{
+    "driver": "sqlite",
+    "database": "/workspaces/nestjs-demo/dev.db",
+    "synchronize": true
+}

@@ -7,7 +7,6 @@ import { isTruthy } from 'ts-istruthy';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-	// TODO: Document & Test
 	constructor(private readonly logger: LogAdapter) {}
 
 	use(req: Request, res: Response, next: NextFunction) {

@@ -1,11 +1,11 @@
 import { LoggerService } from '@nestjs/common';
 import { ILogger } from 'ts-log-adapter';
+import { TMetadata } from 'ts-log-adapter/dist/ILogger';
 
 /**
  * An adapter for the ts-log-adapter library.
  */
 export class LogAdapter implements LoggerService {
-	// TODO: Document & Test & Implement adapter interface
 	private logger: ILogger;
 
 	constructor(logger: ILogger) {
@@ -40,11 +40,23 @@ export class LogAdapter implements LoggerService {
 		this.logger.critical(message, optionalParams[0]);
 	}
 
-	// setLogLevels(levels: LogLevel[]) {
-	//     throw new Error('Method not implemented.');
-	// }
-
 	getLogger(): ILogger {
 		return this.logger;
+	}
+
+	getPrefixedLogger(prefix: string): ILogger {
+		const prefixedLogger: ILogger = {
+			config: this.logger.config,
+			correlationManager: this.logger.correlationManager,
+			verbose: (message: string, metadata?: TMetadata) => this.logger.verbose(`${prefix}: ${message}`, metadata),
+			debug: (message: string, metadata?: TMetadata) => this.logger.debug(`${prefix}: ${message}`, metadata),
+			info: (message: string, metadata?: TMetadata) => this.logger.info(`${prefix}: ${message}`, metadata),
+			log: (message: string, metadata?: TMetadata) => this.logger.log(`${prefix}: ${message}`, metadata),
+			warn: (message: string, metadata?: TMetadata) => this.logger.warn(`${prefix}: ${message}`, metadata),
+			error: (message: string, metadata?: TMetadata) => this.logger.error(`${prefix}: ${message}`, metadata),
+			critical: (message: string, metadata?: TMetadata) => this.logger.critical(`${prefix}: ${message}`, metadata),
+		};
+
+		return prefixedLogger;
 	}
 }

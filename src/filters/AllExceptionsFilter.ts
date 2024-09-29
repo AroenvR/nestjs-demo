@@ -15,7 +15,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 		const request = ctx.getRequest();
 
 		const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-
 		const message = exception instanceof HttpException ? exception.getResponse() : exception;
 
 		const errorResponse = {
@@ -27,9 +26,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 		// Log the stack trace or the error message
 		if (exception instanceof Error) {
-			this.logger.warn(`${this.name}: API exception occurred: ${exception.message}`);
+			this.logger.warn(`${this.name}: API Error occurred: ${exception.message}`);
 			this.logger.debug(`${this.name}: Stack trace: ${exception.stack}`);
-		} else this.logger.debug(`Exception thrown: ${JSON.stringify(exception)}`);
+		}
 
 		// Send the response
 		response.status(status).json(errorResponse);
