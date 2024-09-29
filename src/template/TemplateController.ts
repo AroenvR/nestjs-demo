@@ -13,4 +13,11 @@ export class TemplateController extends AbstractController {
 	) {
 		super(logAdapter, service);
 	}
+
+	/*  This Controller already has fully functional endpoints for:
+        - POST
+        - GET
+        - GET/id
+        - PATCH/id
+        - DELETE/id */
 }

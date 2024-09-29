@@ -16,7 +16,9 @@ export class TemplateService extends AbstractService {
 		super(repository, entityManager, logAdapter);
 	}
 
-	/* Below is a fully functional Service-Repository-Database relationship, simply uncomment it and edit as necessary. */
+	/*  Below is a fully functional Service-Repository-Database relationship, 
+        simply uncomment it and edit as necessary.
+        Without any imlementation, this service will simply throw "NOT_IMPLEMENTED" errors.  */
 
 	// async create(createDto: CreateTemplateDto) {
 	//     this.logger.info(`Creating a new entity`);
