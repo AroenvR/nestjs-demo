@@ -8,28 +8,30 @@ import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
 import { DatabaseModule } from '../../../database/DatabaseModule';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { wasLogged } from '../../helpers/wasLogged';
+import { AbstractService } from '../../../abstract/AbstractService';
 
 describe('TemplateService Integration', () => {
-	const testName = 'TemplateService_Integration';
+	// Value to change
+	const testName = 'TemplateService_Integration'; // Value to change
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-	let service: TemplateService;
+	let service: AbstractService;
 	let className: string;
 
 	const id = 1;
-	let createDto: CreateTemplateDto;
+	let createDto: CreateTemplateDto; // Value to change
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])],
-			providers: [TemplateService],
+			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])], // Value to change
+			providers: [TemplateService], // Value to change
 		}).compile();
 
-		service = module.get<TemplateService>(TemplateService);
+		service = module.get<TemplateService>(TemplateService); // Value to change
 		className = service.constructor.name;
 
-		createDto = new CreateTemplateDto();
-		createDto.value = 'test';
+		createDto = new CreateTemplateDto(); // Value to change
+		createDto.value = 'test'; // Value to change
 	});
 
 	// --------------------------------------------------
@@ -70,8 +72,8 @@ describe('TemplateService Integration', () => {
 	// --------------------------------------------------
 
 	it('Updates an entity', async () => {
-		const dto = new UpdateTemplateDto();
-		dto.value = randomUUID().toString();
+		const dto = new UpdateTemplateDto(); // Value to change
+		dto.value = randomUUID().toString(); // Value to change
 
 		await expect(service.update(id, dto)).resolves.toEqual({ id: id, ...dto });
 		await expect(wasLogged(testName, `${className}: Updating entity with id ${id}`)).resolves.toBe(true);
@@ -81,8 +83,8 @@ describe('TemplateService Integration', () => {
 
 	it('Throws when unable to find an entity to update by its id', async () => {
 		const id = 69;
-		const dto = new UpdateTemplateDto();
-		dto.value = randomUUID().toString();
+		const dto = new UpdateTemplateDto(); // Value to change
+		dto.value = randomUUID().toString(); // Value to change
 
 		await expect(service.update(id, dto)).rejects.toThrow(`Entity by id ${id} not found`);
 		await expect(wasLogged(testName, `${className}: Updating entity with id ${id}`)).resolves.toBe(true);

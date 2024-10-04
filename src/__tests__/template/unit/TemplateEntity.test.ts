@@ -1,17 +1,18 @@
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 
 describe('TemplateEntity', () => {
-	let entity: TemplateEntity;
+	// Value to change
+	let entity: TemplateEntity; // Value to change
 
 	beforeEach(() => {
-		entity = new TemplateEntity({ value: 'test' });
+		entity = new TemplateEntity({ value: 'test' }); // Value to change
 	});
 
 	// --------------------------------------------------
 
 	it('should be defined', () => {
 		expect(entity).toBeDefined();
-		expect(entity).toBeInstanceOf(TemplateEntity);
-		expect(entity.value).toBeTruthy();
+		expect(entity).toBeInstanceOf(TemplateEntity); // Value to change
+		expect(entity.value).toBeTruthy(); // Value to change
 	});
 });

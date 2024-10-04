@@ -4,25 +4,27 @@ import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
 import { TemplateController } from '../../../template/TemplateController';
 import { TemplateService } from '../../../template/TemplateService';
 import { LogAdapter } from '../../../logging/LogAdapter';
-import { mockLogAdapter, mockILogger } from '../../mocks/logAdapter';
+import { mockLogAdapter, mockILogger } from '../../mocks/mockLogAdapter';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { mockService } from '../../mocks/mockService';
+import { AbstractController } from '../../../abstract/AbstractController';
 
 describe('TemplateController Unit', () => {
-	let entity: TemplateEntity;
-	let controller: TemplateController;
+	// Value to change
+	let entity: TemplateEntity; // Value to change
+	let controller: AbstractController;
 
 	let className: string;
 
 	beforeEach(async () => {
-		entity = new TemplateEntity({ value: 'test' });
+		entity = new TemplateEntity({ value: 'test' }); // Value to change
 
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [TemplateController],
+			controllers: [TemplateController], // Value to change
 			providers: [
 				{
 					useValue: mockService(entity),
-					provide: TemplateService,
+					provide: TemplateService, // Value to change
 				},
 				{
 					useValue: mockLogAdapter,
@@ -31,7 +33,7 @@ describe('TemplateController Unit', () => {
 			],
 		}).compile();
 
-		controller = module.get<TemplateController>(TemplateController);
+		controller = module.get<TemplateController>(TemplateController); // Value to change
 		className = controller.constructor.name;
 	});
 
@@ -44,7 +46,7 @@ describe('TemplateController Unit', () => {
 	// --------------------------------------------------
 
 	it('Can create an entity', async () => {
-		const dto = new CreateTemplateDto();
+		const dto = new CreateTemplateDto(); // Value to change
 
 		await expect(controller.create(dto)).resolves.toEqual({ id: 1 });
 		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Creating a new entity`, undefined);
@@ -70,10 +72,10 @@ describe('TemplateController Unit', () => {
 
 	it('Updates an entity', async () => {
 		const id = '1';
-		const dto = new UpdateTemplateDto();
-		dto.value = 'tested';
+		const dto = new UpdateTemplateDto(); // Value to change
+		dto.value = 'tested'; // Value to change
 
-		entity.value = dto.value;
+		entity.value = dto.value; // Value to change
 
 		await expect(controller.update(id, dto)).resolves.toEqual(entity);
 		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity with id ${id}`, undefined);

@@ -1,6 +1,6 @@
 import { AbstractService } from '../../abstract/AbstractService';
-import { mockEntityManager } from '../mocks/entityManager';
-import { mockLogAdapter } from '../mocks/logAdapter';
+import { mockEntityManager } from '../mocks/mockEntityManager';
+import { mockLogAdapter } from '../mocks/mockLogAdapter';
 import { mockRepository } from '../mocks/mockRepository';
 
 /* @Security: This service should always throw so functional endpoints can't be accidentally created */

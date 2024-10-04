@@ -5,8 +5,6 @@ import { TemplateService } from './TemplateService';
 
 @Controller('template')
 export class TemplateController extends AbstractController {
-	public readonly name = 'TemplateController';
-
 	constructor(
 		protected readonly logAdapter: LogAdapter,
 		protected readonly service: TemplateService,

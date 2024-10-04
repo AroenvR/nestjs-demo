@@ -20,19 +20,28 @@ export class TemplateService extends AbstractService {
 	/*  Below is a fully functional Service-Repository-Database relationship.
         Without any implementation, the AbstractService will simply throw "NOT_IMPLEMENTED" errors.  */
 
-	async create(createDto: CreateTemplateDto) {
+	/**
+	 *
+	 */
+	public async create(createDto: CreateTemplateDto) {
 		this.logger.info(`Creating a new entity`);
 
 		const template = new TemplateEntity(createDto);
 		return this.entityManager.save(template);
 	}
 
-	async findAll() {
+	/**
+	 *
+	 */
+	public async findAll() {
 		this.logger.info(`Finding all entities`);
 		return this.repository.find();
 	}
 
-	async findOne(id: number) {
+	/**
+	 *
+	 */
+	public async findOne(id: number) {
 		this.logger.info(`Finding entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });
@@ -41,7 +50,10 @@ export class TemplateService extends AbstractService {
 		return template;
 	}
 
-	async update(id: number, updateDto: UpdateTemplateDto) {
+	/**
+	 *
+	 */
+	public async update(id: number, updateDto: UpdateTemplateDto) {
 		this.logger.info(`Updating entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });
@@ -51,7 +63,10 @@ export class TemplateService extends AbstractService {
 		return this.entityManager.save(template);
 	}
 
-	async remove(id: number) {
+	/**
+	 *
+	 */
+	public async remove(id: number) {
 		this.logger.info(`Deleting entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });

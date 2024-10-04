@@ -5,9 +5,10 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/AllExceptionsFilter';
 import { DatabaseModule } from './database/DatabaseModule';
 import { TemplateModule } from './template/TemplateModule';
+import { AuthModule } from './auth/AuthModule';
 
 @Module({
-	imports: [LoggerModule, DatabaseModule, TemplateModule],
+	imports: [LoggerModule, DatabaseModule, AuthModule, TemplateModule],
 	controllers: [],
 	providers: [
 		{
@@ -26,7 +27,7 @@ export class AppModule implements NestModule {
 	 * Apply middleware to the Express App.
 	 * @param consumer - The middleware consumer to apply middleware.
 	 */
-	configure(consumer: MiddlewareConsumer) {
+	public configure(consumer: MiddlewareConsumer) {
 		consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set
 	}
 }

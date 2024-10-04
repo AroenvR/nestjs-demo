@@ -8,29 +8,31 @@ import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { DatabaseModule } from '../../../database/DatabaseModule';
 import { wasLogged } from '../../helpers/wasLogged';
+import { AbstractController } from 'src/abstract/AbstractController';
 
 describe('TemplateController Integration', () => {
-	const testName = 'TemplateController_Integration';
+	// Value to change
+	const testName = 'TemplateController_Integration'; // Value to change
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-	let controller: TemplateController;
+	let controller: AbstractController;
 	let className: string;
 
 	const id = 1;
-	let createDto: CreateTemplateDto;
+	let createDto: CreateTemplateDto; // Value to change
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])],
-			controllers: [TemplateController],
-			providers: [TemplateService],
+			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])], // Value to change
+			controllers: [TemplateController], // Value to change
+			providers: [TemplateService], // Value to change
 		}).compile();
 
-		controller = module.get<TemplateController>(TemplateController);
+		controller = module.get<TemplateController>(TemplateController); // Value to change
 		className = controller.constructor.name;
 
-		createDto = new CreateTemplateDto();
-		createDto.value = 'test';
+		createDto = new CreateTemplateDto(); // Value to change
+		createDto.value = 'test'; // Value to change
 	});
 
 	// --------------------------------------------------
@@ -63,7 +65,7 @@ describe('TemplateController Integration', () => {
 	// --------------------------------------------------
 
 	it('Updates an entity', async () => {
-		const dto = new UpdateTemplateDto();
+		const dto = new UpdateTemplateDto(); // Value to change
 		dto.value = 'tested';
 
 		await expect(controller.update(id.toString(), dto)).resolves.toEqual({ id: id, ...dto });

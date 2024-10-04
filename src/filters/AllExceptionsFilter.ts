@@ -48,6 +48,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 				message = 'Resource not found.';
 				break;
 
+			case 'NotImplementedException':
+				status = HttpStatus.NOT_IMPLEMENTED;
+				message = 'Not implemented.';
+				break;
+
 			default:
 				this.logger.critical(`Failed to cleanly handle exception, unknown exception type: ${exception.constructor.name}`);
 

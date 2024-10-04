@@ -13,14 +13,14 @@ describe(testName, () => {
 
 	let app: INestApplication;
 
-	const postVal = { value: randomUUID() };
+	const postVal = { value: randomUUID() }; // Value to change
 
 	const code = 201;
 	const expected = { id: 1, ...postVal };
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, DatabaseModule, TemplateModule],
+			imports: [LoggerModule, DatabaseModule, TemplateModule], // Value to change
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
@@ -62,11 +62,7 @@ describe(testName, () => {
 	it('/template/:id (PATCH)', async () => {
 		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
 
-		await request(app.getHttpServer())
-			.patch(`/template/${expected.id}`)
-			.send(postVal)
-			.expect(200) // Should be 200 when implemented
-			.expect(expected);
+		await request(app.getHttpServer()).patch(`/template/${expected.id}`).send(postVal).expect(200).expect(expected);
 
 		await expect(wasLogged(testName, `TemplateController: Updating entity with id ${expected.id}`)).resolves.toBe(true);
 		await expect(wasLogged(testName, `TemplateService: Updating entity with id ${expected.id}`)).resolves.toBe(true);
