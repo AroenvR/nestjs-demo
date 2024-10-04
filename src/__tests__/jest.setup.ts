@@ -15,5 +15,7 @@ afterEach(async () => {
 
 afterAll(() => {
 	jest.clearAllTimers();
+	jest.resetAllMocks();
 	jest.restoreAllMocks();
+	jest.clearAllMocks();
 });

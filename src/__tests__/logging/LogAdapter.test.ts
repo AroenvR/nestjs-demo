@@ -1,4 +1,4 @@
-import { LogAdapter } from '../logging/LogAdapter';
+import { LogAdapter } from '../../logging/LogAdapter';
 import { ILogger } from 'ts-log-adapter';
 
 describe('LogAdapter', () => {

@@ -1,4 +1,4 @@
-import { TemplateEntity } from '../../template/entities/TemplateEntity';
+import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 
 describe('TemplateEntity', () => {
 	let entity: TemplateEntity;
