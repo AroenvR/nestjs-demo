@@ -7,12 +7,12 @@ import { LogAdapter } from '../../../logging/LogAdapter';
 import { mockLogAdapter, mockILogger } from '../../mocks/mockLogAdapter';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { mockService } from '../../mocks/mockService';
-import { AbstractController } from '../../../abstract/AbstractController';
+import { AbstractCrudController } from '../../../abstract/AbstractCrudController';
 
+// Value to change
 describe('TemplateController Unit', () => {
-	// Value to change
 	let entity: TemplateEntity; // Value to change
-	let controller: AbstractController;
+	let controller: AbstractCrudController;
 
 	let className: string;
 

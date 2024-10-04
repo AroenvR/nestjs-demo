@@ -8,14 +8,14 @@ import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
 import { DatabaseModule } from '../../../database/DatabaseModule';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { wasLogged } from '../../helpers/wasLogged';
-import { AbstractService } from '../../../abstract/AbstractService';
+import { AbstractCrudService } from '../../../abstract/AbstractCrudService';
 
+// Value to change
 describe('TemplateService Integration', () => {
-	// Value to change
 	const testName = 'TemplateService_Integration'; // Value to change
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-	let service: AbstractService;
+	let service: AbstractCrudService;
 	let className: string;
 
 	const id = 1;

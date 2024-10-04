@@ -8,14 +8,15 @@ import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { DatabaseModule } from '../../../database/DatabaseModule';
 import { wasLogged } from '../../helpers/wasLogged';
-import { AbstractController } from 'src/abstract/AbstractController';
+import { AbstractCrudController } from 'src/abstract/AbstractCrudController';
+// import { AuthModule } from '../../../auth/AuthModule';
 
+// Value to change
 describe('TemplateController Integration', () => {
-	// Value to change
 	const testName = 'TemplateController_Integration'; // Value to change
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-	let controller: AbstractController;
+	let controller: AbstractCrudController;
 	let className: string;
 
 	const id = 1;
@@ -23,6 +24,7 @@ describe('TemplateController Integration', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
+			// TODO: Fix AuthModule
 			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])], // Value to change
 			controllers: [TemplateController], // Value to change
 			providers: [TemplateService], // Value to change

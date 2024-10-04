@@ -3,7 +3,7 @@ import { ObjectLiteral } from 'typeorm';
 /**
  * An interface that defines the service contract.
  */
-export interface IService {
+export interface ICrudService {
 	/**
 	 * Creates a new entity.
 	 * @param _ A DTO object that represents the entity to be created.

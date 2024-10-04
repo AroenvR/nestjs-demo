@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { AbstractService } from '../abstract/AbstractService';
+import { AbstractCrudService } from '../abstract/AbstractCrudService';
 import { EntityManager, Repository } from 'typeorm';
 import { TemplateEntity } from './entities/TemplateEntity';
 import { LogAdapter } from '../logging/LogAdapter';
@@ -7,7 +7,7 @@ import { CreateTemplateDto } from './dto/CreateTemplateDto';
 import { UpdateTemplateDto } from './dto/UpdateTemplateDto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class TemplateService extends AbstractService {
+export class TemplateService extends AbstractCrudService {
 	constructor(
 		@InjectRepository(TemplateEntity)
 		protected readonly repository: Repository<TemplateEntity>,

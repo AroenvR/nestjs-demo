@@ -8,12 +8,12 @@ import { mockILogger, mockLogAdapter } from '../../mocks/mockLogAdapter';
 import { LogAdapter } from '../../../logging/LogAdapter';
 import { mockEntityManager } from '../../mocks/mockEntityManager';
 import { mockRepository } from '../../mocks/mockRepository';
-import { AbstractService } from 'src/abstract/AbstractService';
+import { AbstractCrudService } from 'src/abstract/AbstractCrudService';
 
+// Value to change
 describe('TemplateService Unit', () => {
-	// Value to change
 	let entity: TemplateEntity; // Value to change
-	let service: AbstractService;
+	let service: AbstractCrudService;
 
 	let className: string;
 

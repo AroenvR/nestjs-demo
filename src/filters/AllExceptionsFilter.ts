@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { LogAdapter } from '../logging/LogAdapter';
 import { ILogger } from 'ts-log-adapter';
 import { QueryFailedError } from 'typeorm';
@@ -26,6 +26,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
 		let message: string;
 
 		switch (exception.constructor.name) {
+			case 'BadRequestException':
+				status = HttpStatus.BAD_REQUEST;
+				message = 'Bad request.';
+				break;
+
+			case 'UnauthorizedException':
+				status = HttpStatus.UNAUTHORIZED;
+				message = (exception as UnauthorizedException).message ?? 'Access unauthorized.';
+				break;
+
 			case 'QueryFailedError':
 				status = HttpStatus.BAD_REQUEST;
 				message = `Query failed error: ${(exception as QueryFailedError).message}`;

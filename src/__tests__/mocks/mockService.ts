@@ -1,12 +1,12 @@
-import { AbstractEntity } from '../../abstract/AbstractEntity';
-import { AbstractService } from '../../abstract/AbstractService';
+import { AbstractCrudEntity } from '../../abstract/AbstractCrudEntity';
+import { AbstractCrudService } from '../../abstract/AbstractCrudService';
 
 /**
  * Mocks a service with CRUD operations.
  * @param entity The entity to be used in the service.
  * @returns A partial service with CRUD operations.
  */
-export const mockService = (entity: AbstractEntity): Partial<AbstractService> => {
+export const mockService = (entity: AbstractCrudEntity): Partial<AbstractCrudService> => {
 	return {
 		create: jest.fn().mockImplementation(() => {
 			return { id: 1 };

@@ -1,9 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractLoggingClass } from '../abstract/AbstractLoggingClass';
+import { randomUUID } from 'crypto';
 
-type TSignInData = null;
-type TAuthResult = boolean;
+export const CURRENT_JWT_VERSION = 1;
+
+export type TSignInData = { username: string; password: string };
+
+export type TJwtPayload = { sub: string; username: string; sessionId: string; version: number };
+
+export type TAuthResult = { accessToken: string };
 
 /**
  * An authentication service interface.
@@ -11,53 +18,65 @@ type TAuthResult = boolean;
 export interface IAuthService {
 	/**
 	 *
-	 * @param input
+	 * @param data
 	 */
-	validate(input: TSignInData): Promise<TAuthResult>;
+	validate(data: TSignInData): Promise<TSignInData>;
 
 	/**
 	 *
 	 */
-	authenticate(): Promise<TAuthResult>;
+	login(data: TSignInData): Promise<TAuthResult>;
 
 	/**
 	 *
 	 */
-	login(): Promise<TAuthResult>;
+	logout(): Promise<void>;
 }
 
 @Injectable()
 export class AuthService extends AbstractLoggingClass implements IAuthService {
-	constructor(protected readonly logAdapter: LogAdapter) {
+	constructor(
+		protected readonly logAdapter: LogAdapter,
+		protected readonly jwtService: JwtService,
+	) {
 		super(logAdapter);
 	}
 
 	/**
 	 *
 	 */
-	public async validate(input: TSignInData): Promise<TAuthResult> {
-		this.logger.info(`Validating user input`);
+	public async validate(data: TSignInData): Promise<TSignInData> {
+		this.logger.info(`Validating user ${data.username}`);
 
-		return true;
+		if (!data.username || !data.password) throw new HttpException('Username and password are required', HttpStatus.BAD_REQUEST);
+
+		return { username: data.username, password: data.password };
 	}
 
 	/**
 	 *
 	 */
-	public async authenticate(): Promise<TAuthResult> {
-		this.logger.info(`Authenticating user`);
+	public async login(data: TSignInData) {
+		this.logger.info(`Logging in user ${data.username}`);
 
-		if (!(await this.validate(null))) throw new UnauthorizedException();
+		await this.validate(data);
 
-		return true;
+		const tokenPayload: TJwtPayload = {
+			sub: '69',
+			username: 'Bob',
+			sessionId: randomUUID().toString(),
+			version: CURRENT_JWT_VERSION,
+		};
+
+		const token = await this.jwtService.signAsync(tokenPayload);
+
+		return { accessToken: token, ...tokenPayload };
 	}
 
 	/**
 	 *
 	 */
-	public async login() {
-		this.logger.info(`Logging in user`);
-
-		return true;
+	public async logout() {
+		this.logger.info(`Logging out user`);
 	}
 }

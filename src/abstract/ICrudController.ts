@@ -4,7 +4,7 @@ import { ObjectLiteral } from 'typeorm';
 /**
  * An interface that defines the basic CRUD operations for a controller.
  */
-export interface IController {
+export interface ICrudController {
 	/**
 	 * Accepts POST requests to create a new entity.
 	 * @param createDto A DTO object that represents the entity to be created.

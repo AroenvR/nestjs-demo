@@ -1,7 +1,7 @@
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 
+// Value to change
 describe('TemplateEntity', () => {
-	// Value to change
 	let entity: TemplateEntity; // Value to change
 
 	beforeEach(() => {

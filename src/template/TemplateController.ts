@@ -1,10 +1,10 @@
 import { Controller } from '@nestjs/common';
-import { AbstractController } from '../abstract/AbstractController';
+import { AbstractCrudController } from '../abstract/AbstractCrudController';
 import { LogAdapter } from '../logging/LogAdapter';
 import { TemplateService } from './TemplateService';
 
 @Controller('template')
-export class TemplateController extends AbstractController {
+export class TemplateController extends AbstractCrudController {
 	constructor(
 		protected readonly logAdapter: LogAdapter,
 		protected readonly service: TemplateService,

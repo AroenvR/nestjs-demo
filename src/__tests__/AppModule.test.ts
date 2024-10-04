@@ -46,7 +46,7 @@ describe('AppModule', () => {
 
 	// --------------------------------------------------
 
-	it('Can execute a GET request', async () => {
+	it('Can execute a POST request to log in', async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
@@ -54,6 +54,6 @@ describe('AppModule', () => {
 		const app = moduleFixture.createNestApplication();
 		await app.init();
 
-		await request(app.getHttpServer()).get('/template').expect(200);
+		await request(app.getHttpServer()).post('/auth/login').send({ username: 'Bob', password: 'super_secret' }).expect(200);
 	});
 });

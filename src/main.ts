@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
 	// TODO's:
 	/*
+        Implement Database Migrations
         Implement JWT authentication
         Create middlewares for:
         - Validating JWT tokens
@@ -21,6 +22,7 @@ async function bootstrap() {
         Create endpoint for login / logout
         Create Websockets
         Create a microservice for RabbitMQ
+        Implement Redis caching
         Implement a Task manager
         Implement a Queue manager
         Implement a validator utility

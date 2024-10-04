@@ -2,14 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
-import { IService } from './IService';
+import { ICrudService } from './ICrudService';
 
 /**
  * An abstract service class that provides basic CRUD operations.
  * A default implementation will only throw the `Method not implemented` exception.
  */
 @Injectable()
-export abstract class AbstractService extends AbstractLoggingClass implements IService {
+export abstract class AbstractCrudService extends AbstractLoggingClass implements ICrudService {
 	constructor(
 		protected readonly repository: Repository<ObjectLiteral>,
 		protected readonly entityManager: EntityManager,

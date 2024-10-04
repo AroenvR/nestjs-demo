@@ -7,7 +7,7 @@ import { TemplateModule } from '../../template/TemplateModule';
 import { wasLogged } from '../helpers/wasLogged';
 import { randomUUID } from 'crypto';
 
-const testName = 'TemplateModule';
+const testName = 'TemplateModule'; // Value to change
 describe(testName, () => {
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 

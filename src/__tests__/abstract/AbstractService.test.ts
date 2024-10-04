@@ -1,4 +1,4 @@
-import { AbstractService } from '../../abstract/AbstractService';
+import { AbstractCrudService } from '../../abstract/AbstractCrudService';
 import { mockEntityManager } from '../mocks/mockEntityManager';
 import { mockLogAdapter } from '../mocks/mockLogAdapter';
 import { mockRepository } from '../mocks/mockRepository';
@@ -6,7 +6,7 @@ import { mockRepository } from '../mocks/mockRepository';
 /* @Security: This service should always throw so functional endpoints can't be accidentally created */
 
 describe('AbstractService', () => {
-	let service: AbstractService;
+	let service: AbstractCrudService;
 
 	beforeEach(() => {
 		const repository = mockRepository({});
@@ -14,7 +14,7 @@ describe('AbstractService', () => {
 		const logAdapter = mockLogAdapter;
 
 		// @ts-expect-error --- This is intentional
-		service = new AbstractService(repository, entityManager, logAdapter);
+		service = new AbstractCrudService(repository, entityManager, logAdapter);
 	});
 
 	// --------------------------------------------------
