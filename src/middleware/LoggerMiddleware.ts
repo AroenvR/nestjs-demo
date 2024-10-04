@@ -23,6 +23,18 @@ export class LoggerMiddleware implements NestMiddleware {
 			if (isTruthy(req.query)) this.logger.verbose(`Request Query: ${JSON.stringify(req.query)}`);
 			if (isTruthy(req.params)) this.logger.verbose(`Request Params: ${JSON.stringify(req.params)}`);
 
+			// try {
+
+			// } catch (err: Error | unknown) {
+			//     if (err instanceof QueryFailedError) {
+			//         this.logger.debug(`Query failed error trying to save entity ${createDto.toString()}. ${err}`);
+			//         this.logger.error(`Query failed error trying to save entity.`);
+			//         throw new HttpException('Query failed error trying to save entity.', HttpStatus.BAD_REQUEST);
+			//     }
+
+			//     throw new HttpException('Error creating entity', HttpStatus.INTERNAL_SERVER_ERROR);
+			// }
+
 			// Hook into the 'finish' event to log the response details
 			res.on('finish', () => {
 				const { statusCode } = res;

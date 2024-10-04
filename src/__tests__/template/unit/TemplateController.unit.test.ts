@@ -5,35 +5,23 @@ import { TemplateController } from '../../../template/TemplateController';
 import { TemplateService } from '../../../template/TemplateService';
 import { LogAdapter } from '../../../logging/LogAdapter';
 import { mockLogAdapter, mockILogger } from '../../mocks/logAdapter';
+import { TemplateEntity } from '../../../template/entities/TemplateEntity';
+import { mockService } from '../../mocks/mockService';
 
 describe('TemplateController Unit', () => {
+	let entity: TemplateEntity;
 	let controller: TemplateController;
+
 	let className: string;
 
 	beforeEach(async () => {
-		const mockTemplateService = {
-			create: jest.fn().mockImplementation(() => {
-				return { id: 1 };
-			}),
-			findAll: jest.fn().mockImplementation(() => {
-				return [];
-			}),
-			findOne: jest.fn().mockImplementation(() => {
-				return null;
-			}),
-			update: jest.fn().mockImplementation(() => {
-				return 'Entity by id 1 not found';
-			}),
-			remove: jest.fn().mockImplementation(() => {
-				return undefined;
-			}),
-		};
+		entity = new TemplateEntity({ value: 'test' });
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [TemplateController],
 			providers: [
 				{
-					useValue: mockTemplateService,
+					useValue: mockService(entity),
 					provide: TemplateService,
 				},
 				{
@@ -65,7 +53,7 @@ describe('TemplateController Unit', () => {
 	// --------------------------------------------------
 
 	it('Finds all entities', async () => {
-		await expect(controller.findAll()).resolves.toEqual([]);
+		await expect(controller.findAll()).resolves.toEqual([entity]);
 		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding all entities`, undefined);
 	});
 
@@ -74,7 +62,7 @@ describe('TemplateController Unit', () => {
 	it('Finds an entity by its Id', async () => {
 		const id = '1';
 
-		await expect(controller.findOne(id)).resolves.toBeNull();
+		await expect(controller.findOne(id)).resolves.toEqual({ id: id, ...entity });
 		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity with id ${id}`, undefined);
 	});
 
@@ -83,8 +71,11 @@ describe('TemplateController Unit', () => {
 	it('Updates an entity', async () => {
 		const id = '1';
 		const dto = new UpdateTemplateDto();
+		dto.value = 'tested';
 
-		await expect(controller.update(id, dto)).resolves.toEqual('Entity by id 1 not found');
+		entity.value = dto.value;
+
+		await expect(controller.update(id, dto)).resolves.toEqual(entity);
 		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity with id ${id}`, undefined);
 	});
 

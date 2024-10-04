@@ -1,6 +1,9 @@
 import { ILogger } from 'ts-log-adapter';
 import { LogAdapter } from '../../logging/LogAdapter';
 
+/**
+ * A mocked ILogger object.
+ */
 export const mockILogger: jest.Mocked<ILogger> = {
 	config: {
 		appName: 'API_TEST',

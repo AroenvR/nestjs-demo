@@ -19,24 +19,28 @@ export abstract class AbstractController {
 	}
 
 	@Post()
+	@HttpCode(HttpStatus.CREATED)
 	async create(@Body() createDto: ObjectLiteral) {
 		this.logger.info(`Creating a new entity`);
 		return this.service.create(createDto);
 	}
 
 	@Get()
+	@HttpCode(HttpStatus.OK)
 	async findAll() {
 		this.logger.info(`Finding all entities`);
 		return this.service.findAll();
 	}
 
 	@Get(':id')
+	@HttpCode(HttpStatus.OK)
 	async findOne(@Param('id') id: string) {
 		this.logger.info(`Finding entity with id ${id}`);
 		return this.service.findOne(+id);
 	}
 
 	@Patch(':id')
+	@HttpCode(HttpStatus.OK)
 	async update(@Param('id') id: string, @Body() updateDto: ObjectLiteral) {
 		this.logger.info(`Updating entity with id ${id}`);
 		return this.service.update(+id, updateDto);

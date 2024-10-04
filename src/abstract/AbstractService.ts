@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ILogger } from 'ts-log-adapter';
 import { LogAdapter } from '../logging/LogAdapter';
 import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
  * An abstract service class that provides basic CRUD operations.
  * A default implementation will only throw the `Method not implemented` exception.
  */
+@Injectable()
 export abstract class AbstractService {
 	protected logger: ILogger;
 

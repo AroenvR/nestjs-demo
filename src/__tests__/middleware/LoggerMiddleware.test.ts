@@ -14,7 +14,7 @@ describe('LoggerMiddleware', () => {
 		const mockLogAdapter = {
 			getLogger: jest.fn().mockReturnValue({
 				correlationManager: {
-					runWithCorrelationId: jest.fn((correlationId, callback) => callback()),
+					runWithCorrelationId: jest.fn((_, callback) => callback()),
 				},
 				info: jest.fn(),
 				verbose: jest.fn(),

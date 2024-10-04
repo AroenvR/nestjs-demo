@@ -1,1 +1,3 @@
-export class UpdateTemplateDto {}
+export class UpdateTemplateDto {
+	value: string;
+}

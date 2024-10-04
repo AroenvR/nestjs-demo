@@ -46,7 +46,7 @@ describe('AppModule', () => {
 
 	// --------------------------------------------------
 
-	it("Can execute a GET request which returns a 'not yet implemented'", async () => {
+	it('Can execute a GET request', async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
@@ -54,6 +54,6 @@ describe('AppModule', () => {
 		const app = moduleFixture.createNestApplication();
 		await app.init();
 
-		await request(app.getHttpServer()).post('/template').send({}).expect(501);
+		await request(app.getHttpServer()).get('/template').expect(200);
 	});
 });

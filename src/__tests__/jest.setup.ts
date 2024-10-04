@@ -8,7 +8,7 @@ const envFileExists = fs.existsSync(testEnvPath);
 if (!envFileExists) throw new Error(`Test environment file not found: ${testEnvPath}`);
 else dotenv.config({ path: '.env.test' });
 
-afterEach(async () => {
+beforeAll(async () => {
 	const testLogPath = path.join(__dirname, '..', '..', 'logs', `${process.env.TEST_NAME}.test.log`);
 	if (await fs.exists(testLogPath)) await fs.unlink(testLogPath);
 });
