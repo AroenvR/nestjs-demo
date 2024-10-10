@@ -1,45 +1,61 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { AbstractLoggingClass } from '../abstract/AbstractLoggingClass';
 import { LogAdapter } from '../logging/LogAdapter';
-import { AuthService, TJwtPayload, TSignInData } from './AuthService';
+import { AuthService, TSignInData } from './AuthService';
 import { PassportJwtAuthGuard } from './guards/PassportJwtAuthGuard';
+import { Response } from 'express';
 
 /**
  * A controller class that provides authentication endpoints.
  */
 @Controller('auth')
 export class AuthController extends AbstractLoggingClass {
-	constructor(
-		protected readonly logAdapter: LogAdapter,
-		protected readonly authService: AuthService,
-	) {
-		super(logAdapter);
-	}
+    constructor(
+        protected readonly logAdapter: LogAdapter,
+        protected readonly authService: AuthService,
+    ) {
+        super(logAdapter);
+    }
 
-	/**
-	 *
-	 * @param request
-	 * @returns
-	 */
-	@Post('login')
-	@HttpCode(HttpStatus.OK)
-	public async login(@Body() data: TSignInData): Promise<any> {
-		this.logger.info(`Logging in user ${data.username}`);
+    /**
+     * todo
+     * @param request
+     * @returns
+     */
+    @Post('login')
+    @HttpCode(HttpStatus.OK)
+    public async login(@Body() data: TSignInData, @Res({ passthrough: true }) response: Response): Promise<any> {
+        this.logger.info(`Logging in user ${data.username}`);
 
-		return this.authService.login(data);
-	}
+        const result = await this.authService.login(data);
 
-	/**
-	 *
-	 * @param request
-	 * @returns
-	 */
-	@Get('check')
-	@HttpCode(HttpStatus.I_AM_A_TEAPOT)
-	@UseGuards(PassportJwtAuthGuard)
-	public async checkTokenInfo(@Request() request): Promise<TJwtPayload> {
-		this.logger.info(`User with sessionId ${request.user.sessionId} is requesting their token`);
+        response.cookie('jwt', result.accessToken, { secure: true, httpOnly: true, }); // expires: ?
+        return result.accessToken;
+    }
 
-		return request.user;
-	}
+    /**
+     * todo
+     */
+    @Post('logout')
+    @HttpCode(HttpStatus.OK)
+    public async logout(@Request() request, @Res({ passthrough: true }) response: Response): Promise<any> {
+        this.logger.info(`Logging out user with sessionId ${request.user.sessionId}`);
+
+        response.clearCookie('jwt');
+        return 'success';
+    }
+
+    /**
+     *
+     * @param request
+     * @returns
+     */
+    @Get('check')
+    @HttpCode(HttpStatus.I_AM_A_TEAPOT)
+    @UseGuards(PassportJwtAuthGuard)
+    public async checkTokenInfo(@Request() request): Promise<any> {
+        this.logger.info(`User with sessionId ${request.user.sessionId} is requesting their token.`);
+
+        return request.user;
+    }
 }

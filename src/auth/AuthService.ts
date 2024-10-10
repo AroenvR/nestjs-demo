@@ -16,67 +16,68 @@ export type TAuthResult = { accessToken: string };
  * An authentication service interface.
  */
 export interface IAuthService {
-	/**
-	 *
-	 * @param data
-	 */
-	validate(data: TSignInData): Promise<TSignInData>;
+    /**
+     *
+     * @param data
+     */
+    validate(data: TSignInData): Promise<TSignInData>;
 
-	/**
-	 *
-	 */
-	login(data: TSignInData): Promise<TAuthResult>;
+    /**
+     *
+     */
+    login(data: TSignInData): Promise<TAuthResult>;
 
-	/**
-	 *
-	 */
-	logout(): Promise<void>;
+    /**
+     *
+     */
+    logout(): Promise<void>;
 }
 
 @Injectable()
 export class AuthService extends AbstractLoggingClass implements IAuthService {
-	constructor(
-		protected readonly logAdapter: LogAdapter,
-		protected readonly jwtService: JwtService,
-	) {
-		super(logAdapter);
-	}
+    constructor(
+        protected readonly logAdapter: LogAdapter,
+        protected readonly jwtService: JwtService,
+    ) {
+        super(logAdapter);
+    }
 
-	/**
-	 *
-	 */
-	public async validate(data: TSignInData): Promise<TSignInData> {
-		this.logger.info(`Validating user ${data.username}`);
+    /**
+     *
+     */
+    public async validate(data: TSignInData): Promise<TSignInData> {
+        this.logger.info(`Validating user ${data.username}`);
 
-		if (!data.username || !data.password) throw new HttpException('Username and password are required', HttpStatus.BAD_REQUEST);
+        if (!data.username || !data.password) throw new HttpException('Username and password are required', HttpStatus.BAD_REQUEST);
 
-		return { username: data.username, password: data.password };
-	}
+        return { username: data.username, password: data.password };
+    }
 
-	/**
-	 *
-	 */
-	public async login(data: TSignInData) {
-		this.logger.info(`Logging in user ${data.username}`);
+    /**
+     *
+     */
+    public async login(data: TSignInData) {
+        this.logger.info(`Logging in user ${data.username}`);
 
-		await this.validate(data);
+        await this.validate(data);
 
-		const tokenPayload: TJwtPayload = {
-			sub: '69',
-			username: 'Bob',
-			sessionId: randomUUID().toString(),
-			version: CURRENT_JWT_VERSION,
-		};
+        const tokenPayload: TJwtPayload = {
+            sub: '69',
+            username: 'Bob',
+            sessionId: randomUUID().toString(),
+            version: CURRENT_JWT_VERSION,
+        };
 
-		const token = await this.jwtService.signAsync(tokenPayload);
+        this.logger.info(`Signing JWT`);
+        const token = await this.jwtService.signAsync(tokenPayload);
 
-		return { accessToken: token, ...tokenPayload };
-	}
+        return { accessToken: token };
+    }
 
-	/**
-	 *
-	 */
-	public async logout() {
-		this.logger.info(`Logging out user`);
-	}
+    /**
+     *
+     */
+    public async logout() {
+        this.logger.info(`Logging out user`);
+    }
 }
