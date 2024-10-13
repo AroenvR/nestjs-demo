@@ -1,22 +1,14 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './middleware/LoggerMiddleware';
 import { LoggerModule } from './logging/LoggerModule';
-import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionsFilter } from './filters/AllExceptionsFilter';
 import { DatabaseModule } from './database/DatabaseModule';
 import { TemplateModule } from './template/TemplateModule';
 import { AuthModule } from './auth/AuthModule';
 
+const ENDPOINT_MODULES = [TemplateModule];
+
 @Module({
-	imports: [LoggerModule, DatabaseModule, AuthModule, TemplateModule],
-	controllers: [],
-	providers: [
-		{
-			provide: APP_FILTER,
-			useClass: AllExceptionsFilter,
-		},
-	],
-	exports: [],
+	imports: [LoggerModule, DatabaseModule, AuthModule, ...ENDPOINT_MODULES],
 })
 /**
  * The root application module.

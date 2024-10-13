@@ -18,7 +18,7 @@ describe('TemplateService Integration', () => {
 	let service: AbstractCrudService;
 	let className: string;
 
-	const id = 1;
+	const ID = 1;
 	let createDto: CreateTemplateDto; // Value to change
 
 	beforeAll(async () => {
@@ -43,22 +43,22 @@ describe('TemplateService Integration', () => {
 	// --------------------------------------------------
 
 	it('Can create an entity', async () => {
-		await expect(service.create(createDto)).resolves.toEqual({ id: id, ...createDto });
+		await expect(service.create(createDto)).resolves.toEqual({ id: ID, ...createDto });
 		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Finds all entities', async () => {
-		await expect(service.findAll()).resolves.toEqual([{ id: id, ...createDto }]);
+		await expect(service.findAll()).resolves.toEqual([{ id: ID, ...createDto }]);
 		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Finds an entity by its id', async () => {
-		await expect(service.findOne(id)).resolves.toEqual({ id: id, ...createDto });
-		await expect(wasLogged(testName, `${className}: Finding entity with id ${id}`)).resolves.toBe(true);
+		await expect(service.findOne(ID)).resolves.toEqual({ id: ID, ...createDto });
+		await expect(wasLogged(testName, `${className}: Finding entity with id ${ID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -75,8 +75,8 @@ describe('TemplateService Integration', () => {
 		const dto = new UpdateTemplateDto(); // Value to change
 		dto.value = randomUUID().toString(); // Value to change
 
-		await expect(service.update(id, dto)).resolves.toEqual({ id: id, ...dto });
-		await expect(wasLogged(testName, `${className}: Updating entity with id ${id}`)).resolves.toBe(true);
+		await expect(service.update(ID, dto)).resolves.toEqual({ id: ID, ...dto });
+		await expect(wasLogged(testName, `${className}: Updating entity with id ${ID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -93,8 +93,8 @@ describe('TemplateService Integration', () => {
 	// --------------------------------------------------
 
 	it('Deletes an entity', async () => {
-		await expect(service.remove(id)).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity with id ${id}`)).resolves.toBe(true);
+		await expect(service.remove(ID)).resolves.toBeUndefined();
+		await expect(wasLogged(testName, `${className}: Deleting entity with id ${ID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------

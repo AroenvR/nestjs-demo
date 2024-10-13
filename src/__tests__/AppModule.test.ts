@@ -2,8 +2,24 @@ import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../AppModule';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
-import { AllExceptionsFilter } from '../filters/AllExceptionsFilter';
-import { APP_FILTER } from '@nestjs/core';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { mockLogAdapter } from './mocks/mockLogAdapter';
+import { LogAdapter } from '../logging/LogAdapter';
+import { HttpErrorFilter } from '../filters/HttpErrorFilter';
+import { HttpExceptionMessages } from '../filters/HttpExceptionMessages';
+
+@Controller('mock')
+export class MockController {
+	@Get()
+	hello() {
+		return 'Hello, World!';
+	}
+
+	@Get('/error')
+	error() {
+		throw new Error('Error Filter test');
+	}
+}
 
 describe('AppModule', () => {
 	let appModule: AppModule;
@@ -38,22 +54,48 @@ describe('AppModule', () => {
 
 	// --------------------------------------------------
 
-	it('should provide AllExceptionsFilter as APP_FILTER', () => {
-		const providers = Reflect.getMetadata('providers', AppModule);
-		const appFilterProvider = providers.find((provider: any) => provider.provide === APP_FILTER && provider.useClass === AllExceptionsFilter);
-		expect(appFilterProvider).toBeDefined();
-	});
-
-	// --------------------------------------------------
-
-	it('Can execute a POST request to log in', async () => {
+	it('Can execute a GET request', async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
+			controllers: [MockController],
 			imports: [AppModule],
 		}).compile();
 
 		const app = moduleFixture.createNestApplication();
 		await app.init();
 
-		await request(app.getHttpServer()).post('/auth/login').send({ username: 'Bob', password: 'super_secret' }).expect(200);
+		await request(app.getHttpServer()).get('/mock').expect(200);
+	});
+
+	// --------------------------------------------------
+
+	it('Protects against any uncaught errors with a global filter', async () => {
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			controllers: [MockController],
+			providers: [
+				{
+					useValue: mockLogAdapter,
+					provide: LogAdapter,
+				},
+			],
+			imports: [AppModule],
+		}).compile();
+
+		const app = moduleFixture.createNestApplication();
+		const logger = app.get(LogAdapter);
+		app.useGlobalFilters(new HttpErrorFilter(logger));
+
+		await app.init();
+
+		await request(app.getHttpServer())
+			.get('/mock/error')
+			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expect((res) => {
+				expect(res.body).toEqual({
+					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					timestamp: expect.any(Number),
+					path: '/mock/error',
+					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
+				});
+			});
 	});
 });

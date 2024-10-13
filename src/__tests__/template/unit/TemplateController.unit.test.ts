@@ -16,6 +16,8 @@ describe('TemplateController Unit', () => {
 
 	let className: string;
 
+	const ID = 1;
+
 	beforeEach(async () => {
 		entity = new TemplateEntity({ value: 'test' }); // Value to change
 
@@ -62,31 +64,26 @@ describe('TemplateController Unit', () => {
 	// --------------------------------------------------
 
 	it('Finds an entity by its Id', async () => {
-		const id = '1';
-
-		await expect(controller.findOne(id)).resolves.toEqual({ id: id, ...entity });
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity with id ${id}`, undefined);
+		await expect(controller.findOne(ID)).resolves.toEqual({ id: ID, ...entity });
+		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity with id ${ID}`, undefined);
 	});
 
 	// --------------------------------------------------
 
 	it('Updates an entity', async () => {
-		const id = '1';
 		const dto = new UpdateTemplateDto(); // Value to change
 		dto.value = 'tested'; // Value to change
 
 		entity.value = dto.value; // Value to change
 
-		await expect(controller.update(id, dto)).resolves.toEqual(entity);
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity with id ${id}`, undefined);
+		await expect(controller.update(ID, dto)).resolves.toEqual(entity);
+		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity with id ${ID}`, undefined);
 	});
 
 	// --------------------------------------------------
 
 	it('Deletes an entity', async () => {
-		const id = '1';
-
-		await expect(controller.remove(id)).resolves.toBeUndefined();
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Deleting entity with id ${id}`, undefined);
+		await expect(controller.remove(ID)).resolves.toBeUndefined();
+		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Deleting entity with id ${ID}`, undefined);
 	});
 });

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
@@ -23,7 +23,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	 */
 	public async create(_: ObjectLiteral): Promise<ObjectLiteral> {
 		this.logger.info(`Creating a new entity`);
-		throw new HttpException('Method not implemented', HttpStatus.NOT_IMPLEMENTED);
+		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -31,7 +31,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	 */
 	public async findAll(): Promise<ObjectLiteral[]> {
 		this.logger.info(`Finding all entities`);
-		throw new HttpException('Method not implemented', HttpStatus.NOT_IMPLEMENTED);
+		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -39,7 +39,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	 */
 	public async findOne(id: number): Promise<ObjectLiteral> {
 		this.logger.info(`Finding entity with id ${id}`);
-		throw new HttpException('Method not implemented', HttpStatus.NOT_IMPLEMENTED);
+		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -47,7 +47,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	 */
 	public async update(id: number, _: ObjectLiteral): Promise<ObjectLiteral> {
 		this.logger.info(`Updating entity with id ${id}`);
-		throw new HttpException('Method not implemented', HttpStatus.NOT_IMPLEMENTED);
+		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -55,6 +55,6 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	 */
 	public async remove(id: number): Promise<void> {
 		this.logger.info(`Deleting entity with id ${id}`);
-		throw new HttpException('Method not implemented', HttpStatus.NOT_IMPLEMENTED);
+		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 }

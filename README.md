@@ -95,3 +95,65 @@ npm run test:watch
 
 Nest, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
+## NestJS object concepts
+```mermaid
+stateDiagram-v2
+    Request_Dataflow_Lifecycle: Request dataflow lifecycle
+    Request_Lifecycle: Request dataflow
+    Response_Lifecycle: Response dataflow
+
+    Request: HTTP(s) Request <br/> GET /users
+    Response: HTTP(s) Response <br/> 200 OK
+
+    Mid1: Middlewares
+    Gaurd1: Guards
+    Inter1: Interceptors
+    Pipe1: Pipes
+    Cont1: Controllers
+    Serv1: Services
+
+    Mid2: Middlewares
+    Gaurd2: Guards
+    Inter2: Interceptors
+    Pipe2: Pipes
+    Cont2: Controllers
+    Serv2: Services
+
+    Request --> Request_Lifecycle
+
+    state Request_Dataflow_Lifecycle {
+        state Request_Lifecycle {
+            [*] --> Mid1
+            Mid1 --> Gaurd1
+            Gaurd1 --> Inter1
+            Inter1 --> Pipe1
+            Pipe1 --> Cont1
+            Cont1 --> Serv1
+        }
+
+        state Response_Lifecycle {
+            Serv2 --> Cont2
+            Cont2 --> Pipe2
+            Pipe2 --> Inter2 
+            Inter2 --> Gaurd2
+            Gaurd2 --> Mid2 
+            Mid2 --> [*] 
+        }
+    }
+
+    Response_Lifecycle --> Response
+```
+
+## Middlewares
+Has access to the `request` and `response` objects and is the first and last object to be called during a request/response cycle.
+
+## Guards
+Usually a security check, such as validating JWT's on any controller that implements the Guard before data is given to the data's handler.
+
+## Interceptors
+An Interceptor ...? TODO
+
+## Pipes
+Used for validating and transforming data before passing it to the data's handler.
+
+## Controllers

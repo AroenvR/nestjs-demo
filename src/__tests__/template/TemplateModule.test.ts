@@ -13,10 +13,9 @@ describe(testName, () => {
 
 	let app: INestApplication;
 
-	const postVal = { value: randomUUID() }; // Value to change
-
-	const code = 201;
-	const expected = { id: 1, ...postVal };
+	const POST_VALUE = { value: randomUUID() }; // Value to change
+	const STATUS_CODE = 201;
+	const EXPECTED_OBJ = { id: 1, ...POST_VALUE };
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,7 +29,7 @@ describe(testName, () => {
 	// --------------------------------------------------
 
 	it('/template (POST)', async () => {
-		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
+		await request(app.getHttpServer()).post('/template').send(POST_VALUE).expect(STATUS_CODE).expect(EXPECTED_OBJ);
 
 		await expect(wasLogged(testName, `TemplateController: Creating a new entity`)).resolves.toBe(true);
 		await expect(wasLogged(testName, `TemplateService: Creating a new entity`)).resolves.toBe(true);
@@ -39,9 +38,9 @@ describe(testName, () => {
 	// --------------------------------------------------
 
 	it('/template (GET)', async () => {
-		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
+		await request(app.getHttpServer()).post('/template').send(POST_VALUE).expect(STATUS_CODE).expect(EXPECTED_OBJ);
 
-		await request(app.getHttpServer()).get('/template').expect(200).expect([expected]);
+		await request(app.getHttpServer()).get('/template').expect(200).expect([EXPECTED_OBJ]);
 
 		await expect(wasLogged(testName, `TemplateController: Finding all entities`)).resolves.toBe(true);
 		await expect(wasLogged(testName, `TemplateService: Finding all entities`)).resolves.toBe(true);
@@ -50,31 +49,31 @@ describe(testName, () => {
 	// --------------------------------------------------
 
 	it('/template/:id (GET)', async () => {
-		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
-		await request(app.getHttpServer()).get(`/template/${expected.id}`).expect(200).expect(expected);
+		await request(app.getHttpServer()).post('/template').send(POST_VALUE).expect(STATUS_CODE).expect(EXPECTED_OBJ);
+		await request(app.getHttpServer()).get(`/template/${EXPECTED_OBJ.id}`).expect(200).expect(EXPECTED_OBJ);
 
-		await expect(wasLogged(testName, `TemplateController: Finding entity with id ${expected.id}`)).resolves.toBe(true);
-		await expect(wasLogged(testName, `TemplateService: Finding entity with id ${expected.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateController: Finding entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateService: Finding entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('/template/:id (PATCH)', async () => {
-		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
+		await request(app.getHttpServer()).post('/template').send(POST_VALUE).expect(STATUS_CODE).expect(EXPECTED_OBJ);
 
-		await request(app.getHttpServer()).patch(`/template/${expected.id}`).send(postVal).expect(200).expect(expected);
+		await request(app.getHttpServer()).patch(`/template/${EXPECTED_OBJ.id}`).send(POST_VALUE).expect(200).expect(EXPECTED_OBJ);
 
-		await expect(wasLogged(testName, `TemplateController: Updating entity with id ${expected.id}`)).resolves.toBe(true);
-		await expect(wasLogged(testName, `TemplateService: Updating entity with id ${expected.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateController: Updating entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateService: Updating entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('/template/:id (DELETE)', async () => {
-		await request(app.getHttpServer()).post('/template').send(postVal).expect(code).expect(expected);
-		await request(app.getHttpServer()).delete(`/template/${expected.id}`).expect(204);
+		await request(app.getHttpServer()).post('/template').send(POST_VALUE).expect(STATUS_CODE).expect(EXPECTED_OBJ);
+		await request(app.getHttpServer()).delete(`/template/${EXPECTED_OBJ.id}`).expect(204);
 
-		await expect(wasLogged(testName, `TemplateController: Deleting entity with id ${expected.id}`)).resolves.toBe(true);
-		await expect(wasLogged(testName, `TemplateService: Deleting entity with id ${expected.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateController: Deleting entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `TemplateService: Deleting entity with id ${EXPECTED_OBJ.id}`)).resolves.toBe(true);
 	});
 });

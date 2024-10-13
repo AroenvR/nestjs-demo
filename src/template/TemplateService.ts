@@ -5,7 +5,7 @@ import { TemplateEntity } from './entities/TemplateEntity';
 import { LogAdapter } from '../logging/LogAdapter';
 import { CreateTemplateDto } from './dto/CreateTemplateDto';
 import { UpdateTemplateDto } from './dto/UpdateTemplateDto';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 export class TemplateService extends AbstractCrudService {
 	constructor(
@@ -45,7 +45,7 @@ export class TemplateService extends AbstractCrudService {
 		this.logger.info(`Finding entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });
-		if (!template) throw new HttpException(`Entity by id ${id} not found`, HttpStatus.NOT_FOUND);
+		if (!template) throw new NotFoundException(`Entity by id ${id} not found`);
 
 		return template;
 	}
@@ -57,7 +57,7 @@ export class TemplateService extends AbstractCrudService {
 		this.logger.info(`Updating entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });
-		if (!template) throw new HttpException(`Entity by id ${id} not found`, HttpStatus.NOT_FOUND);
+		if (!template) throw new NotFoundException(`Entity by id ${id} not found`);
 
 		template.value = updateDto.value;
 		return this.entityManager.save(template);
@@ -70,7 +70,7 @@ export class TemplateService extends AbstractCrudService {
 		this.logger.info(`Deleting entity with id ${id}`);
 
 		const template = await this.repository.findOneBy({ id });
-		if (!template) throw new HttpException(`Entity by id ${id} not found`, HttpStatus.NOT_FOUND);
+		if (!template) throw new NotFoundException(`Entity by id ${id} not found`);
 
 		await this.repository.delete({ id });
 	}

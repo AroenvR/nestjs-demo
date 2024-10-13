@@ -1,9 +1,9 @@
 // src/middleware/logger.middleware.ts
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { Request, Response, NextFunction } from 'express';
-import { LogAdapter } from '../logging/LogAdapter';
+import { randomUUID } from 'crypto';
 import { isTruthy } from 'ts-istruthy';
+import { LogAdapter } from '../logging/LogAdapter';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {

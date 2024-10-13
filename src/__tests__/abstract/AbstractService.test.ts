@@ -20,30 +20,30 @@ describe('AbstractService', () => {
 	// --------------------------------------------------
 
 	test('Throws when requested to create', async () => {
-		await expect(service.create({})).rejects.toThrow('Method not implemented');
+		await expect(service.create({})).rejects.toThrow('AbstractCrudService: Abstract method not implemented');
 	});
 
 	// --------------------------------------------------
 
 	test('Throws when requested to find all', async () => {
-		await expect(service.findAll()).rejects.toThrow('Method not implemented');
+		await expect(service.findAll()).rejects.toThrow('AbstractCrudService: Abstract method not implemented');
 	});
 
 	// --------------------------------------------------
 
 	test('Throws when requested to find by id', async () => {
-		await expect(service.findOne(1)).rejects.toThrow('Method not implemented');
+		await expect(service.findOne(1)).rejects.toThrow('AbstractCrudService: Abstract method not implemented');
 	});
 
 	// --------------------------------------------------
 
 	test('Throws when requested to update by id', async () => {
-		await expect(service.update(1, {})).rejects.toThrow('Method not implemented');
+		await expect(service.update(1, {})).rejects.toThrow('AbstractCrudService: Abstract method not implemented');
 	});
 
 	// --------------------------------------------------
 
 	test('Throws when requested to delete by id', async () => {
-		await expect(service.remove(1)).rejects.toThrow('Method not implemented');
+		await expect(service.remove(1)).rejects.toThrow('AbstractCrudService: Abstract method not implemented');
 	});
 });

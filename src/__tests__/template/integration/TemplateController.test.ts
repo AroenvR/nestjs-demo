@@ -19,7 +19,7 @@ describe('TemplateController Integration', () => {
 	let controller: AbstractCrudController;
 	let className: string;
 
-	const id = 1;
+	const ID = 1;
 	let createDto: CreateTemplateDto; // Value to change
 
 	beforeAll(async () => {
@@ -46,22 +46,22 @@ describe('TemplateController Integration', () => {
 	// --------------------------------------------------
 
 	it('Can create an entity', async () => {
-		await expect(controller.create(createDto)).resolves.toEqual({ id: id, ...createDto });
+		await expect(controller.create(createDto)).resolves.toEqual({ id: ID, ...createDto });
 		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Finds all entities', async () => {
-		await expect(controller.findAll()).resolves.toEqual([{ id: id, ...createDto }]);
+		await expect(controller.findAll()).resolves.toEqual([{ id: ID, ...createDto }]);
 		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Finds an entity by its Id', async () => {
-		await expect(controller.findOne(id.toString())).resolves.toEqual({ id: id, ...createDto });
-		await expect(wasLogged(testName, `${className}: Finding entity with id ${id}`)).resolves.toBe(true);
+		await expect(controller.findOne(ID)).resolves.toEqual({ id: ID, ...createDto });
+		await expect(wasLogged(testName, `${className}: Finding entity with id ${ID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -70,14 +70,14 @@ describe('TemplateController Integration', () => {
 		const dto = new UpdateTemplateDto(); // Value to change
 		dto.value = 'tested';
 
-		await expect(controller.update(id.toString(), dto)).resolves.toEqual({ id: id, ...dto });
-		await expect(wasLogged(testName, `${className}: Updating entity with id ${id}`)).resolves.toBe(true);
+		await expect(controller.update(ID, dto)).resolves.toEqual({ id: ID, ...dto });
+		await expect(wasLogged(testName, `${className}: Updating entity with id ${ID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Deletes an entity', async () => {
-		await expect(controller.remove(id.toString())).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity with id ${id}`)).resolves.toBe(true);
+		await expect(controller.remove(ID)).resolves.toBeUndefined();
+		await expect(wasLogged(testName, `${className}: Deleting entity with id ${ID}`)).resolves.toBe(true);
 	});
 });

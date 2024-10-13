@@ -5,6 +5,7 @@ import { AppModule } from './AppModule';
 import { LogAdapter } from './logging/LogAdapter';
 import { VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpErrorFilter } from './filters/HttpErrorFilter';
 
 async function bootstrap() {
 	// TODO's:
@@ -36,6 +37,9 @@ async function bootstrap() {
 
 	const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
+
+	// Apply global filters to ensure we catch any uncaught errors.
+	app.useGlobalFilters(new HttpErrorFilter(logger));
 
 	// Enable API versioning
 	app.enableVersioning({

@@ -23,7 +23,7 @@ export interface ICrudController {
 	 * @param id The id of the entity to find.
 	 * @returns The entity with the specified id with a {@link HttpStatus.OK}.
 	 */
-	findOne(id: string): Promise<ObjectLiteral>;
+	findOne(id: number): Promise<ObjectLiteral>;
 
 	/**
 	 * Accepts PATCH requests to update an entity by its id.
@@ -31,11 +31,11 @@ export interface ICrudController {
 	 * @param updateDto A DTO object that represents the entity to be updated.
 	 * @returns The updated entity with a {@link HttpStatus.OK}.
 	 */
-	update(id: string, updateDto: ObjectLiteral): Promise<ObjectLiteral>;
+	update(id: number, updateDto: ObjectLiteral): Promise<ObjectLiteral>;
 
 	/**
 	 * Accepts DELETE requests to remove an entity by its id.
 	 * @param id The id of the entity to remove with a {@link HttpStatus.NO_CONTENT}.
 	 */
-	remove(id: string): Promise<void>;
+	remove(id: number): Promise<void>;
 }
