@@ -3,6 +3,7 @@ import { EntityManager, ObjectLiteral, Repository } from 'typeorm';
 import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
 import { ICrudService } from './ICrudService';
+import { AbstractCrudEntity } from './AbstractCrudEntity';
 
 /**
  * An abstract service class that provides basic CRUD operations.
@@ -11,7 +12,7 @@ import { ICrudService } from './ICrudService';
 @Injectable()
 export abstract class AbstractCrudService extends AbstractLoggingClass implements ICrudService {
 	constructor(
-		protected readonly repository: Repository<ObjectLiteral>,
+		protected readonly repository: Repository<AbstractCrudEntity>,
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: LogAdapter,
 	) {
@@ -21,7 +22,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	/**
 	 *
 	 */
-	public async create(_: ObjectLiteral): Promise<ObjectLiteral> {
+	public async create(_: ObjectLiteral): Promise<AbstractCrudEntity> {
 		this.logger.info(`Creating a new entity`);
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
@@ -29,7 +30,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	/**
 	 *
 	 */
-	public async findAll(): Promise<ObjectLiteral[]> {
+	public async findAll(): Promise<AbstractCrudEntity[]> {
 		this.logger.info(`Finding all entities`);
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
@@ -37,7 +38,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	/**
 	 *
 	 */
-	public async findOne(id: number): Promise<ObjectLiteral> {
+	public async findOne(id: number): Promise<AbstractCrudEntity> {
 		this.logger.info(`Finding entity with id ${id}`);
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
@@ -45,7 +46,7 @@ export abstract class AbstractCrudService extends AbstractLoggingClass implement
 	/**
 	 *
 	 */
-	public async update(id: number, _: ObjectLiteral): Promise<ObjectLiteral> {
+	public async update(id: number, _: ObjectLiteral): Promise<AbstractCrudEntity> {
 		this.logger.info(`Updating entity with id ${id}`);
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
