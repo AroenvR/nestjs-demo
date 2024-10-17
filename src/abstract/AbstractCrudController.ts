@@ -1,5 +1,4 @@
-import { Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, ParseIntPipe, UseFilters, UseGuards } from '@nestjs/common';
-import { ObjectLiteral } from 'typeorm';
+import { Body, Param, ParseIntPipe, UseFilters, UseGuards } from '@nestjs/common';
 import { LogAdapter } from '../logging/LogAdapter';
 import { AbstractCrudService } from './AbstractCrudService';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
@@ -11,17 +10,21 @@ import { HttpExceptionFilter } from '../filters/HttpExceptionFilter';
 import { NotImplementedExceptionFilter } from '../filters/NotImplementedExceptionFilter';
 import { UnauthorizedExceptionFilter } from '../filters/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../auth/guards/PassportJwtAuthGuard';
-
-// import { PassportJwtAuthGuard } from '../auth/guards/PassportJwtAuthGuard'; // TODO: Fix
-
-// TODO: Create pipes for DTO validation
+import { AbstractCrudEntity } from './AbstractCrudEntity';
+import { AbstractCreateDto } from './AbstractCreateDto';
+import { AbstractUpdateDto } from './AbstractUpdateDto';
+import { ApiSecurity } from '@nestjs/swagger';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
  * This class is meant to be extended by other controllers.
- * It has a configured logger, preset error/exception filters and guards.
+ * It has:
+ * - A configured logger
+ * - HTTP-only Cookie JWT Guard
+ * - Preset error/exception filters
  */
 @UseFilters(
+	// Remember to add an ApiResponse decorator when adding new response codes at src/decorators/DefaultErrorDecorators.ts
 	BadRequestExceptionFilter,
 	HttpExceptionFilter,
 	NotFoundExceptionFilter,
@@ -30,10 +33,18 @@ import { PassportJwtAuthGuard } from '../auth/guards/PassportJwtAuthGuard';
 	UnauthorizedExceptionFilter,
 )
 @UseGuards(PassportJwtAuthGuard)
-export abstract class AbstractCrudController extends AbstractLoggingClass implements ICrudController {
+@ApiSecurity('jwt') // TODO
+export abstract class AbstractCrudController<
+		Entity extends AbstractCrudEntity,
+		CreateDto extends AbstractCreateDto,
+		UpdateDto extends AbstractUpdateDto,
+	>
+	extends AbstractLoggingClass
+	implements ICrudController<Entity, CreateDto, UpdateDto>
+{
 	constructor(
 		protected readonly logAdapter: LogAdapter,
-		protected readonly service: AbstractCrudService,
+		protected readonly service: AbstractCrudService<Entity, CreateDto, UpdateDto>,
 	) {
 		super(logAdapter);
 	}
@@ -41,9 +52,7 @@ export abstract class AbstractCrudController extends AbstractLoggingClass implem
 	/**
 	 *
 	 */
-	@Post()
-	@HttpCode(HttpStatus.CREATED)
-	public async create(@Body() createDto: ObjectLiteral) {
+	public async create(@Body() createDto: CreateDto): Promise<Entity> {
 		this.logger.info(`Creating a new entity`);
 		return this.service.create(createDto);
 	}
@@ -51,9 +60,7 @@ export abstract class AbstractCrudController extends AbstractLoggingClass implem
 	/**
 	 *
 	 */
-	@Get()
-	@HttpCode(HttpStatus.OK)
-	public async findAll() {
+	public async findAll(): Promise<Entity[]> {
 		this.logger.info(`Finding all entities`);
 		return this.service.findAll();
 	}
@@ -61,9 +68,7 @@ export abstract class AbstractCrudController extends AbstractLoggingClass implem
 	/**
 	 *
 	 */
-	@Get(':id')
-	@HttpCode(HttpStatus.OK)
-	public async findOne(@Param('id', ParseIntPipe) id: number) {
+	public async findOne(@Param('id', ParseIntPipe) id: number): Promise<Entity> {
 		this.logger.info(`Finding entity with id ${id}`);
 		return this.service.findOne(id);
 	}
@@ -71,9 +76,7 @@ export abstract class AbstractCrudController extends AbstractLoggingClass implem
 	/**
 	 *
 	 */
-	@Patch(':id')
-	@HttpCode(HttpStatus.OK)
-	public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: ObjectLiteral) {
+	public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<Entity> {
 		this.logger.info(`Updating entity with id ${id}`);
 		return this.service.update(id, updateDto);
 	}
@@ -81,9 +84,7 @@ export abstract class AbstractCrudController extends AbstractLoggingClass implem
 	/**
 	 *
 	 */
-	@Delete(':id')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	public async remove(@Param('id', ParseIntPipe) id: number) {
+	public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		this.logger.info(`Deleting entity with id ${id}`);
 		await this.service.remove(id);
 	}

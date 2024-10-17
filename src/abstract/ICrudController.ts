@@ -1,30 +1,31 @@
 import { HttpStatus } from '@nestjs/common'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ObjectLiteral } from 'typeorm';
 import { AbstractCrudEntity } from './AbstractCrudEntity';
+import { AbstractCreateDto } from './AbstractCreateDto';
+import { AbstractUpdateDto } from './AbstractUpdateDto';
 
 /**
  * An interface that defines the basic CRUD operations for a controller.
  */
-export interface ICrudController {
+export interface ICrudController<Entity extends AbstractCrudEntity, CreateDto extends AbstractCreateDto, UpdateDto extends AbstractUpdateDto> {
 	/**
 	 * Accepts POST requests to create a new entity.
 	 * @param createDto A DTO object that represents the entity to be created.
 	 * @returns The newly created entity with a {@link HttpStatus.OK}.
 	 */
-	create(createDto: ObjectLiteral): Promise<AbstractCrudEntity>;
+	create(createDto: CreateDto): Promise<Entity>;
 
 	/**
 	 * Accepts GET requests to find all entities.
 	 * @returns An array of all entities with a {@link HttpStatus.OK}.
 	 */
-	findAll(): Promise<AbstractCrudEntity[]>;
+	findAll(): Promise<Entity[]>;
 
 	/**
 	 * Accepts GET requests to find an entity by its id.
 	 * @param id The id of the entity to find.
 	 * @returns The entity with the specified id with a {@link HttpStatus.OK}.
 	 */
-	findOne(id: number): Promise<AbstractCrudEntity>;
+	findOne(id: number): Promise<Entity>;
 
 	/**
 	 * Accepts PATCH requests to update an entity by its id.
@@ -32,7 +33,7 @@ export interface ICrudController {
 	 * @param updateDto A DTO object that represents the entity to be updated.
 	 * @returns The updated entity with a {@link HttpStatus.OK}.
 	 */
-	update(id: number, updateDto: ObjectLiteral): Promise<AbstractCrudEntity>;
+	update(id: number, updateDto: UpdateDto): Promise<Entity>;
 
 	/**
 	 * Accepts DELETE requests to remove an entity by its id.

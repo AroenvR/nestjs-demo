@@ -1,8 +1,8 @@
 import request from 'supertest';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../AppModule';
 import { LoggerMiddleware } from '../middleware/LoggerMiddleware';
-import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { mockLogAdapter } from './mocks/mockLogAdapter';
 import { LogAdapter } from '../logging/LogAdapter';
 import { HttpErrorFilter } from '../filters/HttpErrorFilter';

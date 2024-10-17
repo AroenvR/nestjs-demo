@@ -13,6 +13,12 @@ export class HttpExceptionFilter extends AbstractHttpFilter {
 	}
 
 	catch(exception: HttpException, host: ArgumentsHost) {
+		// ValidationPipes throw HttpExceptions with BadRequestExceptions inside.
+		if (exception.name === 'BadRequestException') {
+			this.status = HttpStatus.BAD_REQUEST;
+			this.message = HttpExceptionMessages.BAD_REQUEST;
+		}
+
 		super.catch(exception, host);
 
 		this.logger.warn(`Exception was caught by the default HTTP exception filter.`);

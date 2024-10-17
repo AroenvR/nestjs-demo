@@ -7,7 +7,7 @@ import { CreateTemplateDto } from './dto/CreateTemplateDto';
 import { UpdateTemplateDto } from './dto/UpdateTemplateDto';
 import { NotFoundException } from '@nestjs/common';
 
-export class TemplateService extends AbstractCrudService {
+export class TemplateService extends AbstractCrudService<TemplateEntity, CreateTemplateDto, UpdateTemplateDto> {
 	constructor(
 		@InjectRepository(TemplateEntity)
 		protected readonly repository: Repository<TemplateEntity>,
@@ -16,9 +16,6 @@ export class TemplateService extends AbstractCrudService {
 	) {
 		super(repository, entityManager, logAdapter);
 	}
-
-	/*  Below is a fully functional Service-Repository-Database relationship.
-        Without any implementation, the AbstractService will simply throw "NOT_IMPLEMENTED" errors.  */
 
 	/**
 	 *

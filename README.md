@@ -90,6 +90,7 @@ npm run test:watch
 ```
 [Thunder Client](thunderclient.com) to manually test the API's endpoints.  
 [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.
+[Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
 
 ## License
 

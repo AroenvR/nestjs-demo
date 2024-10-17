@@ -16,9 +16,11 @@ describe('LoggerMiddleware', () => {
 				correlationManager: {
 					runWithCorrelationId: jest.fn((_, callback) => callback()),
 				},
+				log: jest.fn(),
 				info: jest.fn(),
 				verbose: jest.fn(),
 			}),
+			log: jest.fn(),
 			info: jest.fn(),
 			verbose: jest.fn(),
 		};
@@ -64,12 +66,12 @@ describe('LoggerMiddleware', () => {
 		// Assertions
 		expect(logger.getLogger().correlationManager.runWithCorrelationId).toHaveBeenCalled();
 
-		expect(logger.info).toHaveBeenCalledWith(`Request: GET /test-url`);
+		expect(logger.log).toHaveBeenCalledWith(`Request: GET /test-url`);
 		expect(logger.verbose).toHaveBeenCalledWith(`Request Headers: {}`);
 
 		expect(res.on).toHaveBeenCalledWith('finish', expect.any(Function));
 
-		expect(logger.info).toHaveBeenCalledWith(`Response: GET /test-url - Status: 200 - Content-Length: 123 bytes - Time: 1000 milliseconds.`);
+		expect(logger.log).toHaveBeenCalledWith(`Response: GET /test-url - Status: 200 - Content-Length: 123 bytes - Time: 1000 milliseconds.`);
 
 		expect(next).toHaveBeenCalled();
 
