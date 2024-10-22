@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
-	imports: [ConfigModule], // Add ConfigModule to imports
+	imports: [ConfigModule],
 	providers: [
 		{
 			provide: LogAdapter,
@@ -40,4 +40,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 	],
 	exports: [LogAdapter],
 })
-export class LoggerModule {}
+export class LoggerModule { }

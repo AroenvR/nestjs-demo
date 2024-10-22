@@ -5,7 +5,7 @@ import { TDatabaseConfig } from '../database/TDatabaseConfig';
  * The server's security configuration interface.
  * @property secure_cookie - A boolean flag indicating whether cookies are allowed over HTTP.
  */
-export type TSecurityConfig = {
+type TSecurityConfig = {
 	secure_cookie: boolean;
 };
 
