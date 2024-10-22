@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from '../../../logging/LoggerModule';
 import { TemplateService } from '../../../template/TemplateService';
 import { CreateTemplateDto } from '../../../template/dto/CreateTemplateDto';
@@ -9,6 +10,7 @@ import { DatabaseModule } from '../../../database/DatabaseModule';
 import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { wasLogged } from '../../helpers/wasLogged';
 import { ICrudService } from '../../../abstract/ICrudService';
+import { serverConfig } from '../../../server_config/serverConfig';
 
 // Value to change
 describe('TemplateService Integration', () => {
@@ -23,7 +25,15 @@ describe('TemplateService Integration', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])], // Value to change
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [serverConfig],
+				}),
+				LoggerModule,
+				DatabaseModule,
+				TypeOrmModule.forFeature([TemplateEntity]), // Value to change
+			],
 			providers: [TemplateService], // Value to change
 		}).compile();
 

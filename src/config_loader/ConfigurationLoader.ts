@@ -23,6 +23,7 @@ export type TLoadOpts<Config> =
 
 /**
  * Class responsible for loading and providing configuration settings.
+ * @deprecated Use NestJS's ConfigurationLoader instead.
  */
 export class ConfigurationLoader<Config> {
 	private readonly name = 'ConfigurationLoader';

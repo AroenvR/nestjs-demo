@@ -1,30 +1,41 @@
 import { Global, Module } from '@nestjs/common';
 import { LogAdapter } from './LogAdapter';
-import { CorrelationManager, LoggerConfigurator, LoggerFactory } from 'ts-log-adapter';
-import { defaultServerConfig } from '../IServerConfig';
+import { CorrelationManager, LoggerFactory } from 'ts-log-adapter';
+import { IServerConfig } from '../server_config/IServerConfig';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
+	imports: [ConfigModule], // Add ConfigModule to imports
 	providers: [
 		{
 			provide: LogAdapter,
-			useFactory: () => {
+			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const correlationManager = new CorrelationManager();
 
-				// If no environment variable is set, use the default (fallback) configuration.
-				const config = new LoggerConfigurator({ loader: 'object', config: defaultServerConfig.logging }).loadConfiguration();
+				// Retrieve logging configuration using ConfigService
+				const loggingConfig = configService.get<IServerConfig['logging']>('logging');
 
-				if (config.file.enabled) {
-					// For log files which wish to be timestamped, the name should be set to 'TIMESTAMPED' and it will be overwritten accordingly.
-					config.file.name = config.file.name === 'TIMESTAMPED' ? `${config.appName}.${Date.now().toString()}.log` : config.file.name;
-
-					// For log files which wish to be named after the test, the name should be set to 'TEST_NAME.test.log' and it will be overwritten using the TEST_NAME environment variable.
-					config.file.name = config.file.name === 'TEST_NAME.test.log' ? `${process.env.TEST_NAME}.test.log` : config.file.name;
+				// If loggingConfig is undefined, you can handle it or throw an error
+				if (!loggingConfig) {
+					throw new Error('Logging configuration is missing.');
 				}
 
-				const logger = new LoggerFactory().initialize(config, correlationManager);
+				// Process the logging configuration
+				if (loggingConfig.file.enabled) {
+					// Handle 'TIMESTAMPED' and 'TEST_NAME.test.log' cases
+					loggingConfig.file.name =
+						loggingConfig.file.name === 'TIMESTAMPED' ? `${loggingConfig.appName}.${Date.now().toString()}.log` : loggingConfig.file.name;
+
+					loggingConfig.file.name =
+						loggingConfig.file.name === 'TEST_NAME.test.log' ? `${process.env.TEST_NAME}.test.log` : loggingConfig.file.name;
+				}
+
+				// Initialize the logger with the retrieved configuration
+				const logger = new LoggerFactory().initialize(loggingConfig, correlationManager);
 				return new LogAdapter(logger);
 			},
+			inject: [ConfigService],
 		},
 	],
 	exports: [LogAdapter],

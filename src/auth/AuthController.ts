@@ -8,6 +8,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '../filters/HttpExceptionFilter';
 import { UnauthorizedExceptionFilter } from '../filters/UnauthorizedExceptionFilter';
 import { HttpExceptionMessages } from '../filters/HttpExceptionMessages';
+import { ConfigService } from '@nestjs/config';
+import { IServerConfig } from 'src/server_config/IServerConfig';
 
 /**
  * A controller class that provides authentication endpoints.
@@ -19,6 +21,7 @@ export class AuthController extends AbstractLoggingClass {
 	constructor(
 		protected readonly logAdapter: LogAdapter,
 		protected readonly authService: AuthService,
+		protected readonly configService: ConfigService<IServerConfig>,
 	) {
 		super(logAdapter);
 	}
@@ -38,7 +41,9 @@ export class AuthController extends AbstractLoggingClass {
 
 		const result = await this.authService.login(data);
 
-		response.cookie('jwt', result.accessToken, { secure: true, httpOnly: true }); // expires: ?
+		const securityConfig = this.configService.get<IServerConfig['security']>('security');
+		response.cookie('jwt', result.accessToken, { secure: securityConfig.secure_cookie, httpOnly: true }); // Expires TODO
+
 		return result.accessToken;
 	}
 

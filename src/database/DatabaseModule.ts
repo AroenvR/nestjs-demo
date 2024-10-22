@@ -1,26 +1,28 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigurationLoader, TLoadOpts } from '../config_loader/ConfigurationLoader';
-import { TDatabaseConfig } from './TDatabaseConfig';
-import { defaultServerConfig } from '../IServerConfig';
-import { databaseJSONSchema } from './DatabaseJsonSchema';
-
-const fallbackDbConfig: TLoadOpts<TDatabaseConfig> = { loader: 'object', config: defaultServerConfig.database };
-const databaseConfig = new ConfigurationLoader(databaseJSONSchema, 'DATABASE_CONFIG', fallbackDbConfig).loadConfiguration();
+import { IServerConfig } from '../server_config/IServerConfig';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
 	imports: [
+		ConfigModule, // Add this line to import ConfigModule
 		TypeOrmModule.forRootAsync({
-			useFactory: () => ({
-				type: databaseConfig.driver,
-				database: databaseConfig.database,
-				host: databaseConfig.driver !== 'sqlite' ? databaseConfig.host : undefined,
-				port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
-				username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
-				password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
-				synchronize: databaseConfig.synchronize,
-				autoLoadEntities: true,
-			}),
+			imports: [ConfigModule], // Ensure ConfigModule is available in the module scope
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService<IServerConfig>) => {
+				const databaseConfig = configService.get<IServerConfig['database']>('database');
+
+				return {
+					type: databaseConfig.driver,
+					database: databaseConfig.database,
+					host: databaseConfig.driver !== 'sqlite' ? databaseConfig.host : undefined,
+					port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
+					username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
+					password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
+					synchronize: databaseConfig.synchronize,
+					autoLoadEntities: true,
+				};
+			},
 		}),
 	],
 })

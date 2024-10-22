@@ -1,12 +1,14 @@
 import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { wasLogged } from '../helpers/wasLogged';
 import { LoggerModule } from '../../logging/LoggerModule';
 import { DatabaseModule } from '../../database/DatabaseModule';
 import { TemplateModule } from '../../template/TemplateModule';
-import { AuthModule } from '../..//auth/AuthModule';
+import { AuthModule } from '../../auth/AuthModule';
+import { serverConfig } from '../../server_config/serverConfig';
 import { mockJwt } from '../mocks/mockJwt';
 
 const testName = 'TemplateModule'; // Value to change
@@ -21,7 +23,16 @@ describe(testName, () => {
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [LoggerModule, DatabaseModule, TemplateModule, AuthModule], // Value to change
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [serverConfig],
+				}),
+				LoggerModule,
+				DatabaseModule,
+				TemplateModule, // Value to change
+				AuthModule,
+			],
 		}).compile();
 
 		app = moduleFixture.createNestApplication();

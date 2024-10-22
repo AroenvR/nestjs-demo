@@ -4,11 +4,22 @@ import { LoggerModule } from './logging/LoggerModule';
 import { DatabaseModule } from './database/DatabaseModule';
 import { TemplateModule } from './template/TemplateModule';
 import { AuthModule } from './auth/AuthModule';
+import { ConfigModule } from '@nestjs/config';
+import { serverConfig } from './server_config/serverConfig';
 
 const ENDPOINT_MODULES = [TemplateModule];
 
 @Module({
-	imports: [LoggerModule, DatabaseModule, AuthModule, ...ENDPOINT_MODULES],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			load: [serverConfig],
+		}),
+		LoggerModule,
+		DatabaseModule,
+		AuthModule,
+		...ENDPOINT_MODULES,
+	],
 })
 /**
  * The root application module.

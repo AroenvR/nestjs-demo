@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TemplateController } from '../../../template/TemplateController';
+import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from '../../../logging/LoggerModule';
 import { TemplateService } from '../../../template/TemplateService';
 import { CreateTemplateDto } from '../../../template/dto/CreateTemplateDto';
@@ -9,6 +10,7 @@ import { TemplateEntity } from '../../../template/entities/TemplateEntity';
 import { DatabaseModule } from '../../../database/DatabaseModule';
 import { wasLogged } from '../../helpers/wasLogged';
 import { ICrudController } from '../../../abstract/ICrudController';
+import { serverConfig } from '../../../server_config/serverConfig';
 
 // Value to change
 describe('TemplateController Integration', () => {
@@ -23,8 +25,15 @@ describe('TemplateController Integration', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			// TODO: Fix AuthModule
-			imports: [LoggerModule, DatabaseModule, TypeOrmModule.forFeature([TemplateEntity])], // Value to change
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [serverConfig],
+				}),
+				LoggerModule,
+				DatabaseModule,
+				TypeOrmModule.forFeature([TemplateEntity]), // Value to change
+			],
 			controllers: [TemplateController], // Value to change
 			providers: [TemplateService], // Value to change
 		}).compile();
