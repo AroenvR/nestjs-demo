@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
+import { ConfigModule } from '@nestjs/config'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { IServerConfig } from './IServerConfig';
 import { serverJsonSchema } from './serverJsonSchema';
 
@@ -34,41 +35,51 @@ const defaultConfig: IServerConfig = {
 
 /**
  * Server configuration settings for the application.
+ * @returns The server configuration settings to be used by NestJS's {@link ConfigModule}.
  */
 export const serverConfig = (): IServerConfig => {
-	let config = {};
+	// Load the default configuration
+	const config = defaultConfig;
 
-	// Load JSON configuration
+	/* Attempt to load JSON configuration files based on the environment variables */
+
+	// Logging configuration
 	try {
 		const loggerConfigPath = path.resolve(process.env.LOGSCRIBE_CONFIG);
-		const loggerConfigData = fs.readFileSync(loggerConfigPath, 'utf8');
-		const loggerConfig = JSON.parse(loggerConfigData);
-
-		const databaseConfigPath = path.resolve(process.env.DATABASE_CONFIG);
-		const databaseConfigData = fs.readFileSync(databaseConfigPath, 'utf8');
-		const databaseConfig = JSON.parse(databaseConfigData);
-
-		const securityConfigPath = path.resolve(process.env.SECURITY_CONFIG);
-		const securityConfigData = fs.readFileSync(securityConfigPath, 'utf8');
-		const securityConfig = JSON.parse(securityConfigData);
-
-		config = {
-			logging: loggerConfig,
-			database: databaseConfig,
-			security: securityConfig,
-		};
+		const loggerConfig = fs.readFileSync(loggerConfigPath, 'utf8');
+		const logging = JSON.parse(loggerConfig);
+		config.logging = logging;
 	} catch (error: Error | unknown) {
-		console.error(`serverConfig: Could not load server configuration, using default fallback configuration: ${error}`);
-		config = defaultConfig;
+		console.error(`serverConfig: Could not load logger configuration, using fallback configuration: ${error}`);
 	}
 
-	// Validate the final configuration
+	// Database configuration
+	try {
+		const databaseConfigPath = path.resolve(process.env.DATABASE_CONFIG);
+		const databaseConfig = fs.readFileSync(databaseConfigPath, 'utf8');
+		const database = JSON.parse(databaseConfig);
+		config.database = database;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load database configuration, using fallback configuration: ${error}`);
+	}
+
+	// Security configuration
+	try {
+		const securityConfigPath = path.resolve(process.env.SECURITY_CONFIG);
+		const securityConfig = fs.readFileSync(securityConfigPath, 'utf8');
+		const security = JSON.parse(securityConfig);
+		config.security = security;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);
+	}
+
+	// JSON Schema validate the complete server configuration object
 	const { error, value } = serverJsonSchema.validate(config, {
 		abortEarly: false,
 	});
 
 	if (error) {
-		throw new Error(`Configuration validation error: ${error.message}`);
+		throw new Error(`serverConfig: validation error: ${error.message}`);
 	}
 
 	return value;
