@@ -10,3 +10,5 @@ COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 curl -X POST http://localhost:3000/v1/auth/logout/ \
     -b $COOKIE_JAR \
     -H "Content-Type: application/json"
+
+echo ""

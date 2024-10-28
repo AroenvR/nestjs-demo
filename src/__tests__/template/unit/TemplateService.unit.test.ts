@@ -9,6 +9,7 @@ import { LogAdapter } from '../../../logging/LogAdapter';
 import { mockEntityManager } from '../../mocks/mockEntityManager';
 import { mockRepository } from '../../mocks/mockRepository';
 import { ICrudService } from '../../../abstract/ICrudService';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Value to change
 describe('TemplateService Unit', () => {
@@ -28,7 +29,7 @@ describe('TemplateService Unit', () => {
 					provide: LogAdapter,
 				},
 				{
-					provide: `${entity.constructor.name}Repository`,
+					provide: getRepositoryToken(TemplateEntity),
 					useValue: mockRepository(entity),
 				},
 				{

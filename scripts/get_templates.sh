@@ -10,3 +10,5 @@ COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 curl -X GET http://localhost:3000/v1/template/ \
     -b $COOKIE_JAR \
     -H "Content-Type: application/json"
+
+echo ""

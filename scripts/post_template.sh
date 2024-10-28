@@ -17,3 +17,5 @@ curl -X POST http://localhost:3000/v1/template/ \
     -b $COOKIE_JAR \
     -H "Content-Type: application/json" \
     -d "{\"value\":\"$1\"}"
+
+echo ""

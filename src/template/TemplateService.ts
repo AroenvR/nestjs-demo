@@ -24,7 +24,12 @@ export class TemplateService extends AbstractCrudService<TemplateEntity, CreateT
 		this.logger.info(`Creating a new entity`);
 
 		const template = new TemplateEntity(createDto);
-		return this.entityManager.save(template);
+
+		const transaction = this.entityManager.transaction(async (entityManager: EntityManager) => {
+			return entityManager.save(template);
+		});
+
+		return transaction;
 	}
 
 	/**
@@ -53,11 +58,15 @@ export class TemplateService extends AbstractCrudService<TemplateEntity, CreateT
 	public async update(id: number, updateDto: UpdateTemplateDto) {
 		this.logger.info(`Updating entity with id ${id}`);
 
-		const template = await this.repository.findOneBy({ id });
-		if (!template) throw new NotFoundException(`Entity by id ${id} not found`);
+		const transaction = this.entityManager.transaction(async (entityManager: EntityManager) => {
+			const template = await this.repository.findOneBy({ id });
+			if (!template) throw new NotFoundException(`Entity by id ${id} not found`);
 
-		template.value = updateDto.value;
-		return this.entityManager.save(template);
+			template.value = updateDto.value;
+			return entityManager.save(template);
+		});
+
+		return transaction;
 	}
 
 	/**

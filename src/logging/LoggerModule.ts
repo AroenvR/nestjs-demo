@@ -40,4 +40,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 	],
 	exports: [LogAdapter],
 })
-export class LoggerModule { }
+export class LoggerModule {}

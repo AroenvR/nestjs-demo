@@ -7,4 +7,7 @@ export const mockEntityManager: Partial<EntityManager> = {
 	save: jest.fn().mockImplementation((entity) => {
 		return entity;
 	}),
+	transaction: jest.fn().mockImplementation((callback) => {
+		return callback(mockEntityManager);
+	}),
 };

@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# Check if username and password are provided
+# Check if the necessary values were provided
 if [ $# -ne 2 ]; then
-  echo "Usage: $0 <username> <password>"
+  echo "Usage: $0 <id> <value>"
   exit 1
 fi
-
-USERNAME=$1
-PASSWORD=$2
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,9 +12,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Set the cookie jar path relative to the script's location
 COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 
-# Send a POST request to the login endpoint
-curl -c $COOKIE_JAR -X POST http://localhost:3000/v1/auth/login \
+# Send a POST request to the template endpoint
+curl -X PATCH http://localhost:3000/v1/template/$1 \
+    -b $COOKIE_JAR \
     -H "Content-Type: application/json" \
-    -d "{\"username\":\"$1\", \"password\":\"$2\"}"
+    -d "{\"value\":\"$2\"}"
 
 echo ""

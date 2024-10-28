@@ -24,68 +24,67 @@ import { ApiSecurity } from '@nestjs/swagger';
  * - Preset error/exception filters
  */
 @UseFilters(
-	// Remember to add an ApiResponse decorator when adding new response codes at src/decorators/DefaultErrorDecorators.ts
-	BadRequestExceptionFilter,
-	HttpExceptionFilter,
-	NotFoundExceptionFilter,
-	NotImplementedExceptionFilter,
-	QueryFailedErrorFilter,
-	UnauthorizedExceptionFilter,
+    // NOTE: Remember to add an ApiResponse decorator when adding new response codes at src/decorators/DefaultErrorDecorators.ts
+    BadRequestExceptionFilter,
+    HttpExceptionFilter,
+    NotFoundExceptionFilter,
+    NotImplementedExceptionFilter,
+    QueryFailedErrorFilter,
+    UnauthorizedExceptionFilter,
 )
 @UseGuards(PassportJwtAuthGuard)
-@ApiSecurity('jwt') // TODO
+@ApiSecurity('jwt')
 export abstract class AbstractCrudController<
-		Entity extends AbstractCrudEntity,
-		CreateDto extends AbstractCreateDto,
-		UpdateDto extends AbstractUpdateDto,
-	>
-	extends AbstractLoggingClass
-	implements ICrudController<Entity, CreateDto, UpdateDto>
-{
-	constructor(
-		protected readonly logAdapter: LogAdapter,
-		protected readonly service: AbstractCrudService<Entity, CreateDto, UpdateDto>,
-	) {
-		super(logAdapter);
-	}
+    Entity extends AbstractCrudEntity,
+    CreateDto extends AbstractCreateDto,
+    UpdateDto extends AbstractUpdateDto,
+>
+    extends AbstractLoggingClass
+    implements ICrudController<Entity, CreateDto, UpdateDto> {
+    constructor(
+        protected readonly logAdapter: LogAdapter,
+        protected readonly service: AbstractCrudService<Entity, CreateDto, UpdateDto>,
+    ) {
+        super(logAdapter);
+    }
 
-	/**
-	 *
-	 */
-	public async create(@Body() createDto: CreateDto): Promise<Entity> {
-		this.logger.info(`Creating a new entity`);
-		return this.service.create(createDto);
-	}
+    /**
+     *
+     */
+    public async create(@Body() createDto: CreateDto): Promise<Entity> {
+        this.logger.info(`Creating a new entity`);
+        return this.service.create(createDto);
+    }
 
-	/**
-	 *
-	 */
-	public async findAll(): Promise<Entity[]> {
-		this.logger.info(`Finding all entities`);
-		return this.service.findAll();
-	}
+    /**
+     *
+     */
+    public async findAll(): Promise<Entity[]> {
+        this.logger.info(`Finding all entities`);
+        return this.service.findAll();
+    }
 
-	/**
-	 *
-	 */
-	public async findOne(@Param('id', ParseIntPipe) id: number): Promise<Entity> {
-		this.logger.info(`Finding entity with id ${id}`);
-		return this.service.findOne(id);
-	}
+    /**
+     *
+     */
+    public async findOne(@Param('id', ParseIntPipe) id: number): Promise<Entity> {
+        this.logger.info(`Finding entity with id ${id}`);
+        return this.service.findOne(id);
+    }
 
-	/**
-	 *
-	 */
-	public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<Entity> {
-		this.logger.info(`Updating entity with id ${id}`);
-		return this.service.update(id, updateDto);
-	}
+    /**
+     *
+     */
+    public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<Entity> {
+        this.logger.info(`Updating entity with id ${id}`);
+        return this.service.update(id, updateDto);
+    }
 
-	/**
-	 *
-	 */
-	public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		this.logger.info(`Deleting entity with id ${id}`);
-		await this.service.remove(id);
-	}
+    /**
+     *
+     */
+    public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        this.logger.info(`Deleting entity with id ${id}`);
+        await this.service.remove(id);
+    }
 }
