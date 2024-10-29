@@ -1,17 +1,18 @@
+## Sequence diagram depicting SSE (Server-Sent Events) flow
 ```mermaid
 sequenceDiagram
-    participant Client
-    participant TemplateController
-    participant TemplateService
-    participant TemplateSubscriber
-    participant Database
+    Client->>Controller: GET /endpoint/events
+    Controller->>Service: Subscribes to events
+    Service->>Subscriber: observe(): Entity
+    Subscriber->>Database: Listening to insert / update events
+    Subscriber-->>Service: success
+    Service-->>Controller: success
+    Controller-->>Client: SSE Stream Established
 
-    Client->>TemplateController: GET /template/events (SSE)
-    TemplateController-->>Client: SSE Stream Established
+    Note over Database: INSERT or UPDATE Entity
 
-    Note over Database,TemplateSubscriber: Insert or Update TemplateEntity
-
-    Database-->>TemplateSubscriber: Emits afterInsert/afterUpdate
-    TemplateSubscriber->>TemplateService: emitTemplateEvent(entity)
-    TemplateService-->>Client: Push TemplateEntity Data via SSE
+    Database-->>Subscriber: Event
+    Subscriber-->>Service: Emits afterInsert / afterUpdate
+    Service-->>Controller: emit(Entity)
+    Controller-->>Client: Push Entity data via SSE
 ```
