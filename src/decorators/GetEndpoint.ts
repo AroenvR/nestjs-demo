@@ -8,11 +8,11 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityType The type of the entity
  */
 export function GetEndpoint(entityName: string, entityType: Type<unknown>) {
-    return applyDecorators(
-        Get(),
-        HttpCode(HttpStatus.OK),
-        ApiOperation({ summary: `Find all ${entityName}s` }),
-        ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType, isArray: true }),
-        DefaultErrorDecorators(),
-    );
+	return applyDecorators(
+		Get(),
+		HttpCode(HttpStatus.OK),
+		ApiOperation({ summary: `Find all ${entityName}s` }),
+		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType, isArray: true }),
+		DefaultErrorDecorators(),
+	);
 }

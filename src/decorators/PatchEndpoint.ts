@@ -9,12 +9,12 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityType The type of the entity
  */
 export function PatchEndpoint(entityName: string, entityType: Type<unknown>) {
-    return applyDecorators(
-        Patch(':id'),
-        HttpCode(HttpStatus.OK),
-        ApiOperation({ summary: `Update an existing ${entityName}` }),
-        ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
-        ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
-        DefaultErrorDecorators(),
-    );
+	return applyDecorators(
+		Patch(':id'),
+		HttpCode(HttpStatus.OK),
+		ApiOperation({ summary: `Update an existing ${entityName}` }),
+		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
+		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
+		DefaultErrorDecorators(),
+	);
 }

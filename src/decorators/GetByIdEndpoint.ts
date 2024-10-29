@@ -9,12 +9,12 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityType The type of the entity
  */
 export function GetByIdEndpoint(entityName: string, entityType: Type<unknown>) {
-    return applyDecorators(
-        Get(':id'),
-        HttpCode(HttpStatus.OK),
-        ApiOperation({ summary: `Find a(n) ${entityName} by id` }),
-        ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
-        ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
-        DefaultErrorDecorators(),
-    );
+	return applyDecorators(
+		Get(':id'),
+		HttpCode(HttpStatus.OK),
+		ApiOperation({ summary: `Find a(n) ${entityName} by id` }),
+		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
+		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
+		DefaultErrorDecorators(),
+	);
 }

@@ -8,8 +8,8 @@ import { TemplateSubscriber } from './TemplateSubscriber';
 /* Remember to add the module to the imports array in src/AppModule.ts */
 
 @Module({
-    imports: [TypeOrmModule.forFeature([TemplateEntity])],
-    controllers: [TemplateController],
-    providers: [TemplateService, TemplateSubscriber],
+	imports: [TypeOrmModule.forFeature([TemplateEntity])],
+	controllers: [TemplateController],
+	providers: [TemplateService, TemplateSubscriber],
 })
-export class TemplateModule { }
+export class TemplateModule {}

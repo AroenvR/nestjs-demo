@@ -8,15 +8,15 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityType The type of the entity
  */
 export function PostEndpoint(entityName: string, entityType: Type<unknown>) {
-    return applyDecorators(
-        Post(),
-        HttpCode(HttpStatus.CREATED),
-        ApiOperation({ summary: `Create a new ${entityName}` }),
-        ApiResponse({
-            status: HttpStatus.CREATED,
-            description: `The ${entityName} was successfully created.`,
-            type: entityType,
-        }),
-        DefaultErrorDecorators(),
-    );
+	return applyDecorators(
+		Post(),
+		HttpCode(HttpStatus.CREATED),
+		ApiOperation({ summary: `Create a new ${entityName}` }),
+		ApiResponse({
+			status: HttpStatus.CREATED,
+			description: `The ${entityName} was successfully created.`,
+			type: entityType,
+		}),
+		DefaultErrorDecorators(),
+	);
 }
