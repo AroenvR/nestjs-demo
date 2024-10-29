@@ -14,6 +14,8 @@ import { AbstractCrudEntity } from './AbstractCrudEntity';
 import { AbstractCreateDto } from './AbstractCreateDto';
 import { AbstractUpdateDto } from './AbstractUpdateDto';
 import { ApiSecurity } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
+import { ISseMessage } from './ISseMessage';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -62,6 +64,14 @@ export abstract class AbstractCrudController<
     public async findAll(): Promise<Entity[]> {
         this.logger.info(`Finding all entities`);
         return this.service.findAll();
+    }
+
+    /**
+     * 
+     */
+    public events(): Observable<ISseMessage<Entity>> {
+        this.logger.log(`Client subscribed to events publishing`);
+        return this.service.observe();
     }
 
     /**

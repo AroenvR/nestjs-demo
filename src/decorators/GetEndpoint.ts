@@ -1,4 +1,4 @@
-import { applyDecorators, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { applyDecorators, Get, HttpCode, HttpStatus, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
 
@@ -7,12 +7,12 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityName The name of the entity
  * @param entityType The type of the entity
  */
-export function GetEndpoint(entityName: string, entityType: any) {
-	return applyDecorators(
-		Get(),
-		HttpCode(HttpStatus.OK),
-		ApiOperation({ summary: `Find all ${entityName}s` }),
-		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType, isArray: true }),
-		DefaultErrorDecorators(),
-	);
+export function GetEndpoint(entityName: string, entityType: Type<unknown>) {
+    return applyDecorators(
+        Get(),
+        HttpCode(HttpStatus.OK),
+        ApiOperation({ summary: `Find all ${entityName}s` }),
+        ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType, isArray: true }),
+        DefaultErrorDecorators(),
+    );
 }

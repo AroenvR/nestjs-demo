@@ -1,4 +1,4 @@
-import { applyDecorators, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { applyDecorators, HttpCode, HttpStatus, Post, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
 
@@ -7,16 +7,16 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityName The name of the entity
  * @param entityType The type of the entity
  */
-export function PostEndpoint(entityName: string, entityType: any) {
-	return applyDecorators(
-		Post(),
-		HttpCode(HttpStatus.CREATED),
-		ApiOperation({ summary: `Create a new ${entityName}` }),
-		ApiResponse({
-			status: HttpStatus.CREATED,
-			description: `The ${entityName} was successfully created.`,
-			type: entityType,
-		}),
-		DefaultErrorDecorators(),
-	);
+export function PostEndpoint(entityName: string, entityType: Type<unknown>) {
+    return applyDecorators(
+        Post(),
+        HttpCode(HttpStatus.CREATED),
+        ApiOperation({ summary: `Create a new ${entityName}` }),
+        ApiResponse({
+            status: HttpStatus.CREATED,
+            description: `The ${entityName} was successfully created.`,
+            type: entityType,
+        }),
+        DefaultErrorDecorators(),
+    );
 }

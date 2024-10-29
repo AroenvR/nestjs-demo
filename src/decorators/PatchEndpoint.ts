@@ -1,4 +1,4 @@
-import { applyDecorators, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import { applyDecorators, HttpCode, HttpStatus, Patch, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpExceptionMessages } from '../filters/HttpExceptionMessages';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
@@ -8,13 +8,13 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  * @param entityName The name of the entity
  * @param entityType The type of the entity
  */
-export function PatchEndpoint(entityName: string, entityType: any) {
-	return applyDecorators(
-		Patch(':id'),
-		HttpCode(HttpStatus.OK),
-		ApiOperation({ summary: `Update an existing ${entityName}` }),
-		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
-		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
-		DefaultErrorDecorators(),
-	);
+export function PatchEndpoint(entityName: string, entityType: Type<unknown>) {
+    return applyDecorators(
+        Patch(':id'),
+        HttpCode(HttpStatus.OK),
+        ApiOperation({ summary: `Update an existing ${entityName}` }),
+        ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
+        ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
+        DefaultErrorDecorators(),
+    );
 }

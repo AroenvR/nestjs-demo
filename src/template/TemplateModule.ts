@@ -1,7 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TemplateController } from './TemplateController';
 import { TemplateService } from './TemplateService';
-import { TemplateEntity } from './entities/TemplateEntity';
+import { TemplateEntity } from './entity/TemplateEntity';
 import { Module } from '@nestjs/common';
 import { TemplateSubscriber } from './TemplateSubscriber';
 

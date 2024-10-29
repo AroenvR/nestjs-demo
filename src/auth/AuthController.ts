@@ -33,7 +33,7 @@ export class AuthController extends AbstractLoggingClass {
      */
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({ summary: 'Request a HTTP-only JWT cookie' })
+    @ApiOperation({ summary: 'Request an HTTP-only JWT cookie' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Login successful' })
     @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: HttpExceptionMessages.INTERNAL_SERVER_ERROR })
     public async login(@Body() data: TSignInData, @Res({ passthrough: true }) response: Response): Promise<any> {

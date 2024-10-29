@@ -1,26 +1,23 @@
-import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from "typeorm";
-import { TemplateEntity } from "./entities/TemplateEntity";
-import { AbstractLoggingClass } from "../abstract/AbstractLoggingClass";
-import { LogAdapter } from "../logging/LogAdapter";
+import { DataSource } from "typeorm";
+import { TemplateEntity } from "./entity/TemplateEntity";
+import { LogAdapter } from "src/logging/LogAdapter";
+import { TemplateService } from "./TemplateService";
+import { AbstractCrudSubscriber } from "../abstract/AbstractCrudSubscriber";
+import { Inject } from "@nestjs/common";
 
 /**
- * Publishes and subscribes to events for the database's actions on the TemplateEntity table.
+ * Subscribes and publishes to events for the database's actions on the TemplateEntity table.
  */
-@EventSubscriber()
-export class TemplateSubscriber extends AbstractLoggingClass implements EntitySubscriberInterface<TemplateEntity> {
+export class TemplateSubscriber extends AbstractCrudSubscriber<TemplateEntity> {
     constructor(
-        protected readonly datasource: DataSource,
         protected readonly logAdapter: LogAdapter,
+        protected readonly datasource: DataSource,
+        @Inject(TemplateService) protected readonly service: TemplateService,
     ) {
-        super(logAdapter);
-        datasource.subscribers.push(this);
+        super(logAdapter, datasource, service);
     }
 
-    afterInsert(event: InsertEvent<TemplateEntity>) {
-        this.logger.info(`Entity with id ${event.entity.id} was inserted`);
-    }
-
-    afterUpdate(event: UpdateEvent<TemplateEntity>): Promise<any> | void {
-        this.logger.info(`Entity with id ${event.entity.id} was updated`);
+    public listenTo() {
+        return TemplateEntity;
     }
 }

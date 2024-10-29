@@ -5,16 +5,22 @@ import { HttpExceptionMessages } from './HttpExceptionMessages';
 
 @Catch(Error)
 export class HttpErrorFilter extends AbstractHttpFilter {
-	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
-	protected message = HttpExceptionMessages.INTERNAL_SERVER_ERROR;
+    protected status = HttpStatus.INTERNAL_SERVER_ERROR;
+    protected message = HttpExceptionMessages.INTERNAL_SERVER_ERROR;
 
-	constructor(logAdapter: LogAdapter) {
-		super(logAdapter);
-	}
+    constructor(logAdapter: LogAdapter) {
+        super(logAdapter);
+    }
 
-	catch(exception: Error, host: ArgumentsHost) {
-		super.catch(exception, host);
+    catch(exception: Error, host: ArgumentsHost) {
+        // Non-existing routes throw HttpErrors with NotFoundExceptions inside.
+        if (exception.name === 'NotFoundException') {
+            this.status = HttpStatus.NOT_FOUND;
+            this.message = HttpExceptionMessages.NOT_FOUND;
+        }
 
-		this.logger.warn(`Exception was caught by the default Error filter.`);
-	}
+        super.catch(exception, host);
+
+        this.logger.warn(`Exception was caught by the default Error filter.`);
+    }
 }
