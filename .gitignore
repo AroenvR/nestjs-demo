@@ -18,7 +18,6 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
-scripts/cookies.txt
 
 # IDEs and editors
 /.idea
@@ -57,3 +56,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Database files
 *.db
+
+# Cookies
+scripts/cookies.txt
