@@ -1,5 +1,5 @@
 import { ILogger } from 'ts-log-adapter';
-import { LogAdapter } from '../../logging/LogAdapter';
+import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 
 /**
  * A mocked ILogger object.

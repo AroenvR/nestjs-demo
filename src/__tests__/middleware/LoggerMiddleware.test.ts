@@ -1,6 +1,6 @@
-import { LoggerMiddleware } from '../../middleware/LoggerMiddleware';
+import { LoggerMiddleware } from '../../common/middleware/LoggerMiddleware';
 import { Request, Response, NextFunction } from 'express';
-import { LogAdapter } from '../../logging/LogAdapter';
+import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { Test, TestingModule } from '@nestjs/testing';
 
 // I'm going to be honest, GPT-4-o1 wrote this test and it's giving 100% coverage so... Look at it when you can.

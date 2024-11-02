@@ -157,4 +157,106 @@ An Interceptor ...? TODO
 ## Pipes
 Used for validating and transforming data before passing it to the data's handler.
 
-## Controllers
+### Layered Architecture Explanation
+
+1. **Domain Layer**: 
+   - This is the heart of DDD and contains the domain model, including entities, value objects, aggregates, domain services, and domain events. It's responsible for expressing the business logic.
+   - **Common Directories**: `Entities/`, `ValueObjects/`, `Repositories/`, `DomainServices/`, `Events/`
+
+2. **Application Layer**: 
+   - This layer orchestrates the application's use cases. It does not contain business logic but coordinates operations provided by the domain layer.
+   - **Common Directories**: `DTOs/`, `Services/`, `Commands/`, `Queries/`
+
+3. **Infrastructure Layer**: 
+   - This layer provides technical capabilities necessary for the application and domain layers, such as data persistence, external service integration, and messaging.
+   - **Common Directories**: `Persistence/`, `Messaging/`, `ExternalServices/`, `Configuration/`
+
+4. **Presentation Layer**: 
+   - This is where the application's UI or API is defined. It handles user interactions and routes calls to the application layer.
+   - **Common Directories**: `Controllers/`, `Views/`, `APIs/`, `ViewModels/`
+
+### Mermaid Diagram
+
+```mermaid
+graph TD;
+    A[Presentation Layer] -->|depends on| B[Application Layer]
+    B -->|leads to| C[Domain Layer]
+    B -->|uses| D[Infrastructure Layer]
+    A --> C
+    C -->|defines| E[Entities]
+    C -->|contains| F[ValueObjects]
+    C -->|includes| G[DomainServices]
+    C -->|raises| H[Events]
+    B -->|utilizes| I[DTOs]
+    B -->|orchestrates| J[Commands]
+    B -->|handles| K[Queries]
+    D -->|provides| L[Persistence]
+    D -->|integrates| M[ExternalServices]
+    D -->|supports| N[Messaging]
+    D -->|manages| O[Configuration]
+    A -->|exposes| P[APIs]
+    A -->|renders| Q[Views]
+```
+
+### Documentation & Testing Considerations
+
+- **TSDoc and Code Comments**: For the C# ABP framework, consider using XML comments to document your code, similar to TSDoc in TypeScript, to help generate documentation.
+  
+- **Testing**: 
+  - **Mocking**: Ensure that interfaces within each layer are easily mockable to facilitate unit testing.
+  - **Tools**: Utilize tools such as xUnit or NUnit for unit testing in C#. Implement integration tests to verify interactions across layers.
+
+### Security and Logging
+
+- **Security**: 
+  - Implement security best practices consistent with ABP guidelines, such as use of authorization attributes and strong input validation.
+- **Logging**:
+  - Integrate a robust logging strategy using libraries like Serilog to capture and manage logs efficiently across all layers.
+
+Implementing these architectural principles and practices not only aligns your project with DDD and ABP conventions but also ensures a secure, maintainable, and scalable system.
+
+# File structure
+```plaintext
+src/
+├── application/        # Coordinates use cases of the application without direct business logic.
+│   ├── dtos/           # Data Transfer Objects that define data structures and handle validation.
+│   ├── modules/        # NestJS Modules that handle Denpendency Injection and expose the Controllers.
+│   ├── services/       # Application services orchestrating domain services and repository interactions.
+│   ├── events/         # Application services which emit events triggered by database operations.
+│   └── controllers/    # HTTP request handlers routing requests to application services.
+│
+├── domain/             # Encapsulates core business logic and domain model.
+│   └── entities/       # Business entities representing database objects.
+│
+├── infrastructure/     # Provides technical capabilities to support application and domain layers.
+│   ├── logging/        # The application's logging mechanisms.
+│   ├── database/       # Responsible for the application's database access.
+│   └── configuration/  # Manages application configuration and environment variables.
+|
+├── common/             # Includes cross-cutting concerns and shared utilities.
+│   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
+│   ├── guards/         # Guards to enforce authorization and endpoint protection.
+│   ├── interceptors/   # Interceptors for transforming data or handling response customization.
+│   └── filters/        # Exception filters for consistent error handling across the application.
+│
+└── main.ts             # The application entry point where the NestJS app is bootstrapped.
+```
+
+## Sequence diagram depicting SSE (Server-Sent Events) flow
+```mermaid
+sequenceDiagram
+    Client->>Controller: GET /endpoint/events
+    Controller->>Service: Subscribes to events
+    Service->>Subscriber: observe(): Entity
+    Subscriber->>Database: Listening to insert / update events
+    Subscriber-->>Service: success
+    Service-->>Controller: success
+    Controller-->>Client: SSE Stream Established
+
+    Note over Database: INSERT or UPDATE Entity
+
+    Database-->>Subscriber: Event
+    Subscriber-->>Service: Emits afterInsert / afterUpdate
+    Service-->>Controller: emit(Entity)
+    Controller-->>Client: Push Entity data via SSE
+```

@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TemplateController } from '../../../template/TemplateController';
+import { TemplateController } from '../../../application/controllers/TemplateController';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerModule } from '../../../logging/LoggerModule';
-import { TemplateService } from '../../../template/TemplateService';
-import { CreateTemplateDto } from '../../../template/dto/CreateTemplateDto';
-import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
-import { TemplateEntity } from '../../../template/entity/TemplateEntity';
-import { DatabaseModule } from '../../../database/DatabaseModule';
+import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
+import { TemplateService } from '../../../application/services/TemplateService';
+import { CreateTemplateDto } from '../../../application/dtos/template/CreateTemplateDto';
+import { UpdateTemplateDto } from '../../../application/dtos/template/UpdateTemplateDto';
+import { TemplateEntity } from '../../../domain/entities/TemplateEntity';
+import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
 import { wasLogged } from '../../helpers/wasLogged';
 import { ICrudController } from '../../../abstract/ICrudController';
-import { serverConfig } from '../../../server_config/serverConfig';
+import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 
 // Value to change
 describe('TemplateController Integration', () => {

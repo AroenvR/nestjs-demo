@@ -2,10 +2,10 @@ import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../logging/LogAdapter';
+import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
-import { HttpExceptionMessages } from '../../filters/HttpExceptionMessages';
-import { QueryFailedErrorFilter } from '../../filters/QueryFailedErrorFilter';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
+import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
 
 @Controller('test')
 @UseFilters(QueryFailedErrorFilter)

@@ -1,6 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
-import { LogAdapter } from '../logging/LogAdapter';
+import { LogAdapter } from '../infrastructure/logging/LogAdapter';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
 import { ICrudService } from './ICrudService';
 import { AbstractCrudEntity } from './AbstractCrudEntity';

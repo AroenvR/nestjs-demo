@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './AppModule';
-import { LogAdapter } from './logging/LogAdapter';
+import { AppModule } from './application/modules/AppModule';
+import { LogAdapter } from './infrastructure/logging/LogAdapter';
 import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpErrorFilter } from './filters/HttpErrorFilter';
+import { HttpErrorFilter } from './common/filters/HttpErrorFilter';
 
 async function bootstrap() {
 	// TODO's:

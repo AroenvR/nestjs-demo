@@ -1,7 +1,7 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
 import { AbstractLoggingClass } from './AbstractLoggingClass';
 import { AbstractCrudEntity } from './AbstractCrudEntity';
-import { LogAdapter } from '../logging/LogAdapter';
+import { LogAdapter } from '../infrastructure/logging/LogAdapter';
 import { AbstractCrudService } from './AbstractCrudService';
 
 /**
@@ -24,7 +24,7 @@ export abstract class AbstractCrudSubscriber<Entity extends AbstractCrudEntity>
 	/**
 	 *
 	 */
-	abstract listenTo(): Function | string; // eslint-disable-line
+    abstract listenTo(): Function | string; // eslint-disable-line
 
 	/**
 	 *

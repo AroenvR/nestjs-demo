@@ -1,4 +1,4 @@
-import { TemplateEntity } from '../../../template/entity/TemplateEntity';
+import { TemplateEntity } from '../../../domain/entities/TemplateEntity';
 
 // Value to change
 describe('TemplateEntity', () => {

@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../logging/LogAdapter';
+import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
-import { HttpExceptionMessages } from '../../filters/HttpExceptionMessages';
-import { UnauthorizedExceptionFilter } from '../../filters/UnauthorizedExceptionFilter';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
+import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
 
 @Controller('test')
 @UseFilters(UnauthorizedExceptionFilter)

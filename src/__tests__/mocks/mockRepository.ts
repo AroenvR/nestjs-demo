@@ -1,4 +1,5 @@
 import { AbstractCrudEntity } from 'src/abstract/AbstractCrudEntity';
+import { AbstractEntity } from 'src/domain/entities/AbstractEntity';
 import { Repository } from 'typeorm';
 
 /**
@@ -6,16 +7,15 @@ import { Repository } from 'typeorm';
  * @param entity The entity to be used in the repository.
  * @returns A partial repository with CRUD operations.
  */
-export const mockRepository = <T extends AbstractCrudEntity>(entity: Partial<T>): Partial<Repository<T>> => {
+export const mockRepository = <T extends AbstractEntity>(entity: Partial<T>): Partial<Repository<T>> => {
 	return {
 		find: jest.fn().mockImplementation(() => {
 			return [entity];
 		}),
-		findOneBy: jest.fn().mockImplementation(({ id }) => {
-			if (id === 69) return null;
+		findOneBy: jest.fn().mockImplementation((entity: Partial<AbstractEntity>) => {
+			if (entity.id === 69) return null;
 
-			entity.id = id;
-			return entity;
+			return entity.create(entity);
 		}),
 		delete: jest.fn().mockImplementation((_) => {
 			return undefined;

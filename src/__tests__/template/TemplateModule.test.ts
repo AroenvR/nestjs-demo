@@ -4,11 +4,11 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { wasLogged } from '../helpers/wasLogged';
-import { LoggerModule } from '../../logging/LoggerModule';
-import { DatabaseModule } from '../../database/DatabaseModule';
-import { TemplateModule } from '../../template/TemplateModule';
-import { AuthModule } from '../../auth/AuthModule';
-import { serverConfig } from '../../server_config/serverConfig';
+import { LoggerModule } from '../../infrastructure/logging/LoggerModule';
+import { DatabaseModule } from '../../infrastructure/database/DatabaseModule';
+import { TemplateModule } from '../../application/modules/TemplateModule';
+import { AuthModule } from '../../application/modules/AuthModule';
+import { serverConfig } from '../../infrastructure/configuration/serverConfig';
 import { mockJwt } from '../mocks/mockJwt';
 
 const testName = 'TemplateModule'; // Value to change

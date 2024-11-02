@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from 'typeorm';
-import { TemplateService } from '../../../template/TemplateService';
-import { CreateTemplateDto } from '../../../template/dto/CreateTemplateDto';
-import { UpdateTemplateDto } from '../../../template/dto/UpdateTemplateDto';
-import { TemplateEntity } from '../../../template/entity/TemplateEntity';
+import { TemplateService } from '../../../application/services/TemplateService';
+import { CreateTemplateDto } from '../../../application/dtos/template/CreateTemplateDto';
+import { UpdateTemplateDto } from '../../../application/dtos/template/UpdateTemplateDto';
+import { TemplateEntity } from '../../../domain/entities/TemplateEntity';
 import { mockILogger, mockLogAdapter } from '../../mocks/mockLogAdapter';
-import { LogAdapter } from '../../../logging/LogAdapter';
+import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { mockEntityManager } from '../../mocks/mockEntityManager';
 import { mockRepository } from '../../mocks/mockRepository';
 import { ICrudService } from '../../../abstract/ICrudService';

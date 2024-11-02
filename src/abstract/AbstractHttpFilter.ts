@@ -1,7 +1,7 @@
 import { ArgumentsHost, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { ILogger } from 'ts-log-adapter';
 import { AbstractCrudController } from '../abstract/AbstractCrudController'; // eslint-disable-line
-import { LogAdapter } from '../logging/LogAdapter';
+import { LogAdapter } from '../infrastructure/logging/LogAdapter';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
 
