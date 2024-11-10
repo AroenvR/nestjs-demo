@@ -36,6 +36,7 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			const entity = UserEntity.create(createDto);
+
 			return entityManager.save(entity);
 		});
 
@@ -58,7 +59,7 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 	 *
 	 */
 	public async findOne(id: number) {
-		this.logger.info(`Finding entity with id ${id}`);
+		this.logger.info(`Finding entity by id ${id}`);
 
 		const data = await this.repository.findOneBy({ id });
 
@@ -72,7 +73,7 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 	 *
 	 */
 	public async update(id: number, updateDto: UpdateUserDto) {
-		this.logger.info(`Updating entity with id ${id}`);
+		this.logger.info(`Updating entity by id ${id}`);
 
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			const data = await this.repository.findOneBy({ id });
@@ -91,7 +92,7 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 	 *
 	 */
 	public async remove(id: number) {
-		this.logger.info(`Deleting entity with id ${id}`);
+		this.logger.info(`Deleting entity by id ${id}`);
 
 		const data = await this.repository.findOneBy({ id });
 		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
@@ -111,7 +112,7 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 	 *
 	 */
 	public emit(data: UserEntity) {
-		this.logger.info(`Emitting entity with id: ${data.id}`);
+		this.logger.info(`Emitting entity by id: ${data.id}`);
 
 		const entity = UserEntity.create(data); // Validate the data
 		this.events.next({ data: UserResponseDto.fromEntity(entity) });

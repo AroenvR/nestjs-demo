@@ -16,133 +16,133 @@ import { ISseMessage } from '../../../abstract/ISseMessage';
 
 // Value to change
 describe('UserService Integration', () => {
-    const testName = 'UserService_Integration'; // Value to change
-    process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
+	const testName = 'UserService_Integration'; // Value to change
+	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-    const ID = 1;
-    const USERNAME = 'test';
+	const ID = 1;
+	const USERNAME = 'test';
 
-    let service: IService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
-    let className: string;
+	let service: IService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
+	let className: string;
 
-    beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [
-                ConfigModule.forRoot({
-                    isGlobal: true,
-                    load: [serverConfig],
-                }),
-                LoggerModule,
-                DatabaseModule,
-                TypeOrmModule.forFeature([UserEntity]), // Value to change
-            ],
-            providers: [UserService], // Value to change
-        }).compile();
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [
+				ConfigModule.forRoot({
+					isGlobal: true,
+					load: [serverConfig],
+				}),
+				LoggerModule,
+				DatabaseModule,
+				TypeOrmModule.forFeature([UserEntity]), // Value to change
+			],
+			providers: [UserService], // Value to change
+		}).compile();
 
-        service = module.get<UserService>(UserService); // Value to change
-        className = service.constructor.name;
-    });
+		service = module.get<UserService>(UserService); // Value to change
+		className = service.constructor.name;
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Should be defined', () => {
-        expect(service).toBeDefined();
-    });
+	it('Should be defined', () => {
+		expect(service).toBeDefined();
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can create an entity', async () => {
-        const dto = new CreateUserDto();
-        dto.username = USERNAME;
+	it('Can create an entity', async () => {
+		const dto = new CreateUserDto();
+		dto.username = USERNAME;
 
-        const response = await service.create(dto);
+		const response = await service.create(dto);
 
-        expect(response).toBeInstanceOf(UserResponseDto);
-        expect(response.id).toEqual(ID);
-        expect(response.username).toEqual(USERNAME);
+		expect(response).toBeInstanceOf(UserResponseDto);
+		expect(response.id).toEqual(ID);
+		expect(response.username).toEqual(USERNAME);
 
-        await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
-    });
+		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Finds all entities', async () => {
-        const response = await service.findAll();
+	it('Finds all entities', async () => {
+		const response = await service.findAll();
 
-        expect(response).toBeInstanceOf(Array);
-        expect(response).toContainEqual({ id: ID, username: USERNAME });
+		expect(response).toBeInstanceOf(Array);
+		expect(response).toContainEqual({ id: ID, username: USERNAME });
 
-        for (const entity of response) {
-            expect(entity).toBeInstanceOf(UserResponseDto);
-        }
+		for (const entity of response) {
+			expect(entity).toBeInstanceOf(UserResponseDto);
+		}
 
-        await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
-    });
+		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Finds an entity by its id', async () => {
-        const response = await service.findOne(ID);
+	it('Finds an entity by id', async () => {
+		const response = await service.findOne(ID);
 
-        expect(response).toBeInstanceOf(UserResponseDto);
-        expect(response.id).toEqual(ID);
-        expect(response.username).toEqual(USERNAME);
+		expect(response).toBeInstanceOf(UserResponseDto);
+		expect(response.id).toEqual(ID);
+		expect(response.username).toEqual(USERNAME);
 
-        await expect(wasLogged(testName, `${className}: Finding entity with id ${ID}`)).resolves.toBe(true);
-    });
+		await expect(wasLogged(testName, `${className}: Finding entity by id ${ID}`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Throws when unable to find an entity by its id', async () => {
-        const id = 69;
+	it('Throws when unable to find an entity by id', async () => {
+		const id = 69;
 
-        await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
-        await expect(wasLogged(testName, `${className}: Finding entity with id ${id}`)).resolves.toBe(true);
-    });
+		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
+		await expect(wasLogged(testName, `${className}: Finding entity by id ${id}`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Updates an entity', async () => {
-        const dto = new UpdateUserDto();
-        dto.username = 'updated';
+	it('Updates an entity', async () => {
+		const dto = new UpdateUserDto();
+		dto.username = 'updated';
 
-        const response = await service.update(ID, dto);
+		const response = await service.update(ID, dto);
 
-        expect(response).toBeInstanceOf(UserResponseDto);
-        expect(response.id).toEqual(ID);
-        expect(response.username).toEqual(dto.username);
+		expect(response).toBeInstanceOf(UserResponseDto);
+		expect(response.id).toEqual(ID);
+		expect(response.username).toEqual(dto.username);
 
-        await expect(wasLogged(testName, `${className}: Updating entity with id ${ID}`)).resolves.toBe(true);
-    });
+		await expect(wasLogged(testName, `${className}: Updating entity by id ${ID}`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Deletes an entity', async () => {
-        await expect(service.remove(ID)).resolves.toBeUndefined();
-        await expect(wasLogged(testName, `${className}: Deleting entity with id ${ID}`)).resolves.toBe(true);
-    });
+	it('Deletes an entity', async () => {
+		await expect(service.remove(ID)).resolves.toBeUndefined();
+		await expect(wasLogged(testName, `${className}: Deleting entity by id ${ID}`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can observe events', async () => {
-        const observable = service.observe();
+	it('Can observe events', async () => {
+		const observable = service.observe();
 
-        expect(observable).toBeDefined();
-        expect(observable).toHaveProperty('subscribe');
+		expect(observable).toBeDefined();
+		expect(observable).toHaveProperty('subscribe');
 
-        await expect(wasLogged(testName, `${className}: Observing template events`)).resolves.toBe(true);
-    });
+		await expect(wasLogged(testName, `${className}: Observing template events`)).resolves.toBe(true);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can emit events', async () => {
-        const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
-        const spy = jest.spyOn(events, 'next');
+	it('Can emit events', async () => {
+		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
+		const spy = jest.spyOn(events, 'next');
 
-        const data = UserEntity.create({ id: ID, username: USERNAME });
-        service.emit(data);
+		const data = UserEntity.create({ id: ID, username: USERNAME });
+		service.emit(data);
 
-        expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
-        await expect(wasLogged(testName, `${className}: Emitting entity with id: ${ID}`)).resolves.toBe(true);
-    });
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
+		await expect(wasLogged(testName, `${className}: Emitting entity by id: ${ID}`)).resolves.toBe(true);
+	});
 });

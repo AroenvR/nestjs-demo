@@ -12,3 +12,13 @@ export const mockJwt = jwt.sign(
 	jwtSecret,
 	{ expiresIn: jwtExpiry },
 );
+
+export const expiredJwt = jwt.sign(
+	{
+		sub: 'testUserId',
+		username: 'testUser',
+		version: 1, // Ensure this matches CURRENT_JWT_VERSION
+	},
+	jwtSecret,
+	{ expiresIn: '-1h' },
+);

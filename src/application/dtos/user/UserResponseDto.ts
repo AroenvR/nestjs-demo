@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength } from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { ResponseDto } from '../ResponseDto';
 
@@ -13,9 +13,10 @@ export class UserResponseDto extends ResponseDto {
 	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
 	@IsString({ message: 'value must be a string' })
 	@MinLength(3, { message: 'Username must be at least 3 characters long' })
+	@MaxLength(50, { message: 'Username must be at most 50 characters long' })
 	username: string;
 
-	private constructor(entity: UserEntity) {
+	constructor(entity: UserEntity) {
 		super(entity);
 		this.username = entity.username;
 	}

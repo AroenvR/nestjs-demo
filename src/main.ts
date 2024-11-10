@@ -31,6 +31,9 @@ async function bootstrap() {
         Mermaid document architecture & API data flow
     */
 
+	// !!! IF ANY CHANGES ARE MADE HERE !!!
+	// Please update the createMockAppModule file in the /src/__tests__/mocks/module directory.
+
 	const app = await NestFactory.create(AppModule, {
 		bufferLogs: true,
 	});

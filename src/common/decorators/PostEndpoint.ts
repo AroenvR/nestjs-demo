@@ -1,6 +1,7 @@
 import { applyDecorators, HttpCode, HttpStatus, Post, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
+import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
 
 /**
  * Decorator for POST endpoints that returns a 201 status code
@@ -17,6 +18,7 @@ export function PostEndpoint(entityName: string, entityType: Type<unknown>) {
 			description: `The ${entityName} was successfully created.`,
 			type: entityType,
 		}),
+		ApiResponse({ status: HttpStatus.CONFLICT, description: HttpExceptionMessages.CONFLICT }),
 		DefaultErrorDecorators(),
 	);
 }

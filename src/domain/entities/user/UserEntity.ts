@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { AbstractEntity } from '../AbstractEntity';
 
 /**

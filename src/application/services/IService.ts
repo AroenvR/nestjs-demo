@@ -48,7 +48,7 @@ export interface IService<C extends CreateDto, U extends UpdateDto, R extends Re
 
 	/**
 	 * Allow constrollers to subscribe to database events.
-	 * @returns An Observable that emits ISseMessage objects.
+	 * @returns An Observable that emits ISseMessage objects containing ResponseDto's.
 	 */
 	observe(): Observable<ISseMessage<R>>;
 

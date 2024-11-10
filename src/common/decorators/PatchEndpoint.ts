@@ -15,6 +15,7 @@ export function PatchEndpoint(entityName: string, entityType: Type<unknown>) {
 		ApiOperation({ summary: `Update an existing ${entityName}` }),
 		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
 		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
+		ApiResponse({ status: HttpStatus.CONFLICT, description: HttpExceptionMessages.CONFLICT }),
 		DefaultErrorDecorators(),
 	);
 }

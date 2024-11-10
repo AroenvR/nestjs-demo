@@ -2,12 +2,12 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from '../../common/middleware/LoggerMiddleware';
 import { LoggerModule } from '../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../infrastructure/database/DatabaseModule';
-import { TemplateModule } from './TemplateModule';
 import { AuthModule } from './AuthModule';
 import { ConfigModule } from '@nestjs/config';
 import { serverConfig } from '../../infrastructure/configuration/serverConfig';
+import { UserModule } from './users/UserModule';
 
-const ENDPOINT_MODULES = [AuthModule, TemplateModule];
+const ENDPOINT_MODULES = [AuthModule, UserModule];
 
 @Module({
 	imports: [

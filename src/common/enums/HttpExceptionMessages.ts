@@ -7,4 +7,5 @@ export enum HttpExceptionMessages {
 	NOT_FOUND = 'not_found',
 	NOT_IMPLEMENTED = 'not_implemented',
 	UNAUTHORIZED = 'unauthorized',
+	CONFLICT = 'conflict',
 }

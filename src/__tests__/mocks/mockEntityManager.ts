@@ -1,13 +1,13 @@
-import { EntityManager } from 'typeorm';
+// import { EntityManager } from 'typeorm';
 
-/**
- * Mocks an EntityManager with a save method.
- */
-export const mockEntityManager: Partial<EntityManager> = {
-	save: jest.fn().mockImplementation((entity) => {
-		return entity;
-	}),
-	transaction: jest.fn().mockImplementation((callback) => {
-		return callback(mockEntityManager);
-	}),
-};
+// /**
+//  * Mocks an EntityManager with a save method.
+//  */
+// export const mockEntityManager: Partial<EntityManager> = {
+// 	save: jest.fn().mockImplementation((entity) => {
+// 		return entity;
+// 	}),
+// 	transaction: jest.fn().mockImplementation((callback) => {
+// 		return callback(mockEntityManager);
+// 	}),
+// };

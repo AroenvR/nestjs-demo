@@ -14,6 +14,11 @@ export class QueryFailedErrorFilter extends AbstractHttpFilter {
 	}
 
 	catch(exception: QueryFailedError, host: ArgumentsHost): void {
+		if (exception.message.includes('UNIQUE constraint failed')) {
+			this.status = HttpStatus.CONFLICT;
+			this.message = HttpExceptionMessages.CONFLICT;
+		}
+
 		super.catch(exception, host);
 
 		// @Security - This can log sensitive information (database input parameters)

@@ -1,1 +1,1 @@
-export abstract class AbstractUpdateDto {}
+// export abstract class AbstractUpdateDto {}

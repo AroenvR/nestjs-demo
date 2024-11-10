@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { PrimaryGeneratedColumn } from 'typeorm';
 
 /**
  * This abstract class represents any entity in the database.

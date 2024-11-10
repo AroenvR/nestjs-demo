@@ -1,13 +1,13 @@
 import { ArgumentsHost, ExceptionFilter, HttpStatus } from '@nestjs/common';
-import { ILogger } from 'ts-log-adapter';
-import { AbstractCrudController } from '../abstract/AbstractCrudController'; // eslint-disable-line
-import { LogAdapter } from '../infrastructure/logging/LogAdapter';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
+import { ILogger } from 'ts-log-adapter';
+import { LogAdapter } from '../infrastructure/logging/LogAdapter';
+import { GuardedController } from '../application/controllers/users/UserController'; // es-lint-disable-line
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
- * @devnote When creating a new filter, remember to add it to the necessary controllers (such as the {@link AbstractCrudController})
+ * @devnote When creating a new filter, remember to add it to the necessary controllers (such as the {@link GuardedController})
  * Using the UseFilters decorator.
  */
 export abstract class AbstractHttpFilter implements ExceptionFilter {
