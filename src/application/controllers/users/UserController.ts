@@ -4,7 +4,6 @@ import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
 import { ILogger } from 'ts-log-adapter';
 import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
-import { IService } from '../../../application/services/IService';
 import { CreateDto } from '../../../application/dtos/CreateDto';
 import { UpdateDto } from '../../../application/dtos/UpdateDto';
 import { ResponseDto } from '../../../application/dtos/ResponseDto';
@@ -26,6 +25,7 @@ import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { UserService } from '../../../application/services/user/UserService';
+import { AbstractService } from '../../../application/services/AbstractService';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -51,7 +51,7 @@ export class GuardedController {
 
 	constructor(
 		protected readonly logAdapter: LogAdapter,
-		protected readonly service: IService<CreateDto, UpdateDto, ResponseDto>,
+		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);
 	}

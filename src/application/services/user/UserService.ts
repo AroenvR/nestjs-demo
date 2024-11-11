@@ -1,31 +1,25 @@
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
-import { Subject } from 'rxjs';
-import { ILogger } from 'ts-log-adapter';
 import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { CreateUserDto } from '../../dtos/user/CreateUserDto';
 import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
-import { ISseMessage } from '../../../application/events/ISseMessage';
-import { IService } from '../IService';
+import { AbstractService } from '../AbstractService';
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
  * Extends the {@link AbstractService} class and implements the required CRUD operations.
  */
-export class UserService implements IService<CreateUserDto, UpdateUserDto, UserResponseDto> {
-	protected logger: ILogger;
-	protected readonly _events = new Subject<ISseMessage<UserResponseDto>>();
-
+export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto> {
 	constructor(
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: LogAdapter,
 	) {
-		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
+		super(repository, entityManager, logAdapter);
 	}
 
 	/**
@@ -116,9 +110,5 @@ export class UserService implements IService<CreateUserDto, UpdateUserDto, UserR
 
 		const entity = UserEntity.create(data); // Validate the data
 		this.events.next({ data: UserResponseDto.fromEntity(entity) });
-	}
-
-	public get events() {
-		return this._events;
 	}
 }

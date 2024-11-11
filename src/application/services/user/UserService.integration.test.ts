@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
-import { IService } from '../IService';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
@@ -13,6 +12,7 @@ import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { ISseMessage } from '../../../abstract/ISseMessage';
+import { AbstractService } from '../AbstractService';
 
 // Value to change
 describe('UserService Integration', () => {
@@ -22,7 +22,7 @@ describe('UserService Integration', () => {
 	const ID = 1;
 	const USERNAME = 'test';
 
-	let service: IService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
+	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
 	let className: string;
 
 	beforeAll(async () => {

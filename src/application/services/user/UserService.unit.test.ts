@@ -11,15 +11,15 @@ import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto'
 import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
 import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
-import { IService } from '../IService';
 import { ISseMessage } from '../../../application/events/ISseMessage';
+import { AbstractService } from '../AbstractService';
 
 describe('UserService Unit', () => {
 	const ID = 1;
 	const USERNAME = 'test';
 
 	let entity: UserEntity;
-	let service: IService<CreateUserDto, UpdateUserDto, UserResponseDto>;
+	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 	let className: string;
 
 	beforeEach(async () => {

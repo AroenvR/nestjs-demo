@@ -14,10 +14,7 @@ describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	let app: INestApplication;
-	let entityName: string;
 	let repository: Repository<unknown>;
-
-	let existingEntity: UserEntity; // Value to change
 
 	const ENDPOINT = '/v1/user'; // Value to change
 
@@ -31,9 +28,7 @@ describe(TEST_NAME, () => {
 		dto.username = 'Initial'; // Value to change
 
 		const entity = UserEntity.create(dto); // Value to change
-		existingEntity = await repository.save(entity);
-
-		entityName = entity.constructor.name;
+		await repository.save(entity);
 	});
 
 	afterEach(async () => {
@@ -64,6 +59,9 @@ describe(TEST_NAME, () => {
 
 			await expect(wasLogged(TEST_NAME, `UserController: Creating a new entity`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Creating a new entity`)).resolves.toBe(true);
+
+			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${response.id} was inserted`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${response.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -203,6 +201,9 @@ describe(TEST_NAME, () => {
 
 			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by id ${expected.id}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by id ${expected.id}`)).resolves.toBe(true);
+
+			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${expected.id} was updated`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${expected.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------

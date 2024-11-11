@@ -9,40 +9,39 @@
 //  */
 // @EventSubscriber()
 // export abstract class AbstractCrudSubscriber<Entity extends AbstractCrudEntity>
-// 	extends AbstractLoggingClass
-// 	implements EntitySubscriberInterface<Entity>
-// {
-// 	constructor(
-// 		protected readonly logAdapter: LogAdapter,
-// 		protected readonly datasource: DataSource,
-// 		protected readonly service: AbstractCrudService<Entity, unknown, unknown>,
-// 	) {
-// 		super(logAdapter);
-// 		datasource.subscribers.push(this);
-// 	}
+//     extends AbstractLoggingClass
+//     implements EntitySubscriberInterface<Entity> {
+//     constructor(
+//         protected readonly logAdapter: LogAdapter,
+//         protected readonly datasource: DataSource,
+//         protected readonly service: AbstractCrudService<Entity, unknown, unknown>,
+//     ) {
+//         super(logAdapter);
+//         datasource.subscribers.push(this);
+//     }
 
-// 	/**
-// 	 *
-// 	 */
+//     /**
+//      *
+//      */
 //     abstract listenTo(): Function | string; // eslint-disable-line
 
-// 	/**
-// 	 *
-// 	 */
-// 	afterInsert(event: InsertEvent<Entity>) {
-// 		if (!event) return;
+//     /**
+//      *
+//      */
+//     afterInsert(event: InsertEvent<Entity>) {
+//         if (!event) return;
 
-// 		this.logger.info(`Entity with id ${event.entity.id} was inserted`);
-// 		this.service.emit(event.entity);
-// 	}
+//         this.logger.info(`Entity with id ${event.entity.id} was inserted`);
+//         this.service.emit(event.entity);
+//     }
 
-// 	/**
-// 	 *
-// 	 */
-// 	afterUpdate(event: UpdateEvent<Entity>) {
-// 		if (!event) return;
+//     /**
+//      *
+//      */
+//     afterUpdate(event: UpdateEvent<Entity>) {
+//         if (!event) return;
 
-// 		this.logger.info(`Entity with id ${event.entity.id} was updated`);
-// 		this.service.emit(event.entity as Entity);
-// 	}
+//         this.logger.info(`Entity with id ${event.entity.id} was updated`);
+//         this.service.emit(event.entity as Entity);
+//     }
 // }
