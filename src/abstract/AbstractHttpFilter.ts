@@ -3,7 +3,7 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
 import { ILogger } from 'ts-log-adapter';
 import { LogAdapter } from '../infrastructure/logging/LogAdapter';
-import { GuardedController } from '../application/controllers/users/UserController'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { GuardedController } from '../application/controllers/GuardedController'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.

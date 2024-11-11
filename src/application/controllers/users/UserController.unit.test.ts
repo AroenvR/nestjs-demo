@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GuardedController, UserController } from './UserController';
+import { UserController } from './UserController';
 import { MockService } from '../../../__tests__/mocks/service/MockService';
 import { UserService } from '../../../application/services/user/UserService';
 import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
@@ -8,6 +8,7 @@ import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { GuardedController } from '../GuardedController';
 
 describe('UserController Unit', () => {
 	let className: string;
