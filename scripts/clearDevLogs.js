@@ -14,7 +14,7 @@
                 return;
             }
 
-            let filePrefix = "no_prefix_yet";
+            let filePrefix = "No prefix was found.";
 
             const configDir = path.join(__dirname, "..", "config", "development");
             const configDirExists = fs.existsSync(configDir);
