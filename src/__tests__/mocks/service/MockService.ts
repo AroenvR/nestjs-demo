@@ -2,8 +2,8 @@ import { Observable, of } from 'rxjs';
 import { CreateDto } from '../../../application/dtos/CreateDto';
 import { UpdateDto } from '../../../application/dtos/UpdateDto';
 import { ResponseDto } from '../../../application/dtos/ResponseDto';
-import { ISseMessage } from '../../../abstract/ISseMessage';
 import { AbstractEntity } from '../../../domain/entities/AbstractEntity';
+import { ISseMessage } from '../../../application/events/ISseMessage';
 
 /**
  * Mocks a service with CRUD operations based on the {@link IService} interface.

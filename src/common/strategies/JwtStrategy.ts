@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { CURRENT_JWT_VERSION, TJwtPayload } from '../../application/services/AuthService';
+import { CURRENT_JWT_VERSION, TJwtPayload } from '../../application/services/auth/AuthService';
 import { UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import * as cookie from 'cookie';

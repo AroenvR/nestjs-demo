@@ -11,11 +11,11 @@ import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFil
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../../common/guards/PassportJwtAuthGuard';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { ISseMessage } from '../../abstract/ISseMessage';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
+import { ISseMessage } from '../events/ISseMessage';
 
 /**
  * An abstract controller class that provides basic CRUD operations.

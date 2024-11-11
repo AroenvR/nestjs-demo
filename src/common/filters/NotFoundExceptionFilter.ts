@@ -1,6 +1,6 @@
 import { Catch, HttpStatus, NotFoundException } from '@nestjs/common';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { AbstractHttpFilter } from '../../abstract/AbstractHttpFilter';
+import { AbstractHttpFilter } from './AbstractHttpFilter';
 import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
 
 @Catch(NotFoundException)

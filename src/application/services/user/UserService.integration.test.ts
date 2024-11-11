@@ -11,8 +11,8 @@ import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule'
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { ISseMessage } from '../../../abstract/ISseMessage';
 import { AbstractService } from '../AbstractService';
+import { ISseMessage } from '../../../application/events/ISseMessage';
 
 // Value to change
 describe('UserService Integration', () => {

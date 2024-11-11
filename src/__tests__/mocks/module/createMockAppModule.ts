@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
-import { AuthModule } from '../../../application/modules/AuthModule';
+import { AuthModule } from '../../../application/modules/auth/AuthModule';
 import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { HttpErrorFilter } from '../../../common/filters/HttpErrorFilter';
 
