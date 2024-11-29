@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
@@ -24,7 +24,7 @@ describe('UnauthorizedExceptionFilter', () => {
 			providers: [
 				{
 					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					provide: NestLogger,
 				},
 			],
 		}).compile();

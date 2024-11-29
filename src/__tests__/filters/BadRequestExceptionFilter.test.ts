@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { BadRequestException, Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { BadRequestExceptionFilter } from '../../common/filters/BadRequestExceptionFilter';
@@ -24,7 +24,7 @@ describe('BadRequestExceptionFilter', () => {
 			providers: [
 				{
 					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					provide: NestLogger,
 				},
 			],
 		}).compile();

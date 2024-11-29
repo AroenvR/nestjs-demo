@@ -2,7 +2,7 @@ import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
@@ -25,7 +25,7 @@ describe('QueryFailedErrorFilter', () => {
 			providers: [
 				{
 					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					provide: NestLogger,
 				},
 			],
 		}).compile();

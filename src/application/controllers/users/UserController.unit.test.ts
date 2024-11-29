@@ -3,7 +3,7 @@ import { UserController } from './UserController';
 import { MockService } from '../../../__tests__/mocks/service/MockService';
 import { UserService } from '../../../application/services/user/UserService';
 import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
@@ -34,7 +34,7 @@ describe('UserController Unit', () => {
 					useValue: new MockService(() => expectedResponse),
 				},
 				{
-					provide: LogAdapter,
+					provide: NestLogger,
 					useValue: mockLogAdapter,
 				},
 			],

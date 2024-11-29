@@ -1,7 +1,7 @@
 import { EntityManager, Repository } from 'typeorm';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AbstractEntity } from '../../domain/entities/AbstractEntity';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { CreateDto } from '../dtos/CreateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
 import { UpdateDto } from '../dtos/UpdateDto';
@@ -21,7 +21,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	constructor(
 		protected readonly repository: Repository<unknown>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 	) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 	}

@@ -1,7 +1,7 @@
 import { Controller, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { DeleteEndpoint } from '../../../common/decorators/DeleteEndpoint';
 import { PatchEndpoint } from '../../../common/decorators/PatchEndpoint';
 import { GetByIdEndpoint } from '../../../common/decorators/GetByIdEndpoint';
@@ -21,7 +21,7 @@ const ENDPOINT = 'user'; // Just finished the unit test, on to the integration a
 @ApiTags(ENDPOINT)
 export class UserController extends GuardedController {
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 		protected readonly service: UserService,
 	) {
 		super(logAdapter, service);

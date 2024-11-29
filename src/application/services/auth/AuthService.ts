@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { randomUUID } from 'crypto';
 import { ILogger } from '../../../infrastructure/logging/ILogger';
 
@@ -38,7 +38,7 @@ export class AuthService implements IAuthService {
 	protected readonly logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 		protected readonly jwtService: JwtService,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);

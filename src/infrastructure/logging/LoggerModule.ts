@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { LogAdapter } from './LogAdapter';
+import { NestLogger } from './NestLogger';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CorrelationManager } from './correlation/CorrelationManager';
@@ -10,7 +10,7 @@ import { LoggerFactory } from './factory/LoggerFactory';
 	imports: [ConfigModule],
 	providers: [
 		{
-			provide: LogAdapter,
+			provide: NestLogger,
 			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const correlationManager = new CorrelationManager();
 
@@ -34,11 +34,11 @@ import { LoggerFactory } from './factory/LoggerFactory';
 
 				// Initialize the logger with the retrieved configuration
 				const logger = new LoggerFactory().initialize(loggingConfig, correlationManager);
-				return new LogAdapter(logger);
+				return new NestLogger(logger);
 			},
 			inject: [ConfigService],
 		},
 	],
-	exports: [LogAdapter],
+	exports: [NestLogger],
 })
 export class LoggerModule {}

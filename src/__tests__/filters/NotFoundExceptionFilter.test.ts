@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
 import { NotFoundExceptionFilter } from '../../common/filters/NotFoundExceptionFilter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
@@ -24,7 +24,7 @@ describe('NotFoundExceptionFilter', () => {
 			providers: [
 				{
 					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					provide: NestLogger,
 				},
 			],
 		}).compile();

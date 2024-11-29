@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
 import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
 
@@ -8,7 +8,7 @@ export class HttpErrorFilter extends AbstractHttpFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
 	protected message = HttpExceptionMessages.INTERNAL_SERVER_ERROR;
 
-	constructor(logAdapter: LogAdapter) {
+	constructor(logAdapter: NestLogger) {
 		super(logAdapter);
 	}
 

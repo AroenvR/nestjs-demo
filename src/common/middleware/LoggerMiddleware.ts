@@ -3,11 +3,11 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import { isTruthy } from 'ts-istruthy';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-	constructor(private readonly logger: LogAdapter) {}
+	constructor(private readonly logger: NestLogger) {}
 
 	use(req: Request, res: Response, next: NextFunction) {
 		const startTime = performance.now();

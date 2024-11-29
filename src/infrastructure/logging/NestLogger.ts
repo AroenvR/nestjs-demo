@@ -4,7 +4,7 @@ import { ILogger, TMetadata } from './ILogger';
 /**
  * An adapter for our custom logger.
  */
-export class LogAdapter implements LoggerService {
+export class NestLogger implements LoggerService {
 	private logger: ILogger;
 
 	constructor(logger: ILogger) {

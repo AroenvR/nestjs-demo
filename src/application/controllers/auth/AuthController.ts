@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
 import { HttpExceptionFilter } from '../../../common/filters/HttpExceptionFilter';
 import { UnauthorizedExceptionFilter } from '../../../common/filters/UnauthorizedExceptionFilter';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { AuthService, TSignInData } from '../../services/auth/AuthService';
 import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
 import { PassportJwtAuthGuard } from '../../../common/guards/PassportJwtAuthGuard';
@@ -21,7 +21,7 @@ export class AuthController {
 	private logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 		protected readonly authService: AuthService,
 		protected readonly configService: ConfigService<IServerConfig>,
 	) {

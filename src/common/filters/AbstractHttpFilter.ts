@@ -1,7 +1,7 @@
 import { ArgumentsHost, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { GuardedController } from '../../application/controllers/GuardedController'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ILogger } from '../../infrastructure/logging/ILogger';
 
@@ -18,7 +18,7 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
 	protected message = 'internal_server_error';
 
-	constructor(private readonly logAdapter: LogAdapter) {
+	constructor(private readonly logAdapter: NestLogger) {
 		const name = this.constructor.name;
 		this.logger = this.logAdapter.getPrefixedLogger(name);
 	}

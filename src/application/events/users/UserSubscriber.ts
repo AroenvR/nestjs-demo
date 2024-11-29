@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { Inject } from '@nestjs/common';
 import { AbstractSubscriber } from '../AbstractSubscriber';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { UserService } from '../../services/user/UserService';
 
 /**
@@ -11,7 +11,7 @@ import { UserService } from '../../services/user/UserService';
  */
 export class UserSubscriber extends AbstractSubscriber<UserEntity> {
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 		protected readonly dataSource: DataSource,
 		@Inject(UserService) protected readonly service: UserService,
 	) {

@@ -1,9 +1,9 @@
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 
 describe('LogAdapter', () => {
 	let mockILogger: jest.Mocked<ILogger>;
-	let logAdapter: LogAdapter;
+	let logAdapter: NestLogger;
 
 	beforeEach(() => {
 		mockILogger = {
@@ -37,7 +37,7 @@ describe('LogAdapter', () => {
 			critical: jest.fn(),
 		};
 
-		logAdapter = new LogAdapter(mockILogger);
+		logAdapter = new NestLogger(mockILogger);
 	});
 
 	// --------------------------------------------------

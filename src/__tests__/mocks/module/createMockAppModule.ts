@@ -5,7 +5,7 @@ import { serverConfig } from '../../../infrastructure/configuration/serverConfig
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
 import { AuthModule } from '../../../application/modules/auth/AuthModule';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { HttpErrorFilter } from '../../../common/filters/HttpErrorFilter';
 
 /**
@@ -29,7 +29,7 @@ export const createMockAppModule = async (module: Type<any>) => {
 
 	const app = moduleFixture.createNestApplication({ bufferLogs: true });
 
-	const logger = app.get(LogAdapter); // Retrieve the custom logger from Nest's DI container
+	const logger = app.get(NestLogger); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
 
 	// Apply global filters to ensure we catch any uncaught errors.

@@ -1,6 +1,6 @@
 import { LoggerMiddleware } from '../../common/middleware/LoggerMiddleware';
 import { Request, Response, NextFunction } from 'express';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { Test, TestingModule } from '@nestjs/testing';
 
 // I'm going to be honest, GPT-4-o1 wrote this test and it's giving 100% coverage so... Look at it when you can.
@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 describe('LoggerMiddleware', () => {
 	let middleware: LoggerMiddleware;
-	let logger: LogAdapter;
+	let logger: NestLogger;
 
 	beforeEach(async () => {
 		const mockLogAdapter = {
@@ -26,11 +26,11 @@ describe('LoggerMiddleware', () => {
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LoggerMiddleware, { provide: LogAdapter, useValue: mockLogAdapter }],
+			providers: [LoggerMiddleware, { provide: NestLogger, useValue: mockLogAdapter }],
 		}).compile();
 
 		middleware = module.get<LoggerMiddleware>(LoggerMiddleware);
-		logger = module.get<LogAdapter>(LogAdapter);
+		logger = module.get<NestLogger>(NestLogger);
 	});
 
 	// --------------------------------------------------

@@ -1,5 +1,5 @@
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 
 /**
  * A mocked ILogger object.
@@ -35,4 +35,4 @@ export const mockILogger: jest.Mocked<ILogger> = {
 	critical: jest.fn(),
 };
 
-export const mockLogAdapter = new LogAdapter(mockILogger);
+export const mockLogAdapter = new NestLogger(mockILogger);

@@ -9,7 +9,7 @@ import { NotImplementedExceptionFilter } from '../../common/filters/NotImplement
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../../common/guards/PassportJwtAuthGuard';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
@@ -40,7 +40,7 @@ export class GuardedController {
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NestLogger,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);
