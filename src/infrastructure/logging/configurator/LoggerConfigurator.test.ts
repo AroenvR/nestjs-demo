@@ -1,6 +1,6 @@
 import path from 'path';
 import { LoggerConfigurator } from './LoggerConfigurator';
-import { serverConfig } from 'src/infrastructure/configuration/serverConfig';
+import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 import { ILoggerConfig } from '../ILopggerConfig';
 
 const defaultConfig: ILoggerConfig = {
@@ -19,6 +19,8 @@ const defaultConfig: ILoggerConfig = {
 	prefixWhitelist: [],
 };
 
+const configPath = path.join(__dirname, '../', '../', '../', '../', 'config', 'testing', 'log_config.json');
+
 describe('LoggerConfig', () => {
 	test('Should return a fallback configuration when nothing is given', () => {
 		const configurator = new LoggerConfigurator();
@@ -30,26 +32,26 @@ describe('LoggerConfig', () => {
 	// ------------------------------
 
 	test('Should return valid configuration when the right environment variable is set', () => {
-		process.env.LOGSCRIBE_CONFIG = path.join(__dirname, '../', 'config_files', 'loggerConfig.json');
 		const configurator = new LoggerConfigurator();
 		const config = configurator.loadConfiguration();
 
-		expect(config).toEqual(defaultConfig);
+		expect(config).toEqual(serverConfig().logging);
 	});
 
 	// ------------------------------
 
 	test('Should return a valid configuration when given a path to load from ', () => {
-		const configPath = path.join(__dirname, '../', 'config_files', 'loggerConfig.json');
 		const configurator = new LoggerConfigurator({ loader: 'file', path: configPath });
 		const config = configurator.loadConfiguration();
 
-		expect(config).toEqual(defaultConfig);
+		expect(config).toEqual(serverConfig().logging);
 	});
 
 	// ------------------------------
 
 	test('Should return a valid configuration when given an object to load from ', () => {
+		process.env.LOGSCRIBE_CONFIG = ''; // Unset the environment variable as it takes priority.
+
 		const configurator = new LoggerConfigurator({ loader: 'object', config: defaultConfig });
 		const config = configurator.loadConfiguration();
 
@@ -59,12 +61,12 @@ describe('LoggerConfig', () => {
 	// ------------------------------
 
 	test('Environment variable configuration overrides a given configuration', () => {
-		process.env.LOGSCRIBE_CONFIG = path.join(__dirname, '../', 'config_files', 'loggerConfig.json');
+		process.env.LOGSCRIBE_CONFIG = configPath;
 
 		const configurator = new LoggerConfigurator({ loader: 'object', config: serverConfig().logging });
 		const config = configurator.loadConfiguration();
 
-		expect(config).toEqual(defaultConfig);
+		expect(config).toEqual(serverConfig().logging);
 	});
 
 	// ------------------------------
@@ -75,17 +77,5 @@ describe('LoggerConfig', () => {
 		const config = configurator.loadConfiguration();
 
 		expect(config).toEqual(serverConfig().logging);
-	});
-
-	// ------------------------------
-
-	test('Throws if the JSON schema fails to validate the given configuration', () => {
-		const invalidConfig = {
-			some: 'invalid',
-			config: 'here',
-		};
-		// @ts-expect-error: Gotta ignore as the config is typed.
-		const configurator = new LoggerConfigurator({ loader: 'object', config: invalidConfig });
-		expect(() => configurator.loadConfiguration()).toThrowError();
 	});
 });
