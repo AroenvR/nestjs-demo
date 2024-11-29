@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { randomUUID } from 'crypto';
-import { ILogger } from 'ts-log-adapter';
+import { ILogger } from '../../../infrastructure/logging/ILogger';
 
 export const CURRENT_JWT_VERSION = 1;
 

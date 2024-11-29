@@ -1,4 +1,4 @@
-import { ILogger } from 'ts-log-adapter';
+import { ILogger } from '../../infrastructure/logging/ILogger';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 
 /**

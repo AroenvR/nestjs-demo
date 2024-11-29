@@ -2,7 +2,6 @@ import { BadRequestException, Body, Param, ParseIntPipe, UseFilters, UseGuards }
 import { Observable } from 'rxjs';
 import { ApiSecurity } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { ILogger } from 'ts-log-adapter';
 import { BadRequestExceptionFilter } from '../../common/filters/BadRequestExceptionFilter';
 import { HttpExceptionFilter } from '../../common/filters/HttpExceptionFilter';
 import { NotFoundExceptionFilter } from '../../common/filters/NotFoundExceptionFilter';
@@ -16,6 +15,7 @@ import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
 import { ISseMessage } from '../events/ISseMessage';
+import { ILogger } from '../../infrastructure/logging/ILogger';
 
 /**
  * An abstract controller class that provides basic CRUD operations.

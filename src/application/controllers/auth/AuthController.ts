@@ -2,7 +2,6 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, Res, UseFil
 import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ILogger } from 'ts-log-adapter';
 import { IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
 import { HttpExceptionFilter } from '../../../common/filters/HttpExceptionFilter';
 import { UnauthorizedExceptionFilter } from '../../../common/filters/UnauthorizedExceptionFilter';
@@ -10,6 +9,7 @@ import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { AuthService, TSignInData } from '../../services/auth/AuthService';
 import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
 import { PassportJwtAuthGuard } from '../../../common/guards/PassportJwtAuthGuard';
+import { ILogger } from '../../../infrastructure/logging/ILogger';
 
 /**
  * A controller class that provides authentication endpoints.

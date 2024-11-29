@@ -1,11 +1,11 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
-import { ILogger } from 'ts-log-adapter';
 import { AbstractEntity } from '../../domain/entities/AbstractEntity';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
+import { ILogger } from '../../infrastructure/logging/ILogger';
 
 /**
  * An abstract class to Subscribe to, and publish, events from the database's INSERT and UPDATE actions.
@@ -26,7 +26,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	/**
 	 * An abstract method to listens to the entity's database events.
 	 */
-	abstract listenTo(): Function | string; // eslint-disable-line
+    abstract listenTo(): Function | string; // eslint-disable-line
 
 	/**
 	 * After an entity is inserted into the database, the service's emit method is called.

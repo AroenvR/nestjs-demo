@@ -1,6 +1,5 @@
 import { EntityManager, Repository } from 'typeorm';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { ILogger } from 'ts-log-adapter';
 import { AbstractEntity } from '../../domain/entities/AbstractEntity';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { CreateDto } from '../dtos/CreateDto';
@@ -8,6 +7,7 @@ import { ResponseDto } from '../dtos/ResponseDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { Observable, Subject } from 'rxjs';
 import { ISseMessage } from '../events/ISseMessage';
+import { ILogger } from '../../infrastructure/logging/ILogger';
 
 /**
  * An abstract service class that enforces basic CRUD operations.

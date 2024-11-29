@@ -1,9 +1,8 @@
 import { LoggerService } from '@nestjs/common';
-import { ILogger } from 'ts-log-adapter';
-import { TMetadata } from 'ts-log-adapter/dist/ILogger';
+import { ILogger, TMetadata } from './ILogger';
 
 /**
- * An adapter for the ts-log-adapter library.
+ * An adapter for our custom logger.
  */
 export class LogAdapter implements LoggerService {
 	private logger: ILogger;

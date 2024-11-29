@@ -1,5 +1,5 @@
+import { ILogger } from '../../infrastructure/logging/ILogger';
 import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { ILogger } from 'ts-log-adapter';
 
 describe('LogAdapter', () => {
 	let mockILogger: jest.Mocked<ILogger>;

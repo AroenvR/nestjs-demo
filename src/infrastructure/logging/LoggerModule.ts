@@ -1,8 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { LogAdapter } from './LogAdapter';
-import { CorrelationManager, LoggerFactory } from 'ts-log-adapter';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CorrelationManager } from './correlation/CorrelationManager';
+import { LoggerFactory } from './factory/LoggerFactory';
 
 @Global()
 @Module({

@@ -10,6 +10,11 @@ const loggerFileConfigSchema = Joi.object({
 		then: Joi.string().required(),
 		otherwise: Joi.forbidden(),
 	}),
+	style: Joi.when('enabled', {
+		is: true,
+		then: Joi.string().required().valid('json', 'text'),
+		otherwise: Joi.forbidden(),
+	}),
 	name: Joi.when('enabled', {
 		is: true,
 		then: Joi.string().required(),
