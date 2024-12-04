@@ -1,14 +1,14 @@
 import { Catch, BadRequestException, HttpStatus } from '@nestjs/common';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
 import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Catch(BadRequestException)
 export class BadRequestExceptionFilter extends AbstractHttpFilter {
 	protected status = HttpStatus.BAD_REQUEST;
 	protected message = HttpExceptionMessages.BAD_REQUEST;
 
-	constructor(logAdapter: NestLogger) {
+	constructor(logAdapter: NewWinstonAdapter) {
 		super(logAdapter);
 	}
 }

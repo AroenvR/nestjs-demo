@@ -2,23 +2,28 @@ import path from 'path';
 import winston from 'winston';
 import { createLogger, format, Logger, transports } from 'winston';
 import { TransformableInfo } from 'logform';
-import { LoggerService } from '@nestjs/common';
 import { ILoggerConfig } from '../ILoggerConfig';
+import { ICorrelationManager } from '../correlation/ICorrelationManager';
+import { ILogger, IPrefixedLogger, TLogMetadata } from '../ILogger';
 
 /**
  * A custom adapter for integrating Winston with NestJS.
  * This adapter supports logging to console, file, and HTTP transports,
  * with custom log levels and flexible formatting.
- * @implements The {@link LoggerService} interface from NestJS.
+ * @implements The {@link ILogger} interface.
  */
-export class NewWinstonAdapter implements LoggerService {
-    private readonly logger: Logger;
+export class NewWinstonAdapter implements IPrefixedLogger {
+    private readonly winston: Logger;
 
-    constructor(private readonly config: ILoggerConfig) {
+    constructor(
+        protected readonly config: ILoggerConfig,
+        public readonly correlationManager: ICorrelationManager,
+    ) {
         const winstonTransports: winston.transport[] = [];
         if (config.console) winstonTransports.push(this.configuredConsoleTransport());
         if (config.file.enabled) winstonTransports.push(this.configuredFileTransport());
         if (config.http.enabled) winstonTransports.push(this.configuredHttpTransport());
+        if (winstonTransports.length === 0) throw new Error(`${this.name}: No logging transports enabled.`);
 
         const customLevels = {
             critical: 0,
@@ -31,40 +36,64 @@ export class NewWinstonAdapter implements LoggerService {
         };
 
         // Create the Winston Logger
-        this.logger = createLogger({
+        this.winston = createLogger({
             levels: customLevels,
-            level: config.level || 'info', // Default log level
+            level: config.level || 'info', // Fallback log level
             transports: winstonTransports,
         });
     }
 
-    public verbose(message: string, context?: string) {
-        this.logger.verbose(message, { context });
+    public verbose(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.verbose(message, { context, metadata });
     }
 
-    public debug(message: string, context?: string) {
-        this.logger.debug(message, { context });
+    public debug(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.debug(message, { context, metadata });
     }
 
-    public info(message: string, context?: string) {
-        this.logger.info(message, { context });
+    public info(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.info(message, { context, metadata });
     }
 
-    public log(message: string, context?: string) {
-        this.logger.log('normal', message, { context });
+    public log(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.log('normal', message, { context, metadata });
     }
 
-    public warn(message: string, context?: string) {
-        this.logger.warn(message, { context });
+    public warn(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.warn(message, { context, metadata });
     }
 
-    public error(message: string, context?: string, error?: Error) {
-        // if (context instanceof Error) this.logger.error(message, { context: context.stack });
-        this.logger.error(message, { context, error });
+    public error(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.error(message, { context, metadata });
     }
 
-    public critical(message: string, context?: string) {
-        this.logger.log('critical', message, { context });
+    public fatal(context: string, message: string, metadata?: TLogMetadata) {
+        this.critical('critical', message, { context, metadata });
+    }
+
+    public critical(context: string, message: string, metadata?: TLogMetadata) {
+        this.winston.log('critical', message, { context, metadata });
+    }
+
+    /**
+     *
+     * @param context
+     * @returns
+     */
+    public getPrefixedLogger(context: string): ILogger {
+        const prefixedLogger: ILogger = {
+            // config: this.config,
+            correlationManager: this.correlationManager,
+            verbose: (message: string, metadata?: TLogMetadata) => this.verbose(context, message, metadata),
+            debug: (message: string, metadata?: TLogMetadata) => this.debug(context, message, metadata),
+            info: (message: string, metadata?: TLogMetadata) => this.info(context, message, metadata),
+            log: (message: string, metadata?: TLogMetadata) => this.log(context, message, metadata),
+            warn: (message: string, metadata?: TLogMetadata) => this.warn(context, message, metadata),
+            error: (message: string, metadata?: TLogMetadata) => this.error(context, message, metadata),
+            critical: (message: string, metadata?: TLogMetadata) => this.log(context, message, metadata),
+        };
+
+        return prefixedLogger;
     }
 
     /**
@@ -75,10 +104,7 @@ export class NewWinstonAdapter implements LoggerService {
         if (!this.config.console) return;
 
         return new transports.Console({
-            format: format.combine(
-                format.timestamp(),
-                format.printf(this.formatTextMessage),
-            ),
+            format: format.combine(format.timestamp(), format.printf(this.formatTextMessage)),
         });
     }
 
@@ -89,11 +115,8 @@ export class NewWinstonAdapter implements LoggerService {
     private configuredFileTransport() {
         if (!this.config.file.enabled) return;
 
-        const jsonFormat = format.combine(format.timestamp(), format.json());
-        const textFormat = format.combine(
-            format.timestamp(),
-            format.printf(this.formatTextMessage),
-        );
+        const jsonFormat = format.combine(format.timestamp(), format.printf(this.formatJsonMessage));
+        const textFormat = format.combine(format.timestamp(), format.printf(this.formatTextMessage));
 
         const fullFilePath = path.join(this.config.file.path, this.config.file.name);
 
@@ -109,7 +132,7 @@ export class NewWinstonAdapter implements LoggerService {
         if (!this.config.http.enabled) return;
 
         return new transports.Http({
-            format: format.combine(format.timestamp(), format.json()),
+            format: format.combine(format.timestamp(), format.printf(this.formatJsonMessage)),
             host: this.config.http.host,
             path: this.config.http.path,
             ssl: true,
@@ -124,10 +147,49 @@ export class NewWinstonAdapter implements LoggerService {
      * @param info - The log message information.
      * @returns The formatted text log message.
      */
-    private formatTextMessage(info: TransformableInfo) { // TODO: Correlation ID
-        if (info.level === "normal") info.level = "log";
-        if (info.error && info.error instanceof Error) info.error = `\n${info.error.stack}`;
+    private formatTextMessage(info: TransformableInfo) {
+        if (info.level === 'normal') info.level = 'log';
 
-        return `${info.timestamp} ${undefined} ${info.level.toUpperCase()} - ${info.context ? `${info.context}` : ''}: ${info.message} ${info.error ? info.error : ''}`;
+        if (info.metadata && info.metadata instanceof Error) info.metadata = `\n${info.metadata.stack}`;
+        else if (info.metadata && typeof info.metadata === 'object') info.metadata = JSON.stringify(info.metadata);
+
+        let message = info.timestamp + ' ';
+        message += this.correlationManager?.getCorrelationId() + ' ';
+        message += info.level.toUpperCase() + ' - ';
+        message += info.context ? `${info.context}: ` : '';
+        message += info.message + ' ';
+        message += info.metadata ? info.metadata : '';
+
+        return message;
+    }
+
+    /**
+     * Formats JSON-based log messages using the
+     * [Serilog Compact Formatting](https://github.com/serilog/serilog-formatting-compact).
+     * @param info - The log message information.
+     * @returns The formatted JSON log message.
+     */
+    private formatJsonMessage(info: TransformableInfo) {
+        if (info.level === 'normal') info.level = 'log';
+
+        if (info.metadata && info.metadata instanceof Error) info.error = `\n${info.metadata.stack}`;
+        else if (info.metadata && typeof info.metadata === 'object') info.metadata = JSON.stringify(info.metadata);
+
+        const obj = {
+            '@t': info.timestamp,
+            '@l': info.level.toUpperCase(),
+            '@cid': this.correlationManager?.getCorrelationId() || '',
+            '@c': info.context ? info.context : '',
+            '@m': info.message,
+            '@x': info.error ? info.error : '',
+            '@md': info.metadata ? info.metadata : '',
+        };
+        return JSON.stringify(obj);
+    }
+
+    /* Getters & Setters */
+
+    public get name(): string {
+        return this.constructor.name;
     }
 }

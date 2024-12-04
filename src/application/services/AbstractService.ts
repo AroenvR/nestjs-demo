@@ -1,13 +1,13 @@
 import { EntityManager, Repository } from 'typeorm';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AbstractEntity } from '../../domain/entities/AbstractEntity';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { CreateDto } from '../dtos/CreateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { Observable, Subject } from 'rxjs';
 import { ISseMessage } from '../events/ISseMessage';
 import { ILogger } from '../../infrastructure/logging/ILogger';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * An abstract service class that enforces basic CRUD operations.
@@ -21,7 +21,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	constructor(
 		protected readonly repository: Repository<unknown>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: NestLogger,
+		protected readonly logAdapter: NewWinstonAdapter,
 	) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 	}

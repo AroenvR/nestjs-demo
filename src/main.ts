@@ -2,10 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './application/modules/AppModule';
-import { NestLogger } from './infrastructure/logging/NestLogger';
 import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpErrorFilter } from './common/filters/HttpErrorFilter';
+import { NewWinstonAdapter } from './infrastructure/logging/adapters/NewWinstonAdapter';
 
 async function bootstrap() {
 	// TODO's:
@@ -38,7 +38,8 @@ async function bootstrap() {
 		bufferLogs: true,
 	});
 
-	const logger = app.get(NestLogger); // Retrieve the custom logger from Nest's DI container
+	// const logger = app.get(NestLogger); // Retrieve the custom logger from Nest's DI container
+	const logger = app.get(NewWinstonAdapter); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
 
 	// Apply global filters to ensure we catch any uncaught errors.

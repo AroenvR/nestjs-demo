@@ -1,16 +1,15 @@
 import { Global, Module } from '@nestjs/common';
-import { NestLogger } from './NestLogger';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CorrelationManager } from './correlation/CorrelationManager';
-import { LoggerFactory } from './factory/LoggerFactory';
+import { NewWinstonAdapter } from './adapters/NewWinstonAdapter';
 
 @Global()
 @Module({
 	imports: [ConfigModule],
 	providers: [
 		{
-			provide: NestLogger,
+			provide: NewWinstonAdapter,
 			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const correlationManager = new CorrelationManager();
 
@@ -32,13 +31,16 @@ import { LoggerFactory } from './factory/LoggerFactory';
 						loggingConfig.file.name === 'TEST_NAME.test.log' ? `${process.env.TEST_NAME}.test.log` : loggingConfig.file.name;
 				}
 
-				// Initialize the logger with the retrieved configuration
-				const logger = new LoggerFactory().initialize(loggingConfig, correlationManager);
-				return new NestLogger(logger);
+				switch (loggingConfig.driver) {
+					case 'winston':
+						return new NewWinstonAdapter(loggingConfig, correlationManager);
+					default:
+						throw new Error('Unsupported logging driver selected.');
+				}
 			},
 			inject: [ConfigService],
 		},
 	],
-	exports: [NestLogger],
+	exports: [NewWinstonAdapter],
 })
 export class LoggerModule {}

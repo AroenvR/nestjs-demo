@@ -6,7 +6,7 @@ import { ILoggerConfig } from '../logging/ILoggerConfig';
  * @property secure_cookie - A boolean flag indicating whether cookies are allowed over HTTP.
  */
 type TSecurityConfig = {
-    secure_cookie: boolean;
+	secure_cookie: boolean;
 };
 
 /**
@@ -15,7 +15,7 @@ type TSecurityConfig = {
  * @property database - The server's {@link TDatabaseConfig} settings.
  */
 export interface IServerConfig {
-    security: TSecurityConfig;
-    logging: ILoggerConfig;
-    database: TDatabaseConfig;
+	security: TSecurityConfig;
+	logging: ILoggerConfig;
+	database: TDatabaseConfig;
 }

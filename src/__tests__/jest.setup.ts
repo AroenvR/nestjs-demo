@@ -9,13 +9,13 @@ if (!envFileExists) throw new Error(`Test environment file not found: ${testEnvP
 else dotenv.config({ path: '.env.test' });
 
 beforeAll(async () => {
-    const testLogPath = path.join(__dirname, '..', '..', 'logs', `${process.env.TEST_NAME}.test.log`);
-    if (await fs.exists(testLogPath)) await fs.unlink(testLogPath);
+	const testLogPath = path.join(__dirname, '..', '..', 'logs', `${process.env.TEST_NAME}.test.log`);
+	if (await fs.exists(testLogPath)) await fs.unlink(testLogPath);
 });
 
 afterAll(() => {
-    jest.clearAllTimers();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+	jest.clearAllTimers();
+	jest.resetAllMocks();
+	jest.restoreAllMocks();
+	jest.clearAllMocks();
 });

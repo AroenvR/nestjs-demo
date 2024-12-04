@@ -1,38 +1,24 @@
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
+import { serverConfig } from '../../infrastructure/configuration/serverConfig';
+import { CorrelationManager } from '../../infrastructure/logging/correlation/CorrelationManager';
+
 
 /**
  * A mocked ILogger object.
  */
 export const mockILogger: jest.Mocked<ILogger> = {
-	config: {
-		appName: 'API_TEST',
-		driver: 'winston',
-		enableCorrelation: true,
-		level: 'verbose',
-		console: false,
-		file: {
-			enabled: true,
-			path: 'logs',
-			name: 'LogAdapter.test.log',
-		},
-		http: {
-			enabled: false,
-		},
-		useWhitelist: false,
-		prefixWhitelist: [],
-	},
-	correlationManager: {
-		getCorrelationId: jest.fn(),
-		runWithCorrelationId: jest.fn(),
-	},
-	verbose: jest.fn(),
-	debug: jest.fn(),
-	info: jest.fn(),
-	log: jest.fn(),
-	warn: jest.fn(),
-	error: jest.fn(),
-	critical: jest.fn(),
-};
+    verbose: jest.fn(),
+    debug: jest.fn(),
+    info: jest.fn(),
+    log: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    fatal: jest.fn(),
+    critical: jest.fn(),
+    config: {} as any, // Mock necessary config
+    correlationManager: {} as any, // Mock correlation manager
+    getPrefixedLogger: jest.fn().mockReturnThis(),
+} as any;
 
-export const mockLogAdapter = new NestLogger(mockILogger);
+export const mockLogAdapter = new NewWinstonAdapter(serverConfig().logging, new CorrelationManager());

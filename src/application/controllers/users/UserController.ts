@@ -1,7 +1,6 @@
 import { Controller, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { DeleteEndpoint } from '../../../common/decorators/DeleteEndpoint';
 import { PatchEndpoint } from '../../../common/decorators/PatchEndpoint';
 import { GetByIdEndpoint } from '../../../common/decorators/GetByIdEndpoint';
@@ -13,6 +12,7 @@ import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { UserService } from '../../../application/services/user/UserService';
 import { GuardedController } from '../GuardedController';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 const ENDPOINT = 'user'; // Just finished the unit test, on to the integration and the module tests.
 
@@ -21,7 +21,7 @@ const ENDPOINT = 'user'; // Just finished the unit test, on to the integration a
 @ApiTags(ENDPOINT)
 export class UserController extends GuardedController {
 	constructor(
-		protected readonly logAdapter: NestLogger,
+		protected readonly logAdapter: NewWinstonAdapter,
 		protected readonly service: UserService,
 	) {
 		super(logAdapter, service);

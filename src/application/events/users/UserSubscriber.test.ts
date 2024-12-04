@@ -1,12 +1,12 @@
 import { DataSource, InsertEvent, UpdateEvent } from 'typeorm';
 import { UserSubscriber } from './UserSubscriber';
-import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { UserService } from '../../../application/services/user/UserService';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 describe('UserSubscriber', () => {
 	let userSubscriber: UserSubscriber;
-	let logAdapter: NestLogger;
+	let logAdapter: NewWinstonAdapter;
 	let dataSource: DataSource;
 	let userService: UserService;
 
@@ -16,7 +16,7 @@ describe('UserSubscriber', () => {
 			getPrefixedLogger: jest.fn().mockReturnValue({
 				info: jest.fn(),
 			}),
-		} as unknown as NestLogger;
+		} as unknown as NewWinstonAdapter;
 
 		dataSource = {
 			subscribers: [],

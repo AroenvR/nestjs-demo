@@ -15,15 +15,15 @@ type TLogDrivers = 'winston';
  * @devnote If the file logger is enabled, the path and name properties are required.
  */
 type TLoggerFileConfig =
-    | {
-        enabled: false;
-    }
-    | {
-        enabled: true;
-        path?: string;
-        style?: 'json' | 'text';
-        name?: string;
-    };
+	| {
+			enabled: false;
+	  }
+	| {
+			enabled: true;
+			path?: string;
+			style?: 'json' | 'text';
+			name?: string;
+	  };
 
 /**
  * The configuration settings for the HTTP logger.
@@ -34,15 +34,15 @@ type TLoggerFileConfig =
  * @devnote If the HTTP logger is enabled, the host, path, and token properties are required.
  */
 type TLoggerHTTPConfig =
-    | {
-        enabled: false;
-    }
-    | {
-        enabled: true;
-        host: string;
-        path: string;
-        token: string;
-    };
+	| {
+			enabled: false;
+	  }
+	| {
+			enabled: true;
+			host: string;
+			path: string;
+			token: string;
+	  };
 
 /**
  * The logging levels supported by the application.
@@ -59,15 +59,15 @@ export type TLogLevels = 'verbose' | 'debug' | 'info' | 'log' | 'warn' | 'error'
  * @property filePath The file path for the log file.
  */
 export interface ILoggerConfig {
-    appName: string;
-    driver: TLogDrivers;
-    enableCorrelation: boolean;
-    level: TLogLevels;
-    console: boolean;
-    file: TLoggerFileConfig;
-    http: TLoggerHTTPConfig;
-    useWhitelist: boolean;
-    prefixWhitelist: string[];
+	appName: string;
+	driver: TLogDrivers;
+	enableCorrelation: boolean;
+	level: TLogLevels;
+	console: boolean;
+	file: TLoggerFileConfig;
+	http: TLoggerHTTPConfig;
+	useWhitelist: boolean;
+	prefixWhitelist: string[];
 }
 
 /**
@@ -80,12 +80,12 @@ export interface ILoggerConfig {
  * If the loader is set to 'object', the config property is required.
  */
 export type TLoggerLoadOptions =
-    | {
-        loader: 'file';
-        path: string;
-    }
-    | {
-        loader: 'object';
-        config: ILoggerConfig;
-    };
-export { };
+	| {
+			loader: 'file';
+			path: string;
+	  }
+	| {
+			loader: 'object';
+			config: ILoggerConfig;
+	  };
+export {};

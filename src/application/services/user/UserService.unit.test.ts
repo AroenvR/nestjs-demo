@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Subject } from 'rxjs';
 import { UserService } from './UserService';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
-import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
@@ -13,6 +12,7 @@ import { MockRepository } from '../../../__tests__/mocks/repository/MockReposito
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 describe('UserService Unit', () => {
 	const ID = 1;
@@ -30,7 +30,7 @@ describe('UserService Unit', () => {
 				UserService,
 				{
 					useValue: mockLogAdapter,
-					provide: NestLogger,
+					provide: NewWinstonAdapter,
 				},
 				{
 					provide: getRepositoryToken(UserEntity),

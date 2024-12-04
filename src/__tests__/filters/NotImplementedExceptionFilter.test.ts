@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, NotImplementedException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { NotImplementedExceptionFilter } from '../../common/filters/NotImplementedExceptionFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(NotImplementedExceptionFilter)
@@ -23,8 +23,8 @@ describe('NotImplementedExceptionFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: NestLogger,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();

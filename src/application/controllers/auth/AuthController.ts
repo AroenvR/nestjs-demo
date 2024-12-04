@@ -5,11 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
 import { HttpExceptionFilter } from '../../../common/filters/HttpExceptionFilter';
 import { UnauthorizedExceptionFilter } from '../../../common/filters/UnauthorizedExceptionFilter';
-import { NestLogger } from '../../../infrastructure/logging/NestLogger';
 import { AuthService, TSignInData } from '../../services/auth/AuthService';
 import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
 import { PassportJwtAuthGuard } from '../../../common/guards/PassportJwtAuthGuard';
 import { ILogger } from '../../../infrastructure/logging/ILogger';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * A controller class that provides authentication endpoints.
@@ -21,7 +21,7 @@ export class AuthController {
 	private logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: NestLogger,
+		protected readonly logAdapter: NewWinstonAdapter,
 		protected readonly authService: AuthService,
 		protected readonly configService: ConfigService<IServerConfig>,
 	) {

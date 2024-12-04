@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './UserController';
 import { MockService } from '../../../__tests__/mocks/service/MockService';
 import { UserService } from '../../../application/services/user/UserService';
-import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
-import { NestLogger } from '../../../infrastructure/logging/NestLogger';
+import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { GuardedController } from '../GuardedController';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
+import { CorrelationManager } from '../../../infrastructure/logging/correlation/CorrelationManager';
 
 describe('UserController Unit', () => {
 	let className: string;
@@ -34,8 +36,8 @@ describe('UserController Unit', () => {
 					useValue: new MockService(() => expectedResponse),
 				},
 				{
-					provide: NestLogger,
-					useValue: mockLogAdapter,
+					provide: NewWinstonAdapter,
+					useValue: new NewWinstonAdapter(serverConfig().logging, new CorrelationManager()),
 				},
 			],
 		}).compile();

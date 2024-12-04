@@ -2,10 +2,10 @@ import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(QueryFailedErrorFilter)
@@ -24,8 +24,8 @@ describe('QueryFailedErrorFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: NestLogger,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();

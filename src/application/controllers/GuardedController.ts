@@ -9,13 +9,13 @@ import { NotImplementedExceptionFilter } from '../../common/filters/NotImplement
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../../common/guards/PassportJwtAuthGuard';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
 import { ISseMessage } from '../events/ISseMessage';
 import { ILogger } from '../../infrastructure/logging/ILogger';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -40,7 +40,7 @@ export class GuardedController {
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: NestLogger,
+		protected readonly logAdapter: NewWinstonAdapter,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);

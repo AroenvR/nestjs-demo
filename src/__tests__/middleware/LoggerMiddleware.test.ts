@@ -1,14 +1,14 @@
 import { LoggerMiddleware } from '../../common/middleware/LoggerMiddleware';
 import { Request, Response, NextFunction } from 'express';
-import { NestLogger } from '../../infrastructure/logging/NestLogger';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 // I'm going to be honest, GPT-4-o1 wrote this test and it's giving 100% coverage so... Look at it when you can.
 // Basically, I haven't looked at if this is correct at all yet.
 
 describe('LoggerMiddleware', () => {
 	let middleware: LoggerMiddleware;
-	let logger: NestLogger;
+	let logger: NewWinstonAdapter;
 
 	beforeEach(async () => {
 		const mockLogAdapter = {
@@ -26,11 +26,11 @@ describe('LoggerMiddleware', () => {
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LoggerMiddleware, { provide: NestLogger, useValue: mockLogAdapter }],
+			providers: [LoggerMiddleware, { provide: NewWinstonAdapter, useValue: mockLogAdapter }],
 		}).compile();
 
 		middleware = module.get<LoggerMiddleware>(LoggerMiddleware);
-		logger = module.get<NestLogger>(NestLogger);
+		logger = module.get<NewWinstonAdapter>(NewWinstonAdapter);
 	});
 
 	// --------------------------------------------------
@@ -64,7 +64,7 @@ describe('LoggerMiddleware', () => {
 		middleware.use(req, res, next);
 
 		// Assertions
-		expect(logger.getLogger().correlationManager.runWithCorrelationId).toHaveBeenCalled();
+		expect(logger.correlationManager.runWithCorrelationId).toHaveBeenCalled();
 
 		expect(logger.log).toHaveBeenCalledWith(`Request: GET /test-url`);
 		expect(logger.verbose).toHaveBeenCalledWith(`Request Headers: {}`);
@@ -107,7 +107,7 @@ describe('LoggerMiddleware', () => {
 
 		middleware.use(req, res, next);
 
-		expect(logger.getLogger().correlationManager.runWithCorrelationId).toHaveBeenCalledWith(correlationId, expect.any(Function));
+		expect(logger.correlationManager.runWithCorrelationId).toHaveBeenCalledWith(correlationId, expect.any(Function));
 	});
 
 	// --------------------------------------------------
