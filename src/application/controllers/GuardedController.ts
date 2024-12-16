@@ -73,7 +73,7 @@ export class GuardedController {
 	 * @returns An Observable that emits {@link ISseMessage} objects containing {@link ResponseDto}'s.
 	 * @devnote Remember to decorate with the {@link SseEndpoint} decorator.
 	 */
-	public events(): Observable<ISseMessage<ResponseDto>> {
+	public async events(): Promise<Observable<ISseMessage<ResponseDto>>> {
 		this.logger.log(`Client subscribed to events publishing`);
 		return this.service.observe();
 	}

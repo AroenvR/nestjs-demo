@@ -4,6 +4,7 @@ import { NewWinstonAdapter } from './NewWinstonAdapter';
 import { ILoggerConfig } from '../ILoggerConfig';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { CorrelationManager } from '../correlation/CorrelationManager';
+import { randomUUID } from 'crypto';
 
 const TEST_LOG_DIR = path.join(__dirname, '../', '../', '../', '../', 'logs');
 const TEST_NAME = 'NewWinstonAdapter_integration';
@@ -89,6 +90,25 @@ describe(TEST_NAME, () => {
 		await expect(wasLogged(TEST_LOG_FILENAME_TEXT, `WARN - ${context}: ${message}`)).resolves.toBe(true);
 		await expect(wasLogged(TEST_LOG_FILENAME_TEXT, `ERROR - ${context}: ${message}`)).resolves.toBe(true);
 		await expect(wasLogged(TEST_LOG_FILENAME_TEXT, `VERBOSE - ${context}: ${message}`)).resolves.toBe(true);
+	});
+
+	// ------------------------------
+
+	it("logs with correlation Id's", async () => {
+		const correlationManager = new CorrelationManager();
+		const adapter = new NewWinstonAdapter(CONFIG_TEXT, correlationManager);
+		const message = 'Plain text log message';
+		const context = 'IntegrationTestText';
+		const correlationId = randomUUID();
+
+		const logger = adapter.getPrefixedLogger(context);
+
+		logger.correlationManager.runWithCorrelationId(correlationId, () => {
+			logger.log(message);
+		});
+
+		await new Promise((resolve) => setTimeout(resolve, 10));
+		await expect(wasLogged(TEST_LOG_FILENAME_TEXT, `${correlationId} LOG - ${context}: ${message}`)).resolves.toBe(true);
 	});
 
 	// ------------------------------

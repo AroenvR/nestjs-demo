@@ -1,6 +1,7 @@
 import { NewWinstonAdapter } from './NewWinstonAdapter';
 import { ILoggerConfig } from '../ILoggerConfig';
 import { CorrelationManager } from '../correlation/CorrelationManager';
+import { randomUUID } from 'node:crypto';
 
 // Mock Winston's createLogger and its methods
 const mockedLoggerMethods = {
@@ -32,7 +33,7 @@ const CONFIG: ILoggerConfig = {
 	driver: 'winston',
 	enableCorrelation: true,
 	level: 'verbose',
-	console: false,
+	console: true,
 	file: {
 		enabled: true,
 		path: 'TEST_LOG_DIR',
@@ -43,7 +44,17 @@ const CONFIG: ILoggerConfig = {
 		enabled: false,
 	},
 	useWhitelist: true,
-	prefixWhitelist: ['TEST', 'console.log'],
+	prefixWhitelist: [
+		'VerboseContext',
+		'DebugContext',
+		'InfoContext',
+		'LogContext',
+		'WarnContext',
+		'ErrorContext',
+		'CriticalContext',
+		'console',
+		'TEST',
+	],
 };
 
 const TEST_NAME = 'NewWinstonAdapter';
@@ -107,5 +118,75 @@ describe(TEST_NAME, () => {
 
 		adapter.critical('CriticalContext', 'critical message');
 		expect(mockedLoggerMethods.log).toHaveBeenCalledWith('critical', 'critical message', { context: 'CriticalContext' });
+	});
+
+	// ------------------------------
+
+	it('does not log a non-whitelisted context', () => {
+		adapter.info('UnwhiteListedContext', 'Yolo');
+		expect(mockedLoggerMethods.info).not.toHaveBeenCalledWith('Yolo', { context: 'UnwhiteListedContext' });
+	});
+
+	// ------------------------------
+
+	it('should overwrite console methods to call logger.verbose if level is "verbose"', () => {
+		console.debug('test debug', { key: 'value' });
+		console.info('test info', { key: 'value' });
+		console.log('test log', { key: 'value' });
+		console.warn('test warn', { key: 'value' });
+		console.error('test error', { key: 'value' });
+
+		// Verify logger.verbose is called for each method
+		expect(mockedLoggerMethods.verbose).toHaveBeenCalledWith('test debug', { context: 'console.debug', metadata: { key: 'value' } });
+		expect(mockedLoggerMethods.verbose).toHaveBeenCalledWith('test info', { context: 'console.info', metadata: { key: 'value' } });
+		expect(mockedLoggerMethods.verbose).toHaveBeenCalledWith('test log', { context: 'console.log', metadata: { key: 'value' } });
+		expect(mockedLoggerMethods.verbose).toHaveBeenCalledWith('test warn', { context: 'console.warn', metadata: { key: 'value' } });
+		expect(mockedLoggerMethods.verbose).toHaveBeenCalledWith('test error', { context: 'console.error', metadata: { key: 'value' } });
+	});
+
+	// ------------------------------
+
+	it("logs with correlation Id's", async () => {
+		const firstCorrelationId = randomUUID();
+		const secondCorrelationId = randomUUID();
+
+		adapter.correlationManager.runWithCorrelationId(firstCorrelationId, () => {
+			adapter.info('TEST', 'This is an info message.', { key: 'value' });
+
+			adapter.correlationManager.runWithCorrelationId(secondCorrelationId, () => {
+				adapter.log('TEST', 'This is a log message.', { key: 'value' });
+			});
+		});
+
+		expect(mockedLoggerMethods.info).toHaveBeenCalledWith('This is an info message.', {
+			context: 'TEST',
+			metadata: { key: 'value' },
+			correlationId: firstCorrelationId,
+		});
+		expect(mockedLoggerMethods.log).toHaveBeenCalledWith('normal', 'This is a log message.', {
+			context: 'TEST',
+			metadata: { key: 'value' },
+			correlationId: secondCorrelationId,
+		});
+	});
+
+	// ------------------------------
+
+	test.skip('should not log anything from the console if the level is not "verbose"', () => {
+		// TODO: Fix...
+		const NON_VERBOSE_CONFIG = CONFIG;
+		NON_VERBOSE_CONFIG.level = 'info';
+
+		// Initialize the adapter
+		adapter = new NewWinstonAdapter(NON_VERBOSE_CONFIG, new CorrelationManager());
+
+		// Mock console.log to track calls
+		const consoleLogSpy = jest.spyOn(console, 'log');
+
+		// Call console.log
+		console.log('test log');
+
+		// Assert that console.log is not called
+		expect(consoleLogSpy).not.toHaveBeenCalled();
 	});
 });

@@ -26,7 +26,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	/**
 	 * An abstract method to listens to the entity's database events.
 	 */
-    abstract listenTo(): Function | string; // eslint-disable-line
+	abstract listenTo(): Function | string; // eslint-disable-line
 
 	/**
 	 * After an entity is inserted into the database, the service's emit method is called.

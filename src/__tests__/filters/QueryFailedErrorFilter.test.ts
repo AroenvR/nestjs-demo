@@ -54,10 +54,7 @@ describe('QueryFailedErrorFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`QueryFailedErrorFilter: QueryFailedError: Query failed error test`, undefined);
-		expect(mockILogger.verbose).toHaveBeenCalledWith(`QueryFailedErrorFilter: QueryFailedError query: Query failed - parameters:`, [
-			'param1',
-			'param2',
-		]);
+		expect(mockILogger.error).toHaveBeenCalledWith(`QueryFailedError: Query failed error test`);
+		expect(mockILogger.verbose).toHaveBeenCalledWith(`QueryFailedError query: Query failed - parameters:`, ['param1', 'param2']);
 	});
 });

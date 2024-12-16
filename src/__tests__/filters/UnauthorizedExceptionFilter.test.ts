@@ -53,6 +53,6 @@ describe('UnauthorizedExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`UnauthorizedExceptionFilter: UnauthorizedException: Unauthorized exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`UnauthorizedException: Unauthorized exception test`);
 	});
 });

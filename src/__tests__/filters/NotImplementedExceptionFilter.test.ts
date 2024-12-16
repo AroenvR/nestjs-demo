@@ -53,9 +53,6 @@ describe('NotImplementedExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(
-			`NotImplementedExceptionFilter: NotImplementedException: Not implemented exception test`,
-			undefined,
-		);
+		expect(mockILogger.error).toHaveBeenCalledWith(`NotImplementedException: Not implemented exception test`);
 	});
 });

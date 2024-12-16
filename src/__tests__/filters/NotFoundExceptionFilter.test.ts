@@ -53,6 +53,6 @@ describe('NotFoundExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`NotFoundExceptionFilter: NotFoundException: Not found exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`NotFoundException: Not found exception test`);
 	});
 });

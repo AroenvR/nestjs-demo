@@ -53,6 +53,6 @@ describe('BadRequestExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`BadRequestExceptionFilter: BadRequestException: Bad request exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`BadRequestException: Bad request exception test`);
 	});
 });

@@ -3,10 +3,10 @@ import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../application/modules/AppModule';
 import { LoggerMiddleware } from '../common/middleware/LoggerMiddleware';
-import { mockLogAdapter } from './mocks/mockLogAdapter';
 import { HttpErrorFilter } from '../common/filters/HttpErrorFilter';
 import { HttpExceptionMessages } from '../common/enums/HttpExceptionMessages';
 import { NewWinstonAdapter } from '../infrastructure/logging/adapters/NewWinstonAdapter';
+import { mockILogger } from './mocks/mockLogAdapter';
 
 @Controller('mock')
 export class MockController {
@@ -73,7 +73,7 @@ describe('AppModule', () => {
 			controllers: [MockController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
+					useValue: mockILogger,
 					provide: NewWinstonAdapter,
 				},
 			],
