@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { NotFoundExceptionFilter } from '../../common/filters/NotFoundExceptionFilter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(NotFoundExceptionFilter)
@@ -23,8 +23,8 @@ describe('NotFoundExceptionFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();
@@ -53,6 +53,6 @@ describe('NotFoundExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`NotFoundExceptionFilter: NotFoundException: Not found exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`NotFoundException: Not found exception test`);
 	});
 });

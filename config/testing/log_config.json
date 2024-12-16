@@ -7,7 +7,9 @@
     "file": {
         "enabled": true,
         "path": "logs",
-        "name": "TEST_NAME.test.log"
+        "style": "text",
+        "name": "TEST_NAME.test.log",
+        "_comment": "Setting the 'name' value to TIMESTAMPED means that the log file will be named APP_NAME.TIMESTAMP.log"
     },
     "http": {
         "enabled": false

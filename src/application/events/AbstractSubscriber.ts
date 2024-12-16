@@ -1,11 +1,11 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
-import { ILogger } from 'ts-log-adapter';
 import { AbstractEntity } from '../../domain/entities/AbstractEntity';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
+import { ILogger } from '../../infrastructure/logging/ILogger';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * An abstract class to Subscribe to, and publish, events from the database's INSERT and UPDATE actions.
@@ -15,7 +15,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NewWinstonAdapter,
 		protected readonly dataSource: DataSource,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {

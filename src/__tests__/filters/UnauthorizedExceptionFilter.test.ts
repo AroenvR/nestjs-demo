@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(UnauthorizedExceptionFilter)
@@ -23,8 +23,8 @@ describe('UnauthorizedExceptionFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();
@@ -53,6 +53,6 @@ describe('UnauthorizedExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`UnauthorizedExceptionFilter: UnauthorizedException: Unauthorized exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`UnauthorizedException: Unauthorized exception test`);
 	});
 });

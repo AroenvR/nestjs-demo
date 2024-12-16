@@ -1,5 +1,5 @@
-import { ILoggerConfig } from 'ts-log-adapter';
 import { TDatabaseConfig } from '../database/TDatabaseConfig';
+import { ILoggerConfig } from '../logging/ILoggerConfig';
 
 /**
  * The server's security configuration interface.

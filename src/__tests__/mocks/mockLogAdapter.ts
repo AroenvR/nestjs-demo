@@ -1,27 +1,9 @@
-import { ILogger } from 'ts-log-adapter';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
+import { IPrefixedLogger } from '../../infrastructure/logging/ILogger';
 
 /**
- * A mocked ILogger object.
+ * Mocked {@link IPrefixedLogger} for testing purposes.
  */
-export const mockILogger: jest.Mocked<ILogger> = {
-	config: {
-		appName: 'API_TEST',
-		driver: 'winston',
-		enableCorrelation: true,
-		level: 'verbose',
-		console: false,
-		file: {
-			enabled: true,
-			path: 'logs',
-			name: 'LogAdapter.test.log',
-		},
-		http: {
-			enabled: false,
-		},
-		useWhitelist: false,
-		prefixWhitelist: [],
-	},
+export const mockILogger: jest.Mocked<IPrefixedLogger> = {
 	correlationManager: {
 		getCorrelationId: jest.fn(),
 		runWithCorrelationId: jest.fn(),
@@ -33,6 +15,5 @@ export const mockILogger: jest.Mocked<ILogger> = {
 	warn: jest.fn(),
 	error: jest.fn(),
 	critical: jest.fn(),
+	getPrefixedLogger: jest.fn((_: string) => mockILogger),
 };
-
-export const mockLogAdapter = new LogAdapter(mockILogger);

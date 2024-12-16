@@ -2,16 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './UserController';
 import { MockService } from '../../../__tests__/mocks/service/MockService';
 import { UserService } from '../../../application/services/user/UserService';
-import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
+import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { GuardedController } from '../GuardedController';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 describe('UserController Unit', () => {
-	let className: string;
 	let controller: GuardedController;
 
 	let createDto: CreateUserDto; // Value to change
@@ -34,14 +33,13 @@ describe('UserController Unit', () => {
 					useValue: new MockService(() => expectedResponse),
 				},
 				{
-					provide: LogAdapter,
-					useValue: mockLogAdapter,
+					provide: NewWinstonAdapter,
+					useValue: mockILogger,
 				},
 			],
 		}).compile();
 
 		controller = module.get<UserController>(UserController); // Value to change
-		className = controller.constructor.name;
 	});
 
 	// --------------------------------------------------
@@ -55,7 +53,7 @@ describe('UserController Unit', () => {
 	describe('CREATE', () => {
 		it('Can create an entity', async () => {
 			await expect(controller.create(createDto)).resolves.toEqual(expectedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Creating a new entity`, undefined);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
 		});
 
 		// --------------------------------------------------
@@ -66,7 +64,7 @@ describe('UserController Unit', () => {
 	describe('FIND ALL', () => {
 		it('Finds all entities', async () => {
 			await expect(controller.findAll()).resolves.toEqual([expectedResponse]);
-			expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding all entities`, undefined);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
 		});
 	});
 
@@ -75,7 +73,7 @@ describe('UserController Unit', () => {
 	describe('FIND ONE', () => {
 		it('Finds an entity by id', async () => {
 			await expect(controller.findOne(ID)).resolves.toEqual(expectedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity by id ${ID}`, undefined);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
 		});
 	});
 
@@ -87,7 +85,7 @@ describe('UserController Unit', () => {
 			dto.username = 'tested'; // Value to change
 
 			await expect(controller.update(ID, dto)).resolves.toEqual(expectedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity by id ${ID}`, undefined);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
 		});
 	});
 
@@ -96,7 +94,7 @@ describe('UserController Unit', () => {
 	describe('DELETE', () => {
 		it('Deletes an entity', async () => {
 			await expect(controller.remove(ID)).resolves.toBeUndefined();
-			expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Deleting entity by id ${ID}`, undefined);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
 		});
 	});
 });

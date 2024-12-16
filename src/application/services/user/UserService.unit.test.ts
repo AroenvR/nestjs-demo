@@ -4,15 +4,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Subject } from 'rxjs';
 import { UserService } from './UserService';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
-import { mockILogger, mockLogAdapter } from '../../../__tests__/mocks/mockLogAdapter';
+import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
 import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
 import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 describe('UserService Unit', () => {
 	const ID = 1;
@@ -20,7 +20,6 @@ describe('UserService Unit', () => {
 
 	let entity: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
-	let className: string;
 
 	beforeEach(async () => {
 		entity = UserEntity.create({ id: ID, username: USERNAME });
@@ -29,8 +28,8 @@ describe('UserService Unit', () => {
 			providers: [
 				UserService,
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 				{
 					provide: getRepositoryToken(UserEntity),
@@ -44,7 +43,6 @@ describe('UserService Unit', () => {
 		}).compile();
 
 		service = module.get<UserService>(UserService);
-		className = service.constructor.name;
 	});
 
 	// --------------------------------------------------
@@ -66,7 +64,7 @@ describe('UserService Unit', () => {
 		expect(created.id).toEqual(ID);
 		expect(created.username).toEqual(USERNAME);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Creating a new entity`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
 	});
 
 	// --------------------------------------------------
@@ -83,7 +81,7 @@ describe('UserService Unit', () => {
 			expect(item.username).toBeTruthy();
 		}
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding all entities`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
 	});
 
 	// --------------------------------------------------
@@ -96,7 +94,7 @@ describe('UserService Unit', () => {
 		expect(data.id).toEqual(ID);
 		expect(data.username).toEqual(USERNAME);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity by id ${ID}`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
 	});
 
 	// --------------------------------------------------
@@ -105,7 +103,7 @@ describe('UserService Unit', () => {
 		const id = 69;
 
 		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Finding entity by id ${id}`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${id}`);
 	});
 
 	// --------------------------------------------------
@@ -121,7 +119,7 @@ describe('UserService Unit', () => {
 		expect(updated.id).toEqual(ID);
 		expect(updated.username).toEqual(dto.username);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Updating entity by id ${ID}`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
 	});
 
 	// --------------------------------------------------
@@ -130,7 +128,7 @@ describe('UserService Unit', () => {
 		const data = await service.remove(ID);
 		expect(data).toBeUndefined();
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Deleting entity by id ${ID}`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
 	});
 
 	// --------------------------------------------------
@@ -141,7 +139,7 @@ describe('UserService Unit', () => {
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty('subscribe');
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Observing template events`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Observing template events`);
 	});
 
 	// --------------------------------------------------
@@ -154,6 +152,6 @@ describe('UserService Unit', () => {
 		service.emit(data);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
-		expect(mockILogger.info).toHaveBeenCalledWith(`${className}: Emitting entity by id: ${data.id}`, undefined);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${data.id}`);
 	});
 });

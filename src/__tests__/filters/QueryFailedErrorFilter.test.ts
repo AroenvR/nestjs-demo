@@ -2,10 +2,10 @@ import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(QueryFailedErrorFilter)
@@ -24,8 +24,8 @@ describe('QueryFailedErrorFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();
@@ -54,10 +54,7 @@ describe('QueryFailedErrorFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`QueryFailedErrorFilter: QueryFailedError: Query failed error test`, undefined);
-		expect(mockILogger.verbose).toHaveBeenCalledWith(`QueryFailedErrorFilter: QueryFailedError query: Query failed - parameters:`, [
-			'param1',
-			'param2',
-		]);
+		expect(mockILogger.error).toHaveBeenCalledWith(`QueryFailedError: Query failed error test`);
+		expect(mockILogger.verbose).toHaveBeenCalledWith(`QueryFailedError query: Query failed - parameters:`, ['param1', 'param2']);
 	});
 });

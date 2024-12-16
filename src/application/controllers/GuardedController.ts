@@ -2,7 +2,6 @@ import { BadRequestException, Body, Param, ParseIntPipe, UseFilters, UseGuards }
 import { Observable } from 'rxjs';
 import { ApiSecurity } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { ILogger } from 'ts-log-adapter';
 import { BadRequestExceptionFilter } from '../../common/filters/BadRequestExceptionFilter';
 import { HttpExceptionFilter } from '../../common/filters/HttpExceptionFilter';
 import { NotFoundExceptionFilter } from '../../common/filters/NotFoundExceptionFilter';
@@ -10,12 +9,13 @@ import { NotImplementedExceptionFilter } from '../../common/filters/NotImplement
 import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
 import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../../common/guards/PassportJwtAuthGuard';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { AbstractService } from '../services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
 import { UpdateDto } from '../dtos/UpdateDto';
 import { ResponseDto } from '../dtos/ResponseDto';
 import { ISseMessage } from '../events/ISseMessage';
+import { ILogger } from '../../infrastructure/logging/ILogger';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -40,7 +40,7 @@ export class GuardedController {
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NewWinstonAdapter,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);
@@ -73,7 +73,7 @@ export class GuardedController {
 	 * @returns An Observable that emits {@link ISseMessage} objects containing {@link ResponseDto}'s.
 	 * @devnote Remember to decorate with the {@link SseEndpoint} decorator.
 	 */
-	public events(): Observable<ISseMessage<ResponseDto>> {
+	public async events(): Promise<Observable<ISseMessage<ResponseDto>>> {
 		this.logger.log(`Client subscribed to events publishing`);
 		return this.service.observe();
 	}

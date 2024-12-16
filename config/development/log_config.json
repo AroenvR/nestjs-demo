@@ -7,8 +7,9 @@
     "file": {
         "enabled": true,
         "path": "logs",
-        "name": "TIMESTAMPED",
-        "_comment": "TIMESTAMPED means that the log file will be named APP_NAME.TIMESTAMP.log"
+        "style": "json",
+        "name": "NEST_DEV.development.log",
+        "_comment": "Setting the 'name' value to TIMESTAMPED means that the log file will be named APP_NAME.TIMESTAMP.log"
     },
     "http": {
         "enabled": false

@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { BadRequestException, Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { BadRequestExceptionFilter } from '../../common/filters/BadRequestExceptionFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')
 @UseFilters(BadRequestExceptionFilter)
@@ -23,8 +23,8 @@ describe('BadRequestExceptionFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();
@@ -53,6 +53,6 @@ describe('BadRequestExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`BadRequestExceptionFilter: BadRequestException: Bad request exception test`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`BadRequestException: Bad request exception test`);
 	});
 });

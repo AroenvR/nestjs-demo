@@ -1,15 +1,15 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { QueryFailedError } from 'typeorm';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
 import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Catch(QueryFailedError)
 export class QueryFailedErrorFilter extends AbstractHttpFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
 	protected message = HttpExceptionMessages.INTERNAL_SERVER_ERROR;
 
-	constructor(logAdapter: LogAdapter) {
+	constructor(logAdapter: NewWinstonAdapter) {
 		super(logAdapter);
 	}
 

@@ -1,10 +1,10 @@
 import request from 'supertest';
 import { Controller, Get, HttpException, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
-import { mockILogger, mockLogAdapter } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { HttpExceptionFilter } from '../../common/filters/HttpExceptionFilter';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { mockILogger } from '../mocks/mockLogAdapter';
 
 @Controller('test')
 @UseFilters(HttpExceptionFilter)
@@ -23,8 +23,8 @@ describe('HttpExceptionFilter', () => {
 			controllers: [TestController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 		}).compile();
@@ -53,7 +53,7 @@ describe('HttpExceptionFilter', () => {
 			});
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`HttpExceptionFilter: HttpException: HTTP exception test`, undefined);
-		expect(mockILogger.warn).toHaveBeenCalledWith(`HttpExceptionFilter: Exception was caught by the default HTTP exception filter.`, undefined);
+		expect(mockILogger.error).toHaveBeenCalledWith(`HttpException: HTTP exception test`);
+		expect(mockILogger.warn).toHaveBeenCalledWith(`Exception was caught by the default HTTP exception filter.`);
 	});
 });

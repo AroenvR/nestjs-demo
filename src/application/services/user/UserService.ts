@@ -1,12 +1,12 @@
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
-import { LogAdapter } from '../../../infrastructure/logging/LogAdapter';
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { CreateUserDto } from '../../dtos/user/CreateUserDto';
 import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { AbstractService } from '../AbstractService';
+import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
@@ -17,7 +17,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: LogAdapter,
+		protected readonly logAdapter: NewWinstonAdapter,
 	) {
 		super(repository, entityManager, logAdapter);
 	}

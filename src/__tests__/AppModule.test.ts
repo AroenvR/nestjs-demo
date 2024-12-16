@@ -3,10 +3,10 @@ import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../application/modules/AppModule';
 import { LoggerMiddleware } from '../common/middleware/LoggerMiddleware';
-import { mockLogAdapter } from './mocks/mockLogAdapter';
-import { LogAdapter } from '../infrastructure/logging/LogAdapter';
 import { HttpErrorFilter } from '../common/filters/HttpErrorFilter';
 import { HttpExceptionMessages } from '../common/enums/HttpExceptionMessages';
+import { NewWinstonAdapter } from '../infrastructure/logging/adapters/NewWinstonAdapter';
+import { mockILogger } from './mocks/mockLogAdapter';
 
 @Controller('mock')
 export class MockController {
@@ -73,15 +73,15 @@ describe('AppModule', () => {
 			controllers: [MockController],
 			providers: [
 				{
-					useValue: mockLogAdapter,
-					provide: LogAdapter,
+					useValue: mockILogger,
+					provide: NewWinstonAdapter,
 				},
 			],
 			imports: [AppModule],
 		}).compile();
 
 		const app = moduleFixture.createNestApplication();
-		const logger = app.get(LogAdapter);
+		const logger = app.get(NewWinstonAdapter);
 		app.useGlobalFilters(new HttpErrorFilter(logger));
 
 		await app.init();

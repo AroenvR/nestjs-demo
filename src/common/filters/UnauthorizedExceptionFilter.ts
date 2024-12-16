@@ -1,14 +1,14 @@
 import { Catch, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { LogAdapter } from '../../infrastructure/logging/LogAdapter';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
 import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Catch(UnauthorizedException)
 export class UnauthorizedExceptionFilter extends AbstractHttpFilter {
 	protected status = HttpStatus.UNAUTHORIZED;
 	protected message = HttpExceptionMessages.UNAUTHORIZED;
 
-	constructor(logAdapter: LogAdapter) {
+	constructor(logAdapter: NewWinstonAdapter) {
 		super(logAdapter);
 	}
 }
