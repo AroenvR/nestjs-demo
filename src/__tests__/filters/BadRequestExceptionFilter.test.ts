@@ -3,7 +3,7 @@ import { BadRequestException, Controller, Get, HttpStatus, INestApplication, Use
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { BadRequestExceptionFilter } from '../../common/filters/BadRequestExceptionFilter';
+import { BadRequestExceptionFilter } from '../../http_api/filters/BadRequestExceptionFilter';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')

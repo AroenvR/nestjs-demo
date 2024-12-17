@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 
 /**
  * Default error decorators for the application's endpoints

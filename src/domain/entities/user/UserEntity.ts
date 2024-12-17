@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Column, Entity } from 'typeorm';
 import { AbstractEntity } from '../AbstractEntity';
+import { userConstants } from '../../../common/constants/userConstants';
 
 /**
  * Represents a user entity in the database.
@@ -32,7 +33,7 @@ export class UserEntity extends AbstractEntity {
 
 	protected get childSchema() {
 		return Joi.object({
-			username: Joi.string().min(3).required(),
+			username: Joi.string().min(userConstants.minUsernameLength).max(userConstants.maxUsernameLength).required(),
 		});
 	}
 }

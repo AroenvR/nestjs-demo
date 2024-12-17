@@ -1,6 +1,6 @@
 import { Catch, BadRequestException, HttpStatus } from '@nestjs/common';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
-import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Catch(BadRequestException)

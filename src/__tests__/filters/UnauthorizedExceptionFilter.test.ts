@@ -3,7 +3,7 @@ import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, U
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { UnauthorizedExceptionFilter } from '../../common/filters/UnauthorizedExceptionFilter';
+import { UnauthorizedExceptionFilter } from '../../http_api/filters/UnauthorizedExceptionFilter';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')

@@ -1,7 +1,7 @@
 import { applyDecorators, HttpCode, HttpStatus, Post, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
-import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 
 /**
  * Decorator for POST endpoints that returns a 201 status code

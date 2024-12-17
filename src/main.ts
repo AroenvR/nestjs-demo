@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './application/modules/AppModule';
 import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpErrorFilter } from './common/filters/HttpErrorFilter';
+import { HttpErrorFilter } from './http_api/filters/HttpErrorFilter';
 import { NewWinstonAdapter } from './infrastructure/logging/adapters/NewWinstonAdapter';
 
 async function bootstrap() {
