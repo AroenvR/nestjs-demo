@@ -1,6 +1,6 @@
 import { applyDecorators, HttpCode, HttpStatus, Patch, Type } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { DefaultErrorDecorators } from './DefaultErrorDecorators';
 
 /**

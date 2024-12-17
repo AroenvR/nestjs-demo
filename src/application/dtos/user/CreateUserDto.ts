@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import { CreateDto } from '../CreateDto';
+import { userConstants } from '../../../common/constants/userConstants';
 
 /**
  * This class is responsible for receiving data from a client to create a {@link UserEntity}.
@@ -11,7 +12,7 @@ import { CreateDto } from '../CreateDto';
 export class CreateUserDto extends CreateDto {
 	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
 	@IsString({ message: 'value must be a string' })
-	@MinLength(3, { message: 'Username must be at least 3 characters long' })
-	@MaxLength(50, { message: 'Username must be at most 50 characters long' })
+	@MinLength(userConstants.minUsernameLength, { message: `Username must be at least ${userConstants.minUsernameLength} characters long` })
+	@MaxLength(userConstants.maxUsernameLength, { message: `Username can be at most ${userConstants.maxUsernameLength} characters long` })
 	username: string;
 }

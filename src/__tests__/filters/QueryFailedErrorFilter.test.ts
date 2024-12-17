@@ -4,7 +4,7 @@ import { QueryFailedError } from 'typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { QueryFailedErrorFilter } from '../../common/filters/QueryFailedErrorFilter';
+import { QueryFailedErrorFilter } from '../../http_api/filters/QueryFailedErrorFilter';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')

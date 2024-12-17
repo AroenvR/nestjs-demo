@@ -3,11 +3,11 @@ import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
-import { HttpExceptionFilter } from '../../../common/filters/HttpExceptionFilter';
-import { UnauthorizedExceptionFilter } from '../../../common/filters/UnauthorizedExceptionFilter';
-import { AuthService, TSignInData } from '../../services/auth/AuthService';
+import { HttpExceptionFilter } from '../../filters/HttpExceptionFilter';
+import { UnauthorizedExceptionFilter } from '../../filters/UnauthorizedExceptionFilter';
+import { AuthService, TSignInData } from '../../../application/services/auth/AuthService';
 import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { PassportJwtAuthGuard } from '../../../common/guards/PassportJwtAuthGuard';
+import { PassportJwtAuthGuard } from '../../guards/PassportJwtAuthGuard';
 import { ILogger } from '../../../infrastructure/logging/ILogger';
 import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 

@@ -1,7 +1,7 @@
 import { ArgumentsHost, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
-import { GuardedController } from '../../application/controllers/GuardedController'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { GuardedController } from '../controllers/GuardedController'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ILogger } from '../../infrastructure/logging/ILogger';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 

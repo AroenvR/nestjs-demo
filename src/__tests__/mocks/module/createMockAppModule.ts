@@ -5,7 +5,7 @@ import { serverConfig } from '../../../infrastructure/configuration/serverConfig
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
 import { AuthModule } from '../../../application/modules/auth/AuthModule';
-import { HttpErrorFilter } from '../../../common/filters/HttpErrorFilter';
+import { HttpErrorFilter } from '../../../http_api/filters/HttpErrorFilter';
 import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 /**

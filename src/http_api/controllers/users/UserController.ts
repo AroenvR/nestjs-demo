@@ -1,12 +1,12 @@
 import { Controller, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { DeleteEndpoint } from '../../../common/decorators/DeleteEndpoint';
-import { PatchEndpoint } from '../../../common/decorators/PatchEndpoint';
-import { GetByIdEndpoint } from '../../../common/decorators/GetByIdEndpoint';
-import { SseEndpoint } from '../../../common/decorators/SseEndpoint';
-import { GetEndpoint } from '../../../common/decorators/GetEndpoint';
-import { PostEndpoint } from '../../../common/decorators/PostEndpoint';
+import { DeleteEndpoint } from '../../decorators/DeleteEndpoint';
+import { PatchEndpoint } from '../../decorators/PatchEndpoint';
+import { GetByIdEndpoint } from '../../decorators/GetByIdEndpoint';
+import { SseEndpoint } from '../../decorators/SseEndpoint';
+import { GetEndpoint } from '../../decorators/GetEndpoint';
+import { PostEndpoint } from '../../decorators/PostEndpoint';
 import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';

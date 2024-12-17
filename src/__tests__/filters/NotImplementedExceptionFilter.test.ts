@@ -3,7 +3,7 @@ import { Controller, Get, HttpStatus, INestApplication, NotImplementedException,
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockILogger } from '../mocks/mockLogAdapter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { NotImplementedExceptionFilter } from '../../common/filters/NotImplementedExceptionFilter';
+import { NotImplementedExceptionFilter } from '../../http_api/filters/NotImplementedExceptionFilter';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Controller('test')

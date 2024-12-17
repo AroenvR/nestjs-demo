@@ -2,7 +2,7 @@ import request from 'supertest';
 import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFilters } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockILogger } from '../mocks/mockLogAdapter';
-import { NotFoundExceptionFilter } from '../../common/filters/NotFoundExceptionFilter';
+import { NotFoundExceptionFilter } from '../../http_api/filters/NotFoundExceptionFilter';
 import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 

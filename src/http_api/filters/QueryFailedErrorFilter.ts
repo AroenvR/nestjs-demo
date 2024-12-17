@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { AbstractHttpFilter } from './AbstractHttpFilter';
-import { HttpExceptionMessages } from '../enums/HttpExceptionMessages';
+import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
 import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
 
 @Catch(QueryFailedError)
