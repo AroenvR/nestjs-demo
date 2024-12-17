@@ -29,7 +29,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		this.logger.info(`Creating a new entity`);
 
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const entity = UserEntity.create(createDto);
+			const entity = new UserEntity(createDto);
 
 			return entityManager.save(entity);
 		});
@@ -44,7 +44,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		this.logger.info(`Finding all entities`);
 
 		const data = await this.repository.find();
-		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
+		const entities = data.map((entity) => new UserEntity(entity)); // Validate the data
 
 		return entities.map((entity) => UserResponseDto.fromEntity(entity));
 	}
@@ -58,7 +58,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		const data = await this.repository.findOneBy({ id });
 
 		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
-		const entity = UserEntity.create(data); // Validate the data
+		const entity = new UserEntity(data); // Validate the data
 
 		return UserResponseDto.fromEntity(entity);
 	}
@@ -73,7 +73,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			const data = await this.repository.findOneBy({ id });
 			if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
 
-			const entity = UserEntity.create(data); // Validate the data
+			const entity = new UserEntity(data); // Validate the data
 			entity.update(updateDto);
 
 			return entityManager.save(entity);
@@ -108,7 +108,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public emit(data: UserEntity) {
 		this.logger.info(`Emitting entity by id: ${data.id}`);
 
-		const entity = UserEntity.create(data); // Validate the data
+		const entity = new UserEntity(data); // Validate the data
 		this.events.next({ data: UserResponseDto.fromEntity(entity) });
 	}
 }

@@ -95,14 +95,35 @@ describe('AbstractEntity', () => {
 	describe('Errors', () => {
 		it('Throws for unexpected values', () => {
 			// @ts-expect-error: Create method / constructor don't accept unknown values
-			expect(() => new MockEntity({ malicious: USERNAME, injection: 'SELECT *' })).toThrow('Disallowed keys: malicious, injection');
+			expect(() => new MockEntity({ malicious: USERNAME, injection: 'SELECT *' })).toThrow('Problematic keys: malicious, injection');
 		});
 
 		// --------------------------------------------------
 
-		it("Throws when the parent's schema fails", () => {
-			// @ts-expect-error: ID value must be a number
-			expect(() => new MockEntity({ id: 'YOLO' })).toThrow('JSON schema validation failed: "id" must be a number');
+		it('Throws when the parent/child schemas fail', () => {
+			const values: unknown[] = [null, undefined, '', 0, -100, true, false, [], {}, Symbol('yolo')];
+
+			const captureAndValdiate = (data: unknown) => {
+				try {
+					new MockEntity(data);
+					fail('Expected an error to be thrown');
+				} catch (err) {
+					// Both the parent and the child's schemas fail on these values. Object.keys(data)[0] is used to verify the error message is accurate.
+					if (err.message.includes('Parent'))
+						expect(err.message).toContain(`Parent's JSON schema validation failed: \"${Object.keys(data)[0]}\"`);
+					else if (err.message.includes('Child'))
+						expect(err.message).toContain(
+							`Child's JSON schema validation failed: \"value\" does not match any of the allowed types - Problematic keys: ${Object.keys(data)[0]}`,
+						);
+					else fail('Unexpected error message received');
+				}
+			};
+
+			for (const value of values) {
+				captureAndValdiate({ id: value });
+				captureAndValdiate({ uuid: value });
+				captureAndValdiate({ createdAt: value });
+			}
 		});
 	});
 });

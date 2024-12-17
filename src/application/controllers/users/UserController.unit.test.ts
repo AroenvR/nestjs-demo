@@ -9,6 +9,7 @@ import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto'
 import { UserEntity } from '../../../domain/entities/user/UserEntity';
 import { GuardedController } from '../GuardedController';
 import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { randomUUID } from 'crypto';
 
 describe('UserController Unit', () => {
 	let controller: GuardedController;
@@ -17,13 +18,15 @@ describe('UserController Unit', () => {
 	let expectedResponse: UserResponseDto; // Value to change
 
 	const ID = 1;
+	const UUID = randomUUID();
+	const CREATED_AT = Date.now();
 	const USERNAME = 'Bob';
 
 	beforeEach(async () => {
 		createDto = new CreateUserDto();
 		createDto.username = USERNAME;
 
-		expectedResponse = UserResponseDto.fromEntity(UserEntity.create({ id: ID, username: USERNAME }));
+		expectedResponse = UserResponseDto.fromEntity(new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME }));
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [UserController], // Value to change

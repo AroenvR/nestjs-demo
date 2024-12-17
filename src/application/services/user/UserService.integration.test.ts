@@ -13,6 +13,7 @@ import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { AbstractService } from '../AbstractService';
 import { ISseMessage } from '../../../application/events/ISseMessage';
+import { randomUUID } from 'crypto';
 
 // Value to change
 describe('UserService Integration', () => {
@@ -20,6 +21,8 @@ describe('UserService Integration', () => {
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
 	const ID = 1;
+	const UUID = randomUUID();
+	const CREATED_AT = Date.now();
 	const USERNAME = 'test';
 
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
@@ -70,10 +73,11 @@ describe('UserService Integration', () => {
 		const response = await service.findAll();
 
 		expect(response).toBeInstanceOf(Array);
-		expect(response).toContainEqual({ id: ID, username: USERNAME });
 
 		for (const entity of response) {
 			expect(entity).toBeInstanceOf(UserResponseDto);
+			expect(entity.id).toEqual(ID);
+			expect(entity.username).toEqual(USERNAME);
 		}
 
 		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
@@ -139,7 +143,7 @@ describe('UserService Integration', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = UserEntity.create({ id: ID, username: USERNAME });
+		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
 		service.emit(data);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });

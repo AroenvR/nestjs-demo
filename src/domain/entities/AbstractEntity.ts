@@ -7,7 +7,7 @@ import { Column, PrimaryGeneratedColumn } from 'typeorm';
  * It provides a few base values and automatic self-validation using a JSON schema upon creation.
  * @column id INTEGER PRIMARY KEY AUTOINCREMENT
  * @column uuid TEXT NOT NULL UNIQUE
- * @column createdAt INTEGER NOT NULL
+ * @column created_at INTEGER NOT NULL
  */
 export abstract class AbstractEntity {
 	@PrimaryGeneratedColumn()
@@ -33,7 +33,7 @@ export abstract class AbstractEntity {
 	/**
 	 * Updates the entity with the provided data.
 	 * @param entity The data to update the entity with.
-	 * @devnote !!! REMEMBER TO CALL this.validate at the end of the function !!!
+	 * @devnote !!! REMEMBER TO CALL **this.validate(this)** at the end of the function !!!
 	 */
 	protected abstract update(entity: Partial<AbstractEntity>): AbstractEntity;
 
@@ -89,15 +89,16 @@ export abstract class AbstractEntity {
 			}
 		}
 
-		if (disallowedKeys.length >= 1) message += ` - Disallowed keys: ${disallowedKeys.join(', ')}`;
+		if (disallowedKeys.length >= 1) message += ` - Problematic keys: ${disallowedKeys.join(', ')}`;
 		return message;
 	}
 
 	/* Getters & Setters */
 
 	/**
-	 * The child's JSON schema.
-	 * This only needs to include the child's own values. Inherited values can be skipped.
+	 * The child's JSON schema which will be used for auto-validation.
+	 * This only needs to include the child's own values.
+	 * Inherited values can be skipped.
 	 */
 	protected abstract get childSchema(): Joi.ObjectSchema;
 
