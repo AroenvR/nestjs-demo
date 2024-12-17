@@ -13,16 +13,19 @@ import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
 import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { randomUUID } from 'crypto';
 
 describe('UserService Unit', () => {
 	const ID = 1;
+	const UUID = randomUUID();
+	const CREATED_AT = Date.now();
 	const USERNAME = 'test';
 
 	let entity: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 
 	beforeEach(async () => {
-		entity = UserEntity.create({ id: ID, username: USERNAME });
+		entity = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -58,8 +61,6 @@ describe('UserService Unit', () => {
 		dto.username = USERNAME;
 
 		const created = await service.create(dto);
-		expect(created).toEqual(entity);
-
 		expect(created).toBeInstanceOf(UserResponseDto);
 		expect(created.id).toEqual(ID);
 		expect(created.username).toEqual(USERNAME);
@@ -148,7 +149,7 @@ describe('UserService Unit', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = UserEntity.create({ id: ID, username: USERNAME });
+		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
 		service.emit(data);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });

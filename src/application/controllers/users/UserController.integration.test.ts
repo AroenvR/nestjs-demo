@@ -55,7 +55,7 @@ describe('UserController Integration', () => {
 		const dto = new CreateUserDto(); // Value to change
 		dto.username = 'Initial'; // Value to change
 
-		const entity = UserEntity.create(dto); // Value to change
+		const entity = new UserEntity(dto); // Value to change
 		existingEntity = await repository.save(entity);
 	});
 
@@ -74,10 +74,10 @@ describe('UserController Integration', () => {
 
 	describe('CREATE', () => {
 		it('Can create an entity', async () => {
-			const response = UserResponseDto.fromEntity(UserEntity.create(createDto)); // Value to change
-			response.id = 2;
+			const created = (await controller.create(createDto)) as UserResponseDto;
+			expect(created.id).toEqual(2);
+			expect(created.username).toEqual(createDto.username);
 
-			await expect(controller.create(createDto)).resolves.toEqual(response);
 			await expect(wasLogged(TEST_NAME, `${className}: Creating a new entity`)).resolves.toBe(true);
 		});
 
@@ -97,15 +97,12 @@ describe('UserController Integration', () => {
 		// --------------------------------------------------
 
 		it('should fail with invalid data', async () => {
-			createDto.username = null; // Value to change
-			await expect(controller.create(createDto)).rejects.toThrow('UserEntity: validation error: "username" must be a string'); // Value to change
-		});
-
-		// --------------------------------------------------
-
-		it('should fail with invalid data', async () => {
-			createDto.username = '';
-			await expect(controller.create(createDto)).rejects.toThrow('UserEntity: validation error: "username" is not allowed to be empty'); // Value to change
+			const values: unknown[] = [null, undefined, '', 1, true, false, [], {}];
+			for (const value of values) {
+				// @ts-expect-error: Username expects a string.
+				createDto.username = value;
+				await expect(controller.create(createDto)).rejects.toThrow("UserEntity: Child's JSON schema validation failed"); // Value to change
+			}
 		});
 
 		// --------------------------------------------------
