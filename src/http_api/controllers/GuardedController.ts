@@ -1,21 +1,21 @@
-import { BadRequestException, Body, Param, ParseIntPipe, UseFilters, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseFilters, UseGuards } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ApiSecurity } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { BadRequestExceptionFilter } from '../filters/BadRequestExceptionFilter';
-import { HttpExceptionFilter } from '../filters/HttpExceptionFilter';
-import { NotFoundExceptionFilter } from '../filters/NotFoundExceptionFilter';
-import { NotImplementedExceptionFilter } from '../filters/NotImplementedExceptionFilter';
-import { QueryFailedErrorFilter } from '../filters/QueryFailedErrorFilter';
-import { UnauthorizedExceptionFilter } from '../filters/UnauthorizedExceptionFilter';
+import { BadRequestExceptionFilter } from '../filters/bad_request/BadRequestExceptionFilter';
+import { HttpExceptionFilter } from '../filters/http_exception/HttpExceptionFilter';
+import { NotFoundExceptionFilter } from '../filters/not_found/NotFoundExceptionFilter';
+import { NotImplementedExceptionFilter } from '../filters/not_implemented/NotImplementedExceptionFilter';
+import { UnauthorizedExceptionFilter } from '../filters/unauthorized/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../guards/PassportJwtAuthGuard';
 import { AbstractService } from '../../application/services/AbstractService';
-import { CreateDto } from '../../application/dtos/CreateDto';
-import { UpdateDto } from '../../application/dtos/UpdateDto';
-import { ResponseDto } from '../../application/dtos/ResponseDto';
+import { CreateDto } from '../dtos/CreateDto';
+import { UpdateDto } from '../dtos/UpdateDto';
+import { ResponseDto } from '../dtos/ResponseDto';
 import { ISseMessage } from '../../application/events/ISseMessage';
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
+import { QueryFailedErrorFilter } from '../filters/query_failed/QueryFailedErrorFilter';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -40,7 +40,7 @@ export class GuardedController {
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);
@@ -97,6 +97,7 @@ export class GuardedController {
 	 * @devnote Remember to decorate with the {@link PatchEndpoint} decorator.
 	 */
 	public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<ResponseDto> {
+		if (!isTruthy(id)) throw new HttpException('ID is empty', HttpStatus.BAD_REQUEST);
 		if (!isTruthy(updateDto)) throw new BadRequestException(`${this.constructor.name}: Update payload is empty.`);
 
 		this.logger.info(`Updating entity by id ${id}`);

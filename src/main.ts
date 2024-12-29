@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './application/modules/AppModule';
+import { AppModule } from './infrastructure/AppModule';
 import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpErrorFilter } from './http_api/filters/HttpErrorFilter';
-import { NewWinstonAdapter } from './infrastructure/logging/adapters/NewWinstonAdapter';
+import { HttpErrorFilter } from './http_api/filters/http_error/HttpErrorFilter';
+import { WinstonAdapter } from './infrastructure/logging/adapters/WinstonAdapter';
 
 async function bootstrap() {
 	// TODO's:
@@ -26,8 +26,6 @@ async function bootstrap() {
         Implement worker threads
         Implement a custom session storage
 
-        Implement outgoing DTO's
-        Implement DDD (fix file structure & entity self-validation)
         Mermaid document architecture & API data flow
     */
 
@@ -39,7 +37,7 @@ async function bootstrap() {
 	});
 
 	// const logger = app.get(NestLogger); // Retrieve the custom logger from Nest's DI container
-	const logger = app.get(NewWinstonAdapter); // Retrieve the custom logger from Nest's DI container
+	const logger = app.get(WinstonAdapter); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
 
 	// Apply global filters to ensure we catch any uncaught errors.

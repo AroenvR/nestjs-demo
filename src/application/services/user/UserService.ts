@@ -1,12 +1,12 @@
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
-import { CreateUserDto } from '../../dtos/user/CreateUserDto';
-import { UserResponseDto } from '../../dtos/user/UserResponseDto';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
+import { UserEntity } from '../../../domain/user/UserEntity';
+import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
+import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
+import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 import { AbstractService } from '../AbstractService';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
@@ -17,7 +17,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 	) {
 		super(repository, entityManager, logAdapter);
 	}
@@ -97,7 +97,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	/**
 	 *
 	 */
-	public observe() {
+	public async observe() {
 		this.logger.info(`Observing template events`);
 		return this.events.asObservable();
 	}
@@ -105,7 +105,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	/**
 	 *
 	 */
-	public emit(data: UserEntity) {
+	public async emit(data: UserEntity) {
 		this.logger.info(`Emitting entity by id: ${data.id}`);
 
 		const entity = new UserEntity(data); // Validate the data

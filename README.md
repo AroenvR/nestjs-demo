@@ -24,7 +24,7 @@
 
 ## Description
 This is a pre-configured [NestJS](https://nestjs.com/) template with middlewares, logging, database connection, quick-and-easy endpoint implementation, ...  
-It features an expansive testing suite with a 100% coverage.  
+It features an expansive testing suite with over 90% coverage.  
 It generates no linting errors / warnings.  
 
 ## Project setup
@@ -59,7 +59,9 @@ npm run start:prod
 Execute `npm run test` to run all tests once.  
 Execute `npm run test:watch` to run all tests on watch, rerunning on each file change.  
 Execute `npm run test SomeFile.test.ts` to run a specific test once.  
+Execute `npm run test something` to run all files with a specific prefix once.  
 Execute `npm run test:watch SomeFile.test.ts` to run a specific test on watch, rerunning on each file change.  
+Execute `npm run test:watch something` to run all files with a specific prefix on watch, rerunning on each file change.  
 Execute `npm run test:coverage` to run all test once with a coverage report.
 
 ## Resources
@@ -73,12 +75,39 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-## Quickly creating a new API endpoint
-Two abstract classes were created for quickly setting up new endpoints.  
-1. [AbstractController](./src/abstract/AbstractController.ts) for all generic CRUD requests (GET / POST / PATCH / DELETE)  
-2. An accompanying [AbstractService](./src/abstract/AbstractService.ts) for connecting to a database. The abstract class only throws a HttpException with METHOD_NOT_IMPLEMENTED as it would be dangerous to accidentally create a fully functional endpoint.
-
-For an example of how to easily set up a new endpoint, refer to the [templates](./src/template/) and [template test](./src/__tests__/template/) directories. They can be utilized for creating new endpoints with the Abstract classes (just copy-paste the templates & change the names).
+# This project's file structure adheres to Domain Driven Design.
+```plaintext
+src/
+├── application/        # Coordinates use cases of the application without direct business logic.
+│   ├── events/         # Application services which emit events triggered by database operations.
+│   └── services/       # Application services orchestrating domain services and repository interactions.
+│
+├── common/             # Contains values that are used accross layers.
+│   ├── constants/      # Constants that are used by multiple layers.
+│   └── enums/          # Enums that are used by multiple layers.
+│
+├── domain/             # Encapsulates core business logic, domain model and its entities.
+│   └── AbstractEntity  # The parent class for all entities in the application.
+│
+├── infrastructure/     # Provides technical capabilities to support application and domain layers.
+│   ├── configuration/  # Manages application configuration and environment variables.
+│   ├── database/       # Responsible for the application's database access.
+│   ├── logging/        # The application's logging mechanisms.
+│   └── AppModule       # The application's primary module, and IOC container.
+|
+├── http_api/           # Encapsulates the application's HTTP interface.
+│   ├── controllers/    # HTTP request handlers routing requests to the application's services.
+│   ├── decorators/     # Custom decorators for Swagger documentation and request routing for Controllers.
+│   ├── dtos/           # Data Transfer Objects that define data structures and handle validation.
+│   ├── filters/        # Exception filters for consistent error handling across the application.
+│   ├── guards/         # Guards to enforce authorization and endpoint protection.
+│   ├── interceptors/   # Interceptors for transforming data or handling response customization.
+│   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
+│   ├── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
+│   └── strategies/     # Passport strategies for encapsulating user authentication.
+│
+└── main.ts             # The application entry point where the NestJS app is bootstrapped.
+```
 
 ## My development setup
 ```bash
@@ -88,13 +117,9 @@ npm run start:dev
 ```bash
 npm run test:watch
 ```
-[Thunder Client](thunderclient.com) to manually test the API's endpoints.  
-[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.
+[Bash scripts](./scripts/) to manually test the API's endpoints.  
+[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.  
 [Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
-
-## License
-
-Nest, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ## NestJS object concepts
 ```mermaid
@@ -157,106 +182,5 @@ An Interceptor ...? TODO
 ## Pipes
 Used for validating and transforming data before passing it to the data's handler.
 
-### Layered Architecture Explanation
-
-1. **Domain Layer**: 
-   - This is the heart of DDD and contains the domain model, including entities, value objects, aggregates, domain services, and domain events. It's responsible for expressing the business logic.
-   - **Common Directories**: `Entities/`, `ValueObjects/`, `Repositories/`, `DomainServices/`, `Events/`
-
-2. **Application Layer**: 
-   - This layer orchestrates the application's use cases. It does not contain business logic but coordinates operations provided by the domain layer.
-   - **Common Directories**: `DTOs/`, `Services/`, `Commands/`, `Queries/`
-
-3. **Infrastructure Layer**: 
-   - This layer provides technical capabilities necessary for the application and domain layers, such as data persistence, external service integration, and messaging.
-   - **Common Directories**: `Persistence/`, `Messaging/`, `ExternalServices/`, `Configuration/`
-
-4. **Presentation Layer**: 
-   - This is where the application's UI or API is defined. It handles user interactions and routes calls to the application layer.
-   - **Common Directories**: `Controllers/`, `Views/`, `APIs/`, `ViewModels/`
-
-### Mermaid Diagram
-
-```mermaid
-graph TD;
-    A[Presentation Layer] -->|depends on| B[Application Layer]
-    B -->|leads to| C[Domain Layer]
-    B -->|uses| D[Infrastructure Layer]
-    A --> C
-    C -->|defines| E[Entities]
-    C -->|contains| F[ValueObjects]
-    C -->|includes| G[DomainServices]
-    C -->|raises| H[Events]
-    B -->|utilizes| I[DTOs]
-    B -->|orchestrates| J[Commands]
-    B -->|handles| K[Queries]
-    D -->|provides| L[Persistence]
-    D -->|integrates| M[ExternalServices]
-    D -->|supports| N[Messaging]
-    D -->|manages| O[Configuration]
-    A -->|exposes| P[APIs]
-    A -->|renders| Q[Views]
-```
-
-### Documentation & Testing Considerations
-
-- **TSDoc and Code Comments**: For the C# ABP framework, consider using XML comments to document your code, similar to TSDoc in TypeScript, to help generate documentation.
-  
-- **Testing**: 
-  - **Mocking**: Ensure that interfaces within each layer are easily mockable to facilitate unit testing.
-  - **Tools**: Utilize tools such as xUnit or NUnit for unit testing in C#. Implement integration tests to verify interactions across layers.
-
-### Security and Logging
-
-- **Security**: 
-  - Implement security best practices consistent with ABP guidelines, such as use of authorization attributes and strong input validation.
-- **Logging**:
-  - Integrate a robust logging strategy using libraries like Serilog to capture and manage logs efficiently across all layers.
-
-Implementing these architectural principles and practices not only aligns your project with DDD and ABP conventions but also ensures a secure, maintainable, and scalable system.
-
-# File structure
-```plaintext
-src/
-├── application/        # Coordinates use cases of the application without direct business logic.
-│   ├── dtos/           # Data Transfer Objects that define data structures and handle validation.
-│   ├── modules/        # NestJS Modules that handle Denpendency Injection and expose the Controllers.
-│   ├── services/       # Application services orchestrating domain services and repository interactions.
-│   ├── events/         # Application services which emit events triggered by database operations.
-│   └── controllers/    # HTTP request handlers routing requests to application services.
-│
-├── domain/             # Encapsulates core business logic and domain model.
-│   └── entities/       # Business entities representing database objects.
-│
-├── infrastructure/     # Provides technical capabilities to support application and domain layers.
-│   ├── logging/        # The application's logging mechanisms.
-│   ├── database/       # Responsible for the application's database access.
-│   └── configuration/  # Manages application configuration and environment variables.
-|
-├── common/             # Includes cross-cutting concerns and shared utilities.
-│   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
-│   ├── guards/         # Guards to enforce authorization and endpoint protection.
-│   ├── interceptors/   # Interceptors for transforming data or handling response customization.
-│   └── filters/        # Exception filters for consistent error handling across the application.
-│
-└── main.ts             # The application entry point where the NestJS app is bootstrapped.
-```
-
-## Sequence diagram depicting SSE (Server-Sent Events) flow
-```mermaid
-sequenceDiagram
-    Client->>Controller: GET /endpoint/events
-    Controller->>Service: Subscribes to events
-    Service->>Subscriber: observe(): Entity
-    Subscriber->>Database: Listening to insert / update events
-    Subscriber-->>Service: success
-    Service-->>Controller: success
-    Controller-->>Client: SSE Stream Established
-
-    Note over Database: INSERT or UPDATE Entity
-
-    Database-->>Subscriber: Event
-    Subscriber-->>Service: Emits afterInsert / afterUpdate
-    Service-->>Controller: emit(Entity)
-    Controller-->>Client: Push Entity data via SSE
-```
+## License
+NestJS, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

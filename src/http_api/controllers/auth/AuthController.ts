@@ -3,13 +3,13 @@ import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
-import { HttpExceptionFilter } from '../../filters/HttpExceptionFilter';
-import { UnauthorizedExceptionFilter } from '../../filters/UnauthorizedExceptionFilter';
+import { HttpExceptionFilter } from '../../filters/http_exception/HttpExceptionFilter';
+import { UnauthorizedExceptionFilter } from '../../filters/unauthorized/UnauthorizedExceptionFilter';
 import { AuthService, TSignInData } from '../../../application/services/auth/AuthService';
 import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
 import { PassportJwtAuthGuard } from '../../guards/PassportJwtAuthGuard';
 import { ILogger } from '../../../infrastructure/logging/ILogger';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * A controller class that provides authentication endpoints.
@@ -21,7 +21,7 @@ export class AuthController {
 	private logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 		protected readonly authService: AuthService,
 		protected readonly configService: ConfigService<IServerConfig>,
 	) {

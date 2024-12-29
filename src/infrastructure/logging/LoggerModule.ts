@@ -2,14 +2,14 @@ import { Global, Module } from '@nestjs/common';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CorrelationManager } from './correlation/CorrelationManager';
-import { NewWinstonAdapter } from './adapters/NewWinstonAdapter';
+import { WinstonAdapter } from './adapters/WinstonAdapter';
 
 @Global()
 @Module({
 	imports: [ConfigModule],
 	providers: [
 		{
-			provide: NewWinstonAdapter,
+			provide: WinstonAdapter,
 			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const correlationManager = new CorrelationManager();
 
@@ -33,7 +33,7 @@ import { NewWinstonAdapter } from './adapters/NewWinstonAdapter';
 
 				switch (loggingConfig.driver) {
 					case 'winston':
-						return new NewWinstonAdapter(loggingConfig, correlationManager);
+						return new WinstonAdapter(loggingConfig, correlationManager);
 					default:
 						throw new Error('Unsupported logging driver selected.');
 				}
@@ -41,6 +41,6 @@ import { NewWinstonAdapter } from './adapters/NewWinstonAdapter';
 			inject: [ConfigService],
 		},
 	],
-	exports: [NewWinstonAdapter],
+	exports: [WinstonAdapter],
 })
 export class LoggerModule {}

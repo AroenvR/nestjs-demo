@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
-import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
-import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
+import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
+import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
+import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
 import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { UserEntity } from '../../../domain/user/UserEntity';
 import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { AbstractService } from '../AbstractService';
@@ -129,7 +129,7 @@ describe('UserService Integration', () => {
 	// --------------------------------------------------
 
 	it('Can observe events', async () => {
-		const observable = service.observe();
+		const observable = await service.observe();
 
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty('subscribe');

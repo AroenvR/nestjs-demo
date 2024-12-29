@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
 import { Inject } from '@nestjs/common';
 import { AbstractSubscriber } from '../AbstractSubscriber';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { UserEntity } from '../../../domain/user/UserEntity';
 import { UserService } from '../../services/user/UserService';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * Subscribes and publishes to events for the database's actions on the UserEntity table.
@@ -11,7 +11,7 @@ import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewW
  */
 export class UserSubscriber extends AbstractSubscriber<UserEntity> {
 	constructor(
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 		protected readonly dataSource: DataSource,
 		@Inject(UserService) protected readonly service: UserService,
 	) {

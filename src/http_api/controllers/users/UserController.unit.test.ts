@@ -3,12 +3,12 @@ import { UserController } from './UserController';
 import { MockService } from '../../../__tests__/mocks/service/MockService';
 import { UserService } from '../../../application/services/user/UserService';
 import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
-import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { CreateUserDto } from '../../dtos/user/CreateUserDto';
+import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
+import { UserResponseDto } from '../../dtos/user/UserResponseDto';
+import { UserEntity } from '../../../domain/user/UserEntity';
 import { GuardedController } from '../GuardedController';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 import { randomUUID } from 'crypto';
 
 describe('UserController Unit', () => {
@@ -36,7 +36,7 @@ describe('UserController Unit', () => {
 					useValue: new MockService(() => expectedResponse),
 				},
 				{
-					provide: NewWinstonAdapter,
+					provide: WinstonAdapter,
 					useValue: mockILogger,
 				},
 			],

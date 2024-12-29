@@ -1,11 +1,11 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../application/modules/AppModule';
+import { AppModule } from '../infrastructure/AppModule';
 import { LoggerMiddleware } from '../http_api/middleware/LoggerMiddleware';
-import { HttpErrorFilter } from '../http_api/filters/HttpErrorFilter';
+import { HttpErrorFilter } from '../http_api/filters/http_error/HttpErrorFilter';
 import { HttpExceptionMessages } from '../common/enums/HttpExceptionMessages';
-import { NewWinstonAdapter } from '../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../infrastructure/logging/adapters/WinstonAdapter';
 import { mockILogger } from './mocks/mockLogAdapter';
 
 @Controller('mock')
@@ -74,14 +74,14 @@ describe('AppModule', () => {
 			providers: [
 				{
 					useValue: mockILogger,
-					provide: NewWinstonAdapter,
+					provide: WinstonAdapter,
 				},
 			],
 			imports: [AppModule],
 		}).compile();
 
 		const app = moduleFixture.createNestApplication();
-		const logger = app.get(NewWinstonAdapter);
+		const logger = app.get(WinstonAdapter);
 		app.useGlobalFilters(new HttpErrorFilter(logger));
 
 		await app.init();

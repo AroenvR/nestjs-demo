@@ -1,8 +1,8 @@
 import { Observable, of } from 'rxjs';
-import { CreateDto } from '../../../application/dtos/CreateDto';
-import { UpdateDto } from '../../../application/dtos/UpdateDto';
-import { ResponseDto } from '../../../application/dtos/ResponseDto';
-import { AbstractEntity } from '../../../domain/entities/AbstractEntity';
+import { CreateDto } from '../../../http_api/dtos/CreateDto';
+import { UpdateDto } from '../../../http_api/dtos/UpdateDto';
+import { ResponseDto } from '../../../http_api/dtos/ResponseDto';
+import { AbstractEntity } from '../../../domain/AbstractEntity';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 
 /**

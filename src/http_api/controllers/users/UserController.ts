@@ -1,18 +1,17 @@
-import { Controller, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { isTruthy } from 'ts-istruthy';
 import { DeleteEndpoint } from '../../decorators/DeleteEndpoint';
 import { PatchEndpoint } from '../../decorators/PatchEndpoint';
 import { GetByIdEndpoint } from '../../decorators/GetByIdEndpoint';
 import { SseEndpoint } from '../../decorators/SseEndpoint';
 import { GetEndpoint } from '../../decorators/GetEndpoint';
 import { PostEndpoint } from '../../decorators/PostEndpoint';
-import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
-import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
+import { CreateUserDto } from '../../dtos/user/CreateUserDto';
+import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
+import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { UserService } from '../../../application/services/user/UserService';
 import { GuardedController } from '../GuardedController';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 
 const ENDPOINT = 'user'; // Just finished the unit test, on to the integration and the module tests.
 
@@ -21,7 +20,7 @@ const ENDPOINT = 'user'; // Just finished the unit test, on to the integration a
 @ApiTags(ENDPOINT)
 export class UserController extends GuardedController {
 	constructor(
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 		protected readonly service: UserService,
 	) {
 		super(logAdapter, service);
@@ -49,8 +48,6 @@ export class UserController extends GuardedController {
 
 	@PatchEndpoint(ENDPOINT, UserResponseDto)
 	public async update(id: number, updateDto: UpdateUserDto) {
-		if (!isTruthy(id)) throw new HttpException('ID is empty', HttpStatus.BAD_REQUEST);
-		if (!isTruthy(updateDto)) throw new HttpException('Payload is empty', HttpStatus.BAD_REQUEST);
 		return super.update(id, updateDto);
 	}
 

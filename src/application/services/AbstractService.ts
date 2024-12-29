@@ -1,13 +1,13 @@
 import { EntityManager, Repository } from 'typeorm';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { AbstractEntity } from '../../domain/entities/AbstractEntity';
-import { CreateDto } from '../dtos/CreateDto';
-import { ResponseDto } from '../dtos/ResponseDto';
-import { UpdateDto } from '../dtos/UpdateDto';
+import { AbstractEntity } from '../../domain/AbstractEntity';
+import { CreateDto } from '../../http_api/dtos/CreateDto';
+import { ResponseDto } from '../../http_api/dtos/ResponseDto';
+import { UpdateDto } from '../../http_api/dtos/UpdateDto';
 import { Observable, Subject } from 'rxjs';
 import { ISseMessage } from '../events/ISseMessage';
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * An abstract service class that enforces basic CRUD operations.
@@ -21,7 +21,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	constructor(
 		protected readonly repository: Repository<unknown>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: NewWinstonAdapter,
+		protected readonly logAdapter: WinstonAdapter,
 	) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 	}
@@ -74,7 +74,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * Allow constrollers to subscribe to database events.
 	 * @returns An Observable that emits ISseMessage objects containing ResponseDto's.
 	 */
-	public observe(): Observable<ISseMessage<RDTO>> {
+	public async observe(): Promise<Observable<ISseMessage<RDTO>>> {
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 
@@ -83,7 +83,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * Emits a ResponseDto object.
 	 * @param entity The entity's data emit.
 	 */
-	public emit(_: AbstractEntity): void {
+	public async emit(_: AbstractEntity): Promise<void> {
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
 	}
 }

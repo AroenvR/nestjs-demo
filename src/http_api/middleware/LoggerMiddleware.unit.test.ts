@@ -3,7 +3,7 @@ import { NestMiddleware } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerMiddleware } from './LoggerMiddleware';
 import { mockILogger } from '../../__tests__/mocks/mockLogAdapter';
-import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
 
 describe('LoggerMiddleware Unit', () => {
 	let middleware: NestMiddleware;
@@ -14,7 +14,7 @@ describe('LoggerMiddleware Unit', () => {
 				LoggerMiddleware,
 				{
 					useValue: mockILogger,
-					provide: NewWinstonAdapter,
+					provide: WinstonAdapter,
 				},
 			],
 		}).compile();

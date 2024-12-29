@@ -3,16 +3,16 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Subject } from 'rxjs';
 import { UserService } from './UserService';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
-import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
+import { UserEntity } from '../../../domain/user/UserEntity';
+import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
 import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
+import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
 import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
 import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
+import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 import { randomUUID } from 'crypto';
 
 describe('UserService Unit', () => {
@@ -32,7 +32,7 @@ describe('UserService Unit', () => {
 				UserService,
 				{
 					useValue: mockILogger,
-					provide: NewWinstonAdapter,
+					provide: WinstonAdapter,
 				},
 				{
 					provide: getRepositoryToken(UserEntity),
@@ -134,8 +134,8 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can observe events', () => {
-		const observable = service.observe();
+	it('Can observe events', async () => {
+		const observable = await service.observe();
 
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty('subscribe');

@@ -2,14 +2,14 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import { isTruthy } from 'ts-istruthy';
-import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
 import { ILogger } from 'src/infrastructure/logging/ILogger';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
 	private readonly logger: ILogger;
 
-	constructor(logAdapter: NewWinstonAdapter) {
+	constructor(logAdapter: WinstonAdapter) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 	}
 

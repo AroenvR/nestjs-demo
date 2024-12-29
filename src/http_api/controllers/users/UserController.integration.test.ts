@@ -3,15 +3,15 @@ import { ConfigModule } from '@nestjs/config';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserController } from './UserController';
-import { CreateUserDto } from '../../../application/dtos/user/CreateUserDto';
+import { CreateUserDto } from '../../dtos/user/CreateUserDto';
 import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
-import { UserEntity } from '../../../domain/entities/user/UserEntity';
+import { UserEntity } from '../../../domain/user/UserEntity';
 import { UserService } from '../../../application/services/user/UserService';
-import { UserResponseDto } from '../../../application/dtos/user/UserResponseDto';
+import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { UpdateUserDto } from '../../../application/dtos/user/UpdateUserDto';
+import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
 import { GuardedController } from '../GuardedController';
 
 describe('UserController Integration', () => {

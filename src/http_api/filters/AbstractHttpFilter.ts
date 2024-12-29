@@ -3,7 +3,7 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
 import { GuardedController } from '../controllers/GuardedController'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ILogger } from '../../infrastructure/logging/ILogger';
-import { NewWinstonAdapter } from '../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
@@ -18,19 +18,17 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
 	protected message = 'internal_server_error';
 
-	constructor(private readonly logAdapter: NewWinstonAdapter) {
-		const name = this.constructor.name;
-		this.logger = this.logAdapter.getPrefixedLogger(name);
+	constructor(private readonly logAdapter: WinstonAdapter) {
+		this.logger = this.logAdapter.getPrefixedLogger(this.name);
 	}
 
-	catch(exception: unknown, host: ArgumentsHost) {
+	catch(error: unknown, host: ArgumentsHost) {
 		this.context = host.switchToHttp();
 
 		this.response = this.context.getResponse();
 		this.request = this.context.getRequest();
 
-		this.logger.error(`${exception}`);
-		if (exception instanceof Error && exception.stack) this.logger.debug(exception.stack);
+		this.logger.error(`${error instanceof Error ? error.message : 'Unknown issue.'}`, error);
 
 		const responseObj = {
 			statusCode: this.status,
@@ -41,5 +39,11 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 
 		// Send the response
 		this.response.status(this.status).json(responseObj);
+	}
+
+	/* Getters & Setters */
+
+	public get name() {
+		return this.constructor.name;
 	}
 }

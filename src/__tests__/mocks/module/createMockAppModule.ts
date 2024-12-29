@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
 import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
 import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
-import { AuthModule } from '../../../application/modules/auth/AuthModule';
-import { HttpErrorFilter } from '../../../http_api/filters/HttpErrorFilter';
-import { NewWinstonAdapter } from '../../../infrastructure/logging/adapters/NewWinstonAdapter';
+import { AuthModule } from '../../../http_api/modules/auth/AuthModule';
+import { HttpErrorFilter } from '../../../http_api/filters/http_error/HttpErrorFilter';
+import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 
 /**
  * Mocks the app module for testing.
@@ -29,7 +29,7 @@ export const createMockAppModule = async (module: Type<any>) => {
 
 	const app = moduleFixture.createNestApplication({ bufferLogs: true });
 
-	const logger = app.get(NewWinstonAdapter); // Retrieve the custom logger from Nest's DI container
+	const logger = app.get(WinstonAdapter); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
 
 	// Apply global filters to ensure we catch any uncaught errors.
