@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MaxLength, MinLength } from 'class-validator';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { ResponseDto } from '../ResponseDto';
-import { userConstants } from '../../../common/constants/userConstants';
 
 /**
  * This class is responsible for returning a {@link UserEntity} to the client.
@@ -11,18 +9,15 @@ import { userConstants } from '../../../common/constants/userConstants';
  * - username: string, at least 3 characters long.
  */
 export class UserResponseDto extends ResponseDto {
-	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
-	@IsString({ message: 'value must be a string' })
-	@MinLength(userConstants.minUsernameLength, { message: `Username must be at least ${userConstants.minUsernameLength} characters long` })
-	@MaxLength(userConstants.maxUsernameLength, { message: `Username can be at most ${userConstants.maxUsernameLength} characters long` })
-	username: string;
+    @ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
+    username: string;
 
-	constructor(entity: UserEntity) {
-		super(entity);
-		this.username = entity.username;
-	}
+    constructor(entity: UserEntity) {
+        super(entity);
+        this.username = entity.username;
+    }
 
-	static fromEntity(entity: UserEntity): UserResponseDto {
-		return new UserResponseDto(entity);
-	}
+    static fromEntity(entity: UserEntity): UserResponseDto {
+        return new UserResponseDto(entity);
+    }
 }
