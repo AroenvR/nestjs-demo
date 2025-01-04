@@ -9,15 +9,15 @@ import { ResponseDto } from '../ResponseDto';
  * - username: string, at least 3 characters long.
  */
 export class UserResponseDto extends ResponseDto {
-    @ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
-    username: string;
+	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
+	username: string;
 
-    constructor(entity: UserEntity) {
-        super(entity);
-        this.username = entity.username;
-    }
+	constructor(entity: UserEntity) {
+		super(entity);
+		this.username = entity.username;
+	}
 
-    static fromEntity(entity: UserEntity): UserResponseDto {
-        return new UserResponseDto(entity);
-    }
+	static fromEntity(entity: UserEntity): UserResponseDto {
+		return new UserResponseDto(entity);
+	}
 }

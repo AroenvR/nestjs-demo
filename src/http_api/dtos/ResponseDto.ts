@@ -7,22 +7,22 @@ import { AbstractEntity } from '../../domain/AbstractEntity'; // eslint-disable-
  * It provides Swagger documentation for the API.
  */
 export class ResponseDto {
-    @ApiProperty({ description: 'Unique autoincrement identifier of the entity', example: 1, uniqueItems: true })
-    id: number;
+	@ApiProperty({ description: 'Unique autoincrement identifier of the entity', example: 1, uniqueItems: true })
+	id: number;
 
-    @ApiProperty({ description: 'Universally unique identifier of the entity', example: '550e8400-e29b-41d4-a716-446655440000', uniqueItems: true })
-    uuid: UUID;
+	@ApiProperty({ description: 'Universally unique identifier of the entity', example: '550e8400-e29b-41d4-a716-446655440000', uniqueItems: true })
+	uuid: UUID;
 
-    @ApiProperty({
-        description: 'Timestamp of when the entity was created using a UNIX timestamp',
-        example: 1711285967,
-        uniqueItems: true,
-    })
-    createdAt: number;
+	@ApiProperty({
+		description: 'Timestamp of when the entity was created using a UNIX timestamp',
+		example: 1711285967,
+		uniqueItems: true,
+	})
+	createdAt: number;
 
-    protected constructor(entity: AbstractEntity) {
-        this.id = entity.id;
-        this.uuid = entity.uuid;
-        this.createdAt = entity.createdAt;
-    }
+	protected constructor(entity: AbstractEntity) {
+		this.id = entity.id;
+		this.uuid = entity.uuid;
+		this.createdAt = entity.createdAt;
+	}
 }
