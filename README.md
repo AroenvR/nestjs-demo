@@ -86,7 +86,7 @@ src/
 │   ├── constants/      # Constants that are used by multiple layers.
 │   └── enums/          # Enums that are used by multiple layers.
 │
-├── domain/             # Encapsulates core business logic, domain model and its entities.
+├── domain/             # Encapsulates core business logic, the domain model and its entities.
 │   └── AbstractEntity  # The parent class for all entities in the application.
 │
 ├── infrastructure/     # Provides technical capabilities to support application and domain layers.
@@ -99,14 +99,14 @@ src/
 │   ├── controllers/    # HTTP request handlers routing requests to the application's services.
 │   ├── decorators/     # Custom decorators for Swagger documentation and request routing for Controllers.
 │   ├── dtos/           # Data Transfer Objects that define data structures and handle validation.
-│   ├── filters/        # Exception filters for consistent error handling across the application.
+│   ├── filters/        # Exception filters for capturing and handling endpoint errors.
 │   ├── guards/         # Guards to enforce authorization and endpoint protection.
 │   ├── interceptors/   # Interceptors for transforming data or handling response customization.
 │   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
 │   ├── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
 │   └── strategies/     # Passport strategies for encapsulating user authentication.
 │
-└── main.ts             # The application entry point where the NestJS app is bootstrapped.
+└── main.ts             # The application's entry point where the NestJS app is bootstrapped.
 ```
 
 ## My development setup
@@ -121,66 +121,99 @@ npm run test:watch
 [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.  
 [Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
 
-## NestJS object concepts
+## NestJS dataflow
 ```mermaid
-stateDiagram-v2
-    Request_Dataflow_Lifecycle: Request dataflow lifecycle
-    Request_Lifecycle: Request dataflow
-    Response_Lifecycle: Response dataflow
+sequenceDiagram
+    participant Client
+    participant Middleware
+    participant Guard
+    participant Pipe
+    participant Interceptor
+    participant Controller
+    participant Service
+    participant Filter
 
-    Request: HTTP(s) Request <br/> GET /users
-    Response: HTTP(s) Response <br/> 200 OK
+    Client->>Middleware: HTTP Request
 
-    Mid1: Middlewares
-    Gaurd1: Guards
-    Inter1: Interceptors
-    Pipe1: Pipes
-    Cont1: Controllers
-    Serv1: Services
+    Note over Middleware: Log/Parse request
+    Middleware->>Guard: Pass Request
+    Guard-->>Middleware: Allow/Deny
+    Middleware->>Pipe: Pass Request
 
-    Mid2: Middlewares
-    Gaurd2: Guards
-    Inter2: Interceptors
-    Pipe2: Pipes
-    Cont2: Controllers
-    Serv2: Services
+    Note over Pipe: Validate/Modify data
+    Pipe->>Interceptor: 
 
-    Request --> Request_Lifecycle
+    Note over Interceptor: Transform/Cache data
+    Interceptor->>Controller: 
 
-    state Request_Dataflow_Lifecycle {
-        state Request_Lifecycle {
-            [*] --> Mid1
-            Mid1 --> Gaurd1
-            Gaurd1 --> Inter1
-            Inter1 --> Pipe1
-            Pipe1 --> Cont1
-            Cont1 --> Serv1
-        }
+    Note over Controller: Pass to correct service
+    Controller->>Service: 
 
-        state Response_Lifecycle {
-            Serv2 --> Cont2
-            Cont2 --> Pipe2
-            Pipe2 --> Inter2 
-            Inter2 --> Gaurd2
-            Gaurd2 --> Mid2 
-            Mid2 --> [*] 
-        }
-    }
+    Note over Service: Execute business logic
+    Service-->>Controller: Response Data
+    Controller-->>Interceptor: Response Data
 
-    Response_Lifecycle --> Response
+    Note over Interceptor: Validate/Transform Data
+    Interceptor-->>Middleware: 
+
+    Note over Middleware: Log/Parse response
+    Middleware-->>Client: HTTP success
+    alt Error Occurs
+        Service-->>Filter: Throw Exception
+
+        Note over Middleware: Log/Parse Error response
+        Filter-->>Client: HTTP Error response
+    end
 ```
 
 ## Middlewares
-Has access to the `request` and `response` objects and is the first and last object to be called during a request/response cycle.
+Middlewares in NestJS are functions that have access to the **request** and **response** objects, as well as the **next middleware** in the request-response cycle. They are executed before any route handlers, making them ideal for tasks like logging, authentication, and modifying requests. Middlewares are the first and last points of interaction during a request/response cycle, allowing for centralized processing of incoming requests and outgoing responses.
+
+#### Key points:
+- **Request Modification**: Alter or enrich incoming request data before it reaches the controller.
+- **Logging**: Track and log details of each incoming request for monitoring and debugging.
+- **Authentication & Authorization**: Validate user credentials and permissions before accessing protected routes.
+- **Error Handling**: Catch and process errors uniformly across all routes.
+- **Performance Enhancements**: Implement caching or rate limiting to optimize application performance.
 
 ## Guards
-Usually a security check, such as validating JWT's on any controller that implements the Guard before data is given to the data's handler.
+Guards in NestJS are used to determine whether a request will be handled by the route handler based on custom logic, typically for authentication and authorization. They implement the CanActivate interface and return a boolean indicating whether to proceed. Guards are executed before any interceptor or pipe, making them ideal for access control checks.
+
+#### Key points:
+- **Authentication**: Validate user credentials, such as verifying JWT tokens.
+- **Authorization**: Check user roles or permissions to access specific resources.
+- **Request Control**: Allow or deny requests before they reach the controller.
+- **Scope Flexibility**: Apply guards globally, to controllers, or individual routes.
+- **Reusable Security Logic**: Centralize access control logic for consistency and maintainability.
 
 ## Interceptors
-An Interceptor ...? TODO
+Interceptors in NestJS allow you to intercept and manipulate incoming requests and outgoing responses. They are useful for implementing cross-cutting concerns such as logging, transforming data, handling errors, and caching. By implementing the NestInterceptor interface, you can add custom logic before and after the execution of route handlers. Interceptors can be applied globally, to specific controllers, or individual routes.
+
+#### Key points:
+- **Logging & Monitoring**: Track request durations and details.
+- **Response Transformation**: Modify or format response data.
+- **Error Handling**: Standardize exception handling across the application.
+- **Caching:** Implement response caching to improve performance.
 
 ## Pipes
-Used for validating and transforming data before passing it to the data's handler.
+Pipes in NestJS are used to validate and transform incoming data before it reaches the route handlers. They implement the PipeTransform interface and can be applied globally, to specific controllers, or individual routes. Pipes ensure data integrity by enforcing validation rules and transforming data into the desired format. They help maintain consistency and reduce boilerplate code by handling common data processing tasks.
 
-## License
+#### Key points:
+- **Validation**: Ensure incoming data meets required criteria using built-in or custom validators.
+- **Transformation**: Convert data types or formats to match expected handler inputs.
+- **Parameter Handling**: Process and validate route parameters, query strings, and request bodies.
+- **Reusable Logic**: Create generic pipes that can be reused across different parts of the application.
+- **Error Handling**: Provide meaningful error messages when data validation fails.
+
+## Filters
+Filters in NestJS, specifically Exception Filters, handle and manage exceptions that occur during the request-response cycle. They provide a centralized mechanism to catch errors, transform them into meaningful responses, and ensure consistent error handling across the application. Filters implement the ExceptionFilter interface and can be applied globally, to specific controllers, or individual routes. By separating error handling from business logic, filters enhance code maintainability and clarity. They also integrate seamlessly with logging systems to record error details for debugging purposes.
+
+#### Key points:
+- **Centralized Error Handling**: Manage all exceptions in a single location for consistency.
+- **Custom Error Responses**: Transform exceptions into standardized, client-friendly messages.
+- **Separation of Concerns**: Isolate error handling from business logic for cleaner code.
+- **Scope Flexibility**: Apply filters globally, to controllers, or individual routes.
+- **Integration with Logging**: Combine with logging mechanisms to record error details for debugging.
+
+# License
 NestJS, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
