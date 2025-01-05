@@ -10,15 +10,15 @@ import { UserModule } from '../http_api/modules/users/UserModule';
 const ENDPOINT_MODULES = [AuthModule, UserModule];
 
 @Module({
-	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true,
-			load: [serverConfig],
-		}),
-		LoggerModule,
-		DatabaseModule,
-		...ENDPOINT_MODULES,
-	],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [serverConfig],
+        }),
+        LoggerModule,
+        DatabaseModule,
+        ...ENDPOINT_MODULES,
+    ],
 })
 /**
  * The root application module.
@@ -26,11 +26,11 @@ const ENDPOINT_MODULES = [AuthModule, UserModule];
  * - Exposes Configuration, Logging and Database modules to the other modules.
  */
 export class AppModule implements NestModule {
-	/**
-	 * Apply middleware to the Express App.
-	 * @param consumer - The middleware consumer to apply middleware.
-	 */
-	public configure(consumer: MiddlewareConsumer) {
-		consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set
-	}
+    /**
+     * Apply middleware to the Express App.
+     * @param consumer - The middleware consumer to apply middleware.
+     */
+    public configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set
+    }
 }

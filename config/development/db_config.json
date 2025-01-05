@@ -1,5 +1,7 @@
 {
     "driver": "sqlite",
     "database": "dev.db",
-    "synchronize": true
+    "runMigrations": true,
+    "synchronize": false,
+    "_comment": "synchronize: true will auto create tables based on models. Don't enable this if migrations are on."
 }
