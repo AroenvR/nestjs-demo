@@ -20,12 +20,13 @@ describe('UserService Unit', () => {
 	const UUID = randomUUID();
 	const CREATED_AT = Date.now();
 	const USERNAME = 'test';
+	const PASSWORD = 'testpass';
 
 	let entity: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 
 	beforeEach(async () => {
-		entity = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
+		entity = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -59,11 +60,13 @@ describe('UserService Unit', () => {
 	it('Can create an entity', async () => {
 		const dto = new CreateUserDto();
 		dto.username = USERNAME;
+		dto.password = PASSWORD;
 
 		const created = await service.create(dto);
 		expect(created).toBeInstanceOf(UserResponseDto);
 		expect(created.id).toEqual(ID);
 		expect(created.username).toEqual(USERNAME);
+		expect(created.password).toEqual(PASSWORD);
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
 	});
@@ -80,6 +83,7 @@ describe('UserService Unit', () => {
 			expect(item).toBeInstanceOf(UserResponseDto);
 			expect(item.id).toBeTruthy();
 			expect(item.username).toBeTruthy();
+			expect(item.password).toBeTruthy();
 		}
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
@@ -94,6 +98,7 @@ describe('UserService Unit', () => {
 		expect(data).toBeInstanceOf(UserResponseDto);
 		expect(data.id).toEqual(ID);
 		expect(data.username).toEqual(USERNAME);
+		expect(data.password).toEqual(PASSWORD);
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
 	});
@@ -112,6 +117,7 @@ describe('UserService Unit', () => {
 	it('Can update an entity', async () => {
 		const dto = new UpdateUserDto();
 		dto.username = 'updated';
+		dto.password = 'updatedpass';
 
 		const updated = await service.update(ID, dto);
 		expect(updated).not.toEqual(entity);
@@ -119,6 +125,7 @@ describe('UserService Unit', () => {
 		expect(updated).toBeInstanceOf(UserResponseDto);
 		expect(updated.id).toEqual(ID);
 		expect(updated.username).toEqual(dto.username);
+		expect(updated.password).toEqual(dto.password);
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
 	});
@@ -149,7 +156,7 @@ describe('UserService Unit', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
+		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
 		service.emit(data);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });

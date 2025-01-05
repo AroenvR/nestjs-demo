@@ -1,6 +1,6 @@
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, OnApplicationBootstrap } from '@nestjs/common';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
 import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
@@ -12,7 +12,7 @@ import { WinstonAdapter } from '../../../infrastructure/logging/adapters/Winston
  * A service class that provides basic CRUD operations for the UserEntity.
  * Extends the {@link AbstractService} class and implements the required CRUD operations.
  */
-export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto> {
+export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto> implements OnApplicationBootstrap {
 	constructor(
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
@@ -110,5 +110,36 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 
 		const entity = new UserEntity(data); // Validate the data
 		this.events.next({ data: UserResponseDto.fromEntity(entity) });
+	}
+
+	/**
+	 * Fired on application bootstrap.
+	 * Checks if data needs to be seeded and seeds it if necessary.
+	 * @returns A Promise that resolves when the operation is complete.
+	 */
+	public async onApplicationBootstrap() {
+		// TODO: TEST
+		this.logger.info(`Checking if data needs to be seeded`);
+
+		if ((await this.repository.count()) === 0) {
+			const data = this.createSeedData();
+			await this.repository.save(data);
+		}
+
+		this.logger.info(`Data already seeded`);
+	}
+
+	/**
+	 * Creates seed data for the UserEntity.
+	 * @returns An array of UserEntity objects.
+	 */
+	private createSeedData() {
+		this.logger.info(`Seeding data`);
+		const seed: UserEntity[] = [];
+
+		const admin = new UserEntity({ username: 'admin', password: 'administrator' });
+		seed.push(admin);
+
+		return seed;
 	}
 }

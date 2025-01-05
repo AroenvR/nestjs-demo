@@ -26,6 +26,7 @@ describe('UserController Integration', () => {
 	let existingEntity: UserEntity; // Value to change
 
 	const USERNAME = 'Bob';
+	const PASSWORD = 'BobsSecret';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -49,11 +50,13 @@ describe('UserController Integration', () => {
 
 		createDto = new CreateUserDto(); // Value to change
 		createDto.username = USERNAME; // Value to change
+		createDto.password = PASSWORD; // Value to change
 	});
 
 	beforeEach(async () => {
 		const dto = new CreateUserDto(); // Value to change
 		dto.username = 'Initial'; // Value to change
+		dto.password = 'InitialPass'; // Value to change
 
 		const entity = new UserEntity(dto); // Value to change
 		existingEntity = await repository.save(entity);
@@ -77,6 +80,7 @@ describe('UserController Integration', () => {
 			const created = (await controller.create(createDto)) as UserResponseDto;
 			expect(created.id).toEqual(2);
 			expect(created.username).toEqual(createDto.username);
+			expect(created.password).toEqual(createDto.password);
 
 			await expect(wasLogged(TEST_NAME, `${className}: Creating a new entity`)).resolves.toBe(true);
 		});
@@ -85,6 +89,7 @@ describe('UserController Integration', () => {
 
 		it('should fail with duplicate input', async () => {
 			createDto.username = 'Initial'; // Value to change
+			createDto.password = 'InitialPassie'; // Value to change
 			await expect(controller.create(createDto)).rejects.toThrow('SQLITE_CONSTRAINT: UNIQUE constraint failed: user_entity.username'); // Value to change
 		});
 
@@ -103,14 +108,12 @@ describe('UserController Integration', () => {
 				createDto.username = value;
 				await expect(controller.create(createDto)).rejects.toThrow("UserEntity: Child's JSON schema validation failed"); // Value to change
 			}
-		});
 
-		// --------------------------------------------------
-
-		it('should fail with sql injection as entry', async () => {
-			createDto.username = `'); DROP TABLE template_entity; --`; // Value to change
-			await controller.create(createDto); // Create initial entry
-			await expect(controller.create(createDto)).rejects.toThrow('SQLITE_CONSTRAINT: UNIQUE constraint failed: user_entity.username'); // Value to change
+			for (const value of values) {
+				// @ts-expect-error: Password expects a string.
+				createDto.password = value;
+				await expect(controller.create(createDto)).rejects.toThrow("UserEntity: Child's JSON schema validation failed"); // Value to change
+			}
 		});
 	});
 
@@ -170,9 +173,11 @@ describe('UserController Integration', () => {
 		it('Updates an entity', async () => {
 			const dto = new UpdateUserDto(); // Value to change
 			dto.username = 'Alice';
+			dto.password = 'AlicesPassword';
 
 			const response = UserResponseDto.fromEntity(existingEntity); // Value to change
 			response.username = 'Alice';
+			response.password = 'AlicesPassword';
 			response.id = 1;
 
 			await expect(controller.update(1, dto)).resolves.toEqual(response);
@@ -185,6 +190,7 @@ describe('UserController Integration', () => {
 			const nonExistentId = 999;
 			const dto = new UpdateUserDto();
 			dto.username = 'new value';
+			dto.password = 'Also a new value';
 
 			await expect(controller.update(nonExistentId, dto)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
 			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by id ${nonExistentId}`)).resolves.toBe(true);

@@ -24,6 +24,7 @@ describe('UserService Integration', () => {
 	const UUID = randomUUID();
 	const CREATED_AT = Date.now();
 	const USERNAME = 'test';
+	const PASSWORD = 'testpass';
 
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
 	let className: string;
@@ -57,12 +58,14 @@ describe('UserService Integration', () => {
 	it('Can create an entity', async () => {
 		const dto = new CreateUserDto();
 		dto.username = USERNAME;
+		dto.password = PASSWORD;
 
 		const response = await service.create(dto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
 		expect(response.id).toEqual(ID);
 		expect(response.username).toEqual(USERNAME);
+		expect(response.password).toEqual(PASSWORD);
 
 		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
 	});
@@ -78,6 +81,7 @@ describe('UserService Integration', () => {
 			expect(entity).toBeInstanceOf(UserResponseDto);
 			expect(entity.id).toEqual(ID);
 			expect(entity.username).toEqual(USERNAME);
+			expect(entity.password).toEqual(PASSWORD);
 		}
 
 		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
@@ -91,6 +95,7 @@ describe('UserService Integration', () => {
 		expect(response).toBeInstanceOf(UserResponseDto);
 		expect(response.id).toEqual(ID);
 		expect(response.username).toEqual(USERNAME);
+		expect(response.password).toEqual(PASSWORD);
 
 		await expect(wasLogged(testName, `${className}: Finding entity by id ${ID}`)).resolves.toBe(true);
 	});
@@ -109,12 +114,14 @@ describe('UserService Integration', () => {
 	it('Updates an entity', async () => {
 		const dto = new UpdateUserDto();
 		dto.username = 'updated';
+		dto.password = 'updatedpass';
 
 		const response = await service.update(ID, dto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
 		expect(response.id).toEqual(ID);
 		expect(response.username).toEqual(dto.username);
+		expect(response.password).toEqual(dto.password);
 
 		await expect(wasLogged(testName, `${className}: Updating entity by id ${ID}`)).resolves.toBe(true);
 	});
@@ -143,7 +150,7 @@ describe('UserService Integration', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME });
+		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
 		service.emit(data);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });

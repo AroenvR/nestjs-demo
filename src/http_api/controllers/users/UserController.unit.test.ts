@@ -21,12 +21,16 @@ describe('UserController Unit', () => {
 	const UUID = randomUUID();
 	const CREATED_AT = Date.now();
 	const USERNAME = 'Bob';
+	const PASSWORD = 'BobsSecret';
 
 	beforeEach(async () => {
 		createDto = new CreateUserDto();
 		createDto.username = USERNAME;
+		createDto.password = PASSWORD;
 
-		expectedResponse = UserResponseDto.fromEntity(new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME }));
+		expectedResponse = UserResponseDto.fromEntity(
+			new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD }),
+		);
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [UserController], // Value to change

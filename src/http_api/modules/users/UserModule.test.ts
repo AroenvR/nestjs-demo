@@ -18,6 +18,7 @@ describe(TEST_NAME, () => {
 
 	const ENDPOINT = '/v1/user'; // Value to change
 	const USERNAME = 'Initial'; // Value to change
+	const PASSWORD = 'password'; // Value to change
 
 	beforeEach(async () => {
 		app = await createMockAppModule(UserModule); // Value to change
@@ -27,6 +28,7 @@ describe(TEST_NAME, () => {
 
 		const dto = new CreateUserDto(); // Value to change
 		dto.username = USERNAME; // Value to change
+		dto.password = PASSWORD; // Value to change
 
 		const entity = new UserEntity(dto); // Value to change
 		await repository.save(entity);
@@ -46,7 +48,7 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('POST /user', () => {
-		const data = { username: 'Bob' }; // Value to change
+		const data = { username: 'Bob', password: 'something' }; // Value to change
 
 		it('Can create an entity', async () => {
 			const response = await request(app.getHttpServer())
@@ -55,8 +57,9 @@ describe(TEST_NAME, () => {
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(201);
 
-			expect(response.body.id).toEqual(2);
+			expect(response.body.id).toEqual(3); // 3 because 1 is being seeded and 1 is being inserted in the beforeEach.
 			expect(response.body.username).toEqual(data.username);
+			expect(response.body.password).toEqual(data.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Creating a new entity`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Creating a new entity`)).resolves.toBe(true);
@@ -114,8 +117,9 @@ describe(TEST_NAME, () => {
 				.expect(200);
 
 			expect(response.body.length).toBeGreaterThanOrEqual(1);
-			expect(response.body[0].id).toEqual(1);
-			expect(response.body[0].username).toEqual(USERNAME);
+			expect(response.body[1].id).toEqual(2);
+			expect(response.body[1].username).toEqual(USERNAME);
+			expect(response.body[1].password).toEqual(PASSWORD);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Finding all entities`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Finding all entities`)).resolves.toBe(true);
@@ -140,7 +144,7 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('GET /user/:id', () => {
-		const expected = { id: 1, username: USERNAME }; // Value to change
+		const expected = { id: 2, username: USERNAME, password: PASSWORD }; // Value to change
 
 		it('Can find an entity by id', async () => {
 			const response = await request(app.getHttpServer())
@@ -150,6 +154,7 @@ describe(TEST_NAME, () => {
 
 			expect(response.body.id).toEqual(expected.id);
 			expect(response.body.username).toEqual(expected.username);
+			expect(response.body.password).toEqual(expected.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by id ${expected.id}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by id ${expected.id}`)).resolves.toBe(true);
@@ -192,8 +197,8 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('PATCH /user/:id', () => {
-		const data = { username: 'Bob' }; // Value to change
-		const expected = { id: 1, username: 'Bob' }; // Value to change
+		const data = { username: 'Bob', password: 'something' }; // Value to change
+		const expected = { id: 1, username: 'Bob', password: 'something' }; // Value to change
 
 		it('Can update an entity', async () => {
 			const response = await request(app.getHttpServer())
@@ -204,6 +209,7 @@ describe(TEST_NAME, () => {
 
 			expect(response.body.id).toEqual(expected.id);
 			expect(response.body.username).toEqual(expected.username);
+			expect(response.body.password).toEqual(expected.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by id ${expected.id}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by id ${expected.id}`)).resolves.toBe(true);

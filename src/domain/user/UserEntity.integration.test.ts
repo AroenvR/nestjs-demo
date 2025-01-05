@@ -7,7 +7,8 @@ import { serverConfig } from '../../infrastructure/configuration/serverConfig';
 import { DatabaseModule } from '../../infrastructure/database/DatabaseModule';
 
 describe('UserEntity_Integration', () => {
-	const VALUE = 'test';
+	const USERNAME = 'test';
+	const PASSWORD = 'testerinobebino';
 
 	let repository: Repository<UserEntity>;
 
@@ -34,13 +35,13 @@ describe('UserEntity_Integration', () => {
 
 	describe('Happy flow', () => {
 		it('Can be inserted into the database', async () => {
-			const entity = new UserEntity({ username: VALUE });
+			const entity = new UserEntity({ username: USERNAME, password: PASSWORD });
 			const saved = await repository.save(entity);
 
 			const found = await repository.findOne({ where: { id: saved.id } });
 			expect(saved).toEqual(found);
 
-			expect(saved.username).toEqual(VALUE);
+			expect(saved.username).toEqual(USERNAME);
 		});
 	});
 
@@ -48,7 +49,7 @@ describe('UserEntity_Integration', () => {
 
 	describe('Unhappy flow', () => {
 		it('Username cannot be null', async () => {
-			const entity = new UserEntity({ username: VALUE });
+			const entity = new UserEntity({ username: USERNAME, password: PASSWORD });
 			entity.username = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});
@@ -56,10 +57,10 @@ describe('UserEntity_Integration', () => {
 		// --------------------------------------------------
 
 		it('Username must be unique', async () => {
-			const entity = new UserEntity({ username: VALUE });
+			const entity = new UserEntity({ username: USERNAME, password: PASSWORD });
 			await repository.save(entity);
 
-			const duplicate = new UserEntity({ username: VALUE });
+			const duplicate = new UserEntity({ username: USERNAME, password: PASSWORD });
 			await expect(repository.save(duplicate)).rejects.toThrow();
 		});
 	});
