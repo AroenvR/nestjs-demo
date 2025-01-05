@@ -17,7 +17,6 @@ COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 # Send a GET by ID request to the endpoint
 curl -X GET http://localhost:3000/v1/$ENDPOINT/$1 \
     -b $COOKIE_JAR \
-    -H "Content-Type: application/json" \
-    -d "{\"value\":\"$2\"}"
+    -H "Content-Type: application/json"
 
 echo ""

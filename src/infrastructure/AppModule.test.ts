@@ -1,12 +1,12 @@
 import request from 'supertest';
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../infrastructure/AppModule';
+import { AppModule } from './AppModule';
 import { LoggerMiddleware } from '../http_api/middleware/LoggerMiddleware';
 import { HttpErrorFilter } from '../http_api/filters/http_error/HttpErrorFilter';
 import { HttpExceptionMessages } from '../common/enums/HttpExceptionMessages';
-import { WinstonAdapter } from '../infrastructure/logging/adapters/WinstonAdapter';
-import { mockILogger } from './mocks/mockLogAdapter';
+import { WinstonAdapter } from './logging/adapters/WinstonAdapter';
+import { mockILogger } from '../__tests__/mocks/mockLogAdapter';
 
 @Controller('mock')
 export class MockController {
