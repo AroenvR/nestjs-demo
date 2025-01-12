@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserModule } from './UserModule';
@@ -55,7 +55,7 @@ describe(TEST_NAME, () => {
 				.post(ENDPOINT)
 				.send(data)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(201);
+				.expect(HttpStatus.CREATED);
 
 			expect(response.body.id).toEqual(3); // 3 because 1 is being seeded and 1 is being inserted in the beforeEach.
 			expect(response.body.username).toEqual(data.username);
@@ -81,7 +81,7 @@ describe(TEST_NAME, () => {
 				.post(ENDPOINT)
 				.send({})
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(400);
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		// --------------------------------------------------
@@ -93,7 +93,7 @@ describe(TEST_NAME, () => {
 				.post(ENDPOINT)
 				.send(data)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(409);
+				.expect(HttpStatus.CONFLICT);
 		});
 
 		// --------------------------------------------------
@@ -103,7 +103,7 @@ describe(TEST_NAME, () => {
 				.post(ENDPOINT)
 				.send(data)
 				.set('Cookie', [`jwt=${expiredJwt}`])
-				.expect(401);
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
@@ -114,7 +114,7 @@ describe(TEST_NAME, () => {
 			const response = await request(app.getHttpServer())
 				.get(ENDPOINT)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(200);
+				.expect(HttpStatus.OK);
 
 			expect(response.body.length).toBeGreaterThanOrEqual(1);
 			expect(response.body[1].id).toEqual(2);
@@ -128,7 +128,7 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).get(ENDPOINT).expect(401);
+			await request(app.getHttpServer()).get(ENDPOINT).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
@@ -137,7 +137,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.get(ENDPOINT)
 				.set('Cookie', [`jwt=${expiredJwt}`])
-				.expect(401);
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
@@ -150,7 +150,7 @@ describe(TEST_NAME, () => {
 			const response = await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${expected.id}`)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(200);
+				.expect(HttpStatus.OK);
 
 			expect(response.body.id).toEqual(expected.id);
 			expect(response.body.username).toEqual(expected.username);
@@ -166,7 +166,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/9999`)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(404);
+				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
@@ -175,13 +175,13 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/abc`)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(400);
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).get(`${ENDPOINT}/${expected.id}`).expect(401);
+			await request(app.getHttpServer()).get(`${ENDPOINT}/${expected.id}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
@@ -190,7 +190,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${expected.id}`)
 				.set('Cookie', [`jwt=${expiredJwt}`])
-				.expect(401);
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
@@ -205,7 +205,7 @@ describe(TEST_NAME, () => {
 				.patch(`${ENDPOINT}/${expected.id}`)
 				.send(data)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(200);
+				.expect(HttpStatus.OK);
 
 			expect(response.body.id).toEqual(expected.id);
 			expect(response.body.username).toEqual(expected.username);
@@ -225,13 +225,13 @@ describe(TEST_NAME, () => {
 				.patch(`${ENDPOINT}/9999`)
 				.send(data)
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(404);
+				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).patch(`${ENDPOINT}/${expected.id}`).send(data).expect(401);
+			await request(app.getHttpServer()).patch(`${ENDPOINT}/${expected.id}`).send(data).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
@@ -241,7 +241,7 @@ describe(TEST_NAME, () => {
 				.patch(`${ENDPOINT}/${expected.id}`)
 				.send(data)
 				.set('Cookie', [`jwt=${expiredJwt}`])
-				.expect(401);
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
@@ -251,7 +251,7 @@ describe(TEST_NAME, () => {
 				.patch(`${ENDPOINT}/${expected.id}`)
 				.send({ username: 12345 })
 				.set('Cookie', [`jwt=${mockJwt}`])
-				.expect(400);
+				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 });
