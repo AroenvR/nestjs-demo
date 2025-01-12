@@ -9,6 +9,6 @@ COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 # Send a GET request to the auth endpoint
 curl -X GET http://localhost:3000/v1/auth/check/ \
     -b $COOKIE_JAR \
-    -H "Content-Type: application/json"
+    -H "Content-Type: application/json" | jq
 
 echo ""

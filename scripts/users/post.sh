@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ENDPOINT="user"
-DATA="{\"username\":\"$1\"}" # Use $* if you need to pass multiple values
+DATA="{\"username\":\"$1\",\"password\":\"$2\"}" # Use $* if you need to pass multiple values
 
 # Check if a value was provided
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <username>"
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <username> <password>"
   exit 1
 fi
 
@@ -19,6 +19,6 @@ COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 curl -X POST http://localhost:3000/v1/$ENDPOINT/ \
     -b $COOKIE_JAR \
     -H "Content-Type: application/json" \
-    -d "$DATA"
+    -d "$DATA" | jq
 
 echo ""
