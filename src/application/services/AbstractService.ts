@@ -1,5 +1,5 @@
 import { EntityManager, Repository } from 'typeorm';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotImplementedException, OnModuleInit } from '@nestjs/common';
 import { AbstractEntity } from '../../domain/AbstractEntity';
 import { CreateDto } from '../../http_api/dtos/CreateDto';
 import { ResponseDto } from '../../http_api/dtos/ResponseDto';
@@ -14,12 +14,13 @@ import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAda
  * A default implementation will only throw the `Method not implemented` exception.
  */
 @Injectable()
-export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDTO extends ResponseDto> {
+export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDTO extends ResponseDto> implements OnModuleInit {
+	private _seedRequirement = false;
 	protected logger: ILogger;
 	protected readonly events = new Subject<ISseMessage<RDTO>>();
 
 	constructor(
-		protected readonly repository: Repository<unknown>,
+		protected readonly repository: Repository<AbstractEntity>,
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: WinstonAdapter,
 	) {
@@ -85,5 +86,12 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 */
 	public async emit(_: AbstractEntity): Promise<void> {
 		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+	}
+
+	/**
+	 * Triggered when this module is initialized.
+	 */
+	public async onModuleInit(): Promise<void> {
+		return;
 	}
 }
