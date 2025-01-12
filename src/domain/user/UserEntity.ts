@@ -40,7 +40,7 @@ export class UserEntity extends AbstractEntity {
 	protected get childSchema() {
 		return Joi.object({
 			username: Joi.string().min(userConstants.minUsernameLength).max(userConstants.maxUsernameLength).required(),
-			password: Joi.string().min(userConstants.minPasswordLength).required(),
+			password: Joi.string().optional(),
 		});
 	}
 }

@@ -18,6 +18,5 @@ export class UpdateUserDto extends UpdateDto {
 
 	@ApiProperty({ description: 'The password of the user entity', required: true })
 	@IsString({ message: 'value must be a string' })
-	@MinLength(userConstants.minPasswordLength, { message: `Password must be at least ${userConstants.minPasswordLength} characters long` })
 	password: string;
 }
