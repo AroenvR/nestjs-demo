@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { randomUUID, UUID } from 'crypto';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BadRequestException } from '@nestjs/common';
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
@@ -93,7 +94,10 @@ export abstract class AbstractEntity {
 	 */
 	private validateParent(): void {
 		const { error } = this.parentSchema.strict().validate(this, { abortEarly: false, allowUnknown: true });
-		if (error) throw new Error(`${this.constructor.name}: Parent's JSON schema validation failed: ${this.generateJsonSchemaErrorMessage(error)}`);
+		if (error)
+			throw new BadRequestException(
+				`${this.constructor.name}: Parent's JSON schema validation failed: ${this.generateJsonSchemaErrorMessage(error)}`,
+			);
 	}
 
 	/**
@@ -107,7 +111,10 @@ export abstract class AbstractEntity {
 			.strict()
 			.validate(entity, { abortEarly: false, allowUnknown: false });
 
-		if (error) throw new Error(`${this.constructor.name}: Child's JSON schema validation failed: ${this.generateJsonSchemaErrorMessage(error)}`);
+		if (error)
+			throw new BadRequestException(
+				`${this.constructor.name}: Child's JSON schema validation failed: ${this.generateJsonSchemaErrorMessage(error)}`,
+			);
 	}
 
 	/**
