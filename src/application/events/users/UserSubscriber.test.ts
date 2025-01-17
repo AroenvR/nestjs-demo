@@ -3,6 +3,7 @@ import { UserSubscriber } from './UserSubscriber';
 import { UserService } from '../../../application/services/user/UserService';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 describe('UserSubscriber', () => {
 	let userSubscriber: UserSubscriber;
@@ -36,7 +37,7 @@ describe('UserSubscriber', () => {
 
 	it('should log and emit on afterInsert', () => {
 		// Prepare mock insert event
-		const entity = { id: 1 } as UserEntity;
+		const entity = MockUserEntity.get();
 		const insertEvent = { entity } as InsertEvent<UserEntity>;
 
 		// Invoke afterInsert
@@ -44,13 +45,13 @@ describe('UserSubscriber', () => {
 
 		// Assert logging and service emit
 		const logger = logAdapter.getPrefixedLogger(UserSubscriber.name);
-		expect(logger.info).toHaveBeenCalledWith('Entity by id 1 was inserted');
+		expect(logger.info).toHaveBeenCalledWith(`Entity by id ${entity.id} was inserted`);
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 
 	it('should log and emit on afterUpdate', () => {
 		// Prepare mock update event
-		const entity = { id: 2 } as UserEntity;
+		const entity = MockUserEntity.get();
 		const updateEvent = { entity } as unknown as UpdateEvent<UserEntity>;
 
 		// Invoke afterUpdate
@@ -58,7 +59,7 @@ describe('UserSubscriber', () => {
 
 		// Assert logging and service emit
 		const logger = logAdapter.getPrefixedLogger(UserSubscriber.name);
-		expect(logger.info).toHaveBeenCalledWith('Entity by id 2 was updated');
+		expect(logger.info).toHaveBeenCalledWith(`Entity by id ${entity.id} was updated`);
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 

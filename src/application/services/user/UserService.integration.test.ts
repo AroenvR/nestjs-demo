@@ -1,50 +1,48 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Subject } from 'rxjs';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
-import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
-import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
-import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { AbstractService } from '../AbstractService';
 import { ISseMessage } from '../../../application/events/ISseMessage';
-import { randomUUID } from 'crypto';
+import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
+import { UserModule } from '../../../http_api/modules/users/UserModule';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 // Value to change
 describe('UserService Integration', () => {
 	const testName = 'UserService_Integration'; // Value to change
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
-	const ID = 1;
-	const UUID = randomUUID();
-	const CREATED_AT = Date.now();
-	const USERNAME = 'test';
-	const PASSWORD = 'testpass';
-
+	let repository: Repository<unknown>;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
 	let className: string;
 
-	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [serverConfig],
-				}),
-				LoggerModule,
-				DatabaseModule,
-				TypeOrmModule.forFeature([UserEntity]), // Value to change
-			],
-			providers: [UserService], // Value to change
-		}).compile();
+	let entity: UserEntity;
+	let createDto: CreateUserDto;
 
+	beforeAll(async () => {
+		const module = await createMockAppModule(UserModule);
+
+		repository = module.get(getRepositoryToken(UserEntity)); // Value to change
 		service = module.get<UserService>(UserService); // Value to change
 		className = service.constructor.name;
+	});
+
+	beforeEach(async () => {
+		createDto = MockCreateUserDto.get();
+
+		const data = MockUserEntity.get();
+		entity = await repository.save(data);
+	});
+
+	afterEach(async () => {
+		await repository.clear();
 	});
 
 	// --------------------------------------------------
@@ -56,16 +54,13 @@ describe('UserService Integration', () => {
 	// --------------------------------------------------
 
 	it('Can create an entity', async () => {
-		const dto = new CreateUserDto();
-		dto.username = USERNAME;
-		dto.password = PASSWORD;
-
-		const response = await service.create(dto);
+		const response = await service.create(createDto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
-		expect(response.id).toEqual(ID);
-		expect(response.username).toEqual(USERNAME);
-		expect(response.password).toEqual(PASSWORD);
+		expect(response.id).toEqual(entity.id + 1);
+
+		expect(response.username).toEqual(createDto.username);
+		expect(response.password).toEqual(createDto.password);
 
 		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
 	});
@@ -75,14 +70,13 @@ describe('UserService Integration', () => {
 	it('Finds all entities', async () => {
 		const response = await service.findAll();
 
-		expect(response).toBeInstanceOf(Array);
+		const found = response.find((data) => data.id === entity.id);
+		expect(found.id).toEqual(entity.id);
+		expect(found.uuid).toEqual(entity.uuid);
+		expect(found.createdAt).toEqual(entity.createdAt);
 
-		for (const entity of response) {
-			expect(entity).toBeInstanceOf(UserResponseDto);
-			expect(entity.id).toEqual(ID);
-			expect(entity.username).toEqual(USERNAME);
-			expect(entity.password).toEqual(PASSWORD);
-		}
+		expect(found.username).toEqual(entity.username);
+		expect(found.password).toEqual(entity.password);
 
 		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
 	});
@@ -90,14 +84,17 @@ describe('UserService Integration', () => {
 	// --------------------------------------------------
 
 	it('Finds an entity by id', async () => {
-		const response = await service.findOne(ID);
+		const response = await service.findOne(entity.id);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
-		expect(response.id).toEqual(ID);
-		expect(response.username).toEqual(USERNAME);
-		expect(response.password).toEqual(PASSWORD);
+		expect(response.id).toEqual(entity.id);
+		expect(response.uuid).toEqual(entity.uuid);
+		expect(response.createdAt).toEqual(entity.createdAt);
 
-		await expect(wasLogged(testName, `${className}: Finding entity by id ${ID}`)).resolves.toBe(true);
+		expect(response.username).toEqual(entity.username);
+		expect(response.password).toEqual(entity.password);
+
+		await expect(wasLogged(testName, `${className}: Finding entity by id ${entity.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -112,25 +109,25 @@ describe('UserService Integration', () => {
 	// --------------------------------------------------
 
 	it('Updates an entity', async () => {
-		const dto = new UpdateUserDto();
-		dto.username = 'updated';
-		dto.password = 'updatedpass';
-
-		const response = await service.update(ID, dto);
+		const dto = MockUpdateUserDto.get();
+		const response = await service.update(entity.id, dto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
-		expect(response.id).toEqual(ID);
+		expect(response.id).toEqual(entity.id);
+		expect(response.uuid).toEqual(entity.uuid);
+		expect(response.createdAt).toEqual(entity.createdAt);
+
 		expect(response.username).toEqual(dto.username);
 		expect(response.password).toEqual(dto.password);
 
-		await expect(wasLogged(testName, `${className}: Updating entity by id ${ID}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `${className}: Updating entity by id ${entity.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it('Deletes an entity', async () => {
-		await expect(service.remove(ID)).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity by id ${ID}`)).resolves.toBe(true);
+		await expect(service.remove(entity.id)).resolves.toBeUndefined();
+		await expect(wasLogged(testName, `${className}: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -150,10 +147,9 @@ describe('UserService Integration', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = UserEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
-		service.emit(data);
+		service.emit(entity);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
-		await expect(wasLogged(testName, `${className}: Emitting entity by id: ${ID}`)).resolves.toBe(true);
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(entity) });
+		await expect(wasLogged(testName, `${className}: Emitting entity by id: ${entity.id}`)).resolves.toBe(true);
 	});
 });

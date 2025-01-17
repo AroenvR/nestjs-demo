@@ -1,49 +1,60 @@
 import { validate } from 'class-validator';
 import { UserEntity } from '../../../domain/user/UserEntity';
-import { CreateUserDto } from './CreateUserDto';
 import { UpdateUserDto } from './UpdateUserDto';
 import { UserResponseDto } from './UserResponseDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { CreateUserDto } from './CreateUserDto';
+import { userConstants } from '../../../common/constants/userConstants';
 
 describe("User DTO's", () => {
-	const USERNAME = 'username';
-	const PASSWORD = 'password';
+	let createDto: CreateUserDto;
+	let updateDto: UpdateUserDto;
 
-	const INVALID_VALUES = [null, undefined, '', 0, true, false, [], {}, Symbol('')];
+	let badValues: unknown[];
+
+	beforeEach(() => {
+		createDto = MockCreateUserDto.get();
+		updateDto = MockUpdateUserDto.get();
+
+		badValues = [null, undefined, '', 0, -100, true, false, [], {}, Symbol('')];
+	});
 
 	describe('Create DTO', () => {
-		const dto = new CreateUserDto();
-		dto.username = USERNAME;
-		dto.password = PASSWORD;
-
 		it('Can be used to create the entity', async () => {
-			const errors = await validate(dto);
+			const errors = await validate(createDto);
 			expect(errors.length).toEqual(0);
 
-			const entity = UserEntity.create(dto);
-			expect(entity.username).toEqual(USERNAME);
-			expect(entity.password).toEqual(PASSWORD);
+			const entity = UserEntity.create(createDto);
+			expect(entity.username).toEqual(createDto.username);
+			expect(entity.password).toEqual(createDto.password);
 		});
 
 		// --------------------------------------------------
 
-		it('Username must be a string', async () => {
-			for (const value of INVALID_VALUES) {
-				// @ts-expect-error: Username expects a string.
-				dto.username = value;
+		it('Username must be a string adhering to min/max lengths', async () => {
+			badValues.push('a'.repeat(userConstants.minUsernameLength - 1));
+			badValues.push('b'.repeat(userConstants.maxUsernameLength + 1));
 
-				const errors = await validate(dto);
+			for (const value of badValues) {
+				// @ts-expect-error: expects a string.
+				createDto.username = value;
+
+				const errors = await validate(createDto);
 				expect(errors.length).toBeGreaterThanOrEqual(1);
 			}
 		});
 
 		// --------------------------------------------------
 
-		it('Password must be a string', async () => {
-			for (const value of INVALID_VALUES) {
-				// @ts-expect-error: Username expects a string.
-				dto.password = value;
+		it('Password must be a string adhering to min length', async () => {
+			badValues.push('a'.repeat(userConstants.minPasswordLength - 1));
 
-				const errors = await validate(dto);
+			for (const value of badValues) {
+				// @ts-expect-error: expects a string.
+				createDto.password = value;
+
+				const errors = await validate(createDto);
 				expect(errors.length).toBeGreaterThanOrEqual(1);
 			}
 		});
@@ -52,41 +63,42 @@ describe("User DTO's", () => {
 	// --------------------------------------------------
 
 	describe('Update DTO', () => {
-		const dto = new UpdateUserDto();
-		dto.username = USERNAME;
-		dto.password = PASSWORD;
-
 		it('Can be used to update the entity', async () => {
-			const errors = await validate(dto);
+			const errors = await validate(updateDto);
 			expect(errors.length).toEqual(0);
 
-			const entity = UserEntity.create({ username: 'initial', password: 'initial-password' });
-			entity.update(dto);
+			const entity = MockUserEntity.get();
+			entity.update(updateDto);
 
-			expect(entity.username).toEqual(USERNAME);
-			expect(entity.password).toEqual(PASSWORD);
+			expect(entity.username).toEqual(updateDto.username);
+			expect(entity.password).toEqual(updateDto.password);
 		});
 
 		// --------------------------------------------------
 
-		it('Username must be a string', async () => {
-			for (const value of INVALID_VALUES) {
-				// @ts-expect-error: Username expects a string.
-				dto.username = value;
+		it('Username must be a string adhering to min/max length', async () => {
+			badValues.push('a'.repeat(userConstants.minUsernameLength - 1));
+			badValues.push('b'.repeat(userConstants.maxUsernameLength + 1));
 
-				const errors = await validate(dto);
+			for (const value of badValues) {
+				// @ts-expect-error: Username expects a string.
+				updateDto.username = value;
+
+				const errors = await validate(updateDto);
 				expect(errors.length).toBeGreaterThanOrEqual(1);
 			}
 		});
 
 		// --------------------------------------------------
 
-		it('Password must be a string', async () => {
-			for (const value of INVALID_VALUES) {
-				// @ts-expect-error: Username expects a string.
-				dto.password = value;
+		it('Password must be a string adhering to min length', async () => {
+			badValues.push('a'.repeat(userConstants.minPasswordLength - 1));
 
-				const errors = await validate(dto);
+			for (const value of badValues) {
+				// @ts-expect-error: Username expects a string.
+				updateDto.password = value;
+
+				const errors = await validate(updateDto);
 				expect(errors.length).toBeGreaterThanOrEqual(1);
 			}
 		});
@@ -96,13 +108,15 @@ describe("User DTO's", () => {
 
 	describe('Response DTO', () => {
 		it('Can be created from the entity', async () => {
-			const entity = UserEntity.create({ username: USERNAME, password: PASSWORD });
-			entity.id = 1;
-
+			const entity = MockUserEntity.get();
 			const dto = new UserResponseDto(entity);
 
-			expect(dto.username).toEqual(USERNAME);
-			expect(dto.password).toEqual(PASSWORD);
+			expect(dto.id).toEqual(entity.id);
+			expect(dto.uuid).toEqual(entity.uuid);
+			expect(dto.createdAt).toEqual(entity.createdAt);
+
+			expect(dto.username).toEqual(entity.username);
+			expect(dto.password).toEqual(entity.password);
 		});
 	});
 });

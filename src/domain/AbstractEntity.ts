@@ -1,8 +1,9 @@
 import Joi from 'joi';
 import { randomUUID, UUID } from 'crypto';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { BadRequestException, NotImplementedException } from '@nestjs/common';
-import { CreateDto } from 'src/http_api/dtos/CreateDto';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDto } from '../http_api/dtos/CreateDto';
+import { UpdateDto } from '../http_api/dtos/UpdateDto';
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
@@ -24,12 +25,17 @@ import { CreateDto } from 'src/http_api/dtos/CreateDto';
 //         }
 //     }
 
-// ADD CREATE FUNCTION
+//      /**
+//       *
+//       */
+//      public static create(data: Partial<FooEntity> | CreateFooDto) {
+//          return new FooEntity(data);
+//     }
 
 //     /**
 //      *
 //      */
-//     public update(entity: Partial<FooEntity>) {
+//     public update(entity: Partial<FooEntity> | UpdateFooDto) {
 
 //         this.validate(this);
 //         return this;
@@ -70,7 +76,7 @@ export abstract class AbstractEntity {
 			this.uuid = entity.uuid ?? randomUUID();
 			this.createdAt = entity.createdAt ?? Date.now();
 
-			this.validate(entity); // Validate the children.
+			this.validate(entity); // Validate the children's incoming data.
 		}
 	}
 
@@ -85,10 +91,10 @@ export abstract class AbstractEntity {
 
 	/**
 	 * Updates the entity with the provided data.
-	 * @param entity The data to update the entity with.
+	 * @param data The data to update the entity with.
 	 * @devnote !!! REMEMBER TO CALL **this.validate(this)** at the end of the function !!!
 	 */
-	protected abstract update(entity: Partial<AbstractEntity>): AbstractEntity;
+	protected abstract update(_: Partial<AbstractEntity> | UpdateDto): AbstractEntity;
 
 	/**
 	 * Performs a JSON schema validation for the parent's base values and the child's own values.
