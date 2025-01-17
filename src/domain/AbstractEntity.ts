@@ -1,7 +1,8 @@
 import Joi from 'joi';
 import { randomUUID, UUID } from 'crypto';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotImplementedException } from '@nestjs/common';
+import { CreateDto } from 'src/http_api/dtos/CreateDto';
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
@@ -22,6 +23,8 @@ import { BadRequestException } from '@nestjs/common';
 
 //         }
 //     }
+
+// ADD CREATE FUNCTION
 
 //     /**
 //      *
@@ -69,6 +72,15 @@ export abstract class AbstractEntity {
 
 			this.validate(entity); // Validate the children.
 		}
+	}
+
+	/**
+	 * A static factory to create an entity.
+	 * @param data The data to create this entity from.
+	 * @returns The created entity after it has been JSON validated.
+	 */
+	public static create(_: Partial<AbstractEntity> | CreateDto): AbstractEntity {
+		throw new NotImplementedException(`${this.constructor.name}: Static 'create' factory not implemented.`);
 	}
 
 	/**
