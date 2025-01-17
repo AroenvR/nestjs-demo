@@ -16,150 +16,150 @@ import { WinstonAdapter } from '../../../infrastructure/logging/adapters/Winston
 import { randomUUID } from 'crypto';
 
 describe('UserService Unit', () => {
-    const ID = 1;
-    const UUID = randomUUID();
-    const CREATED_AT = Date.now();
-    const USERNAME = 'test';
-    const PASSWORD = 'testpass';
+	const ID = 1;
+	const UUID = randomUUID();
+	const CREATED_AT = Date.now();
+	const USERNAME = 'test';
+	const PASSWORD = 'testpass';
 
-    let entity: UserEntity;
-    let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
+	let entity: UserEntity;
+	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 
-    beforeEach(async () => {
-        entity = UserEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
+	beforeEach(async () => {
+		entity = UserEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
 
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                UserService,
-                {
-                    useValue: mockILogger,
-                    provide: WinstonAdapter,
-                },
-                {
-                    provide: getRepositoryToken(UserEntity),
-                    useValue: new MockRepository(() => entity),
-                },
-                {
-                    provide: EntityManager,
-                    useValue: new MockEntityManager<UserEntity>(),
-                },
-            ],
-        }).compile();
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [
+				UserService,
+				{
+					useValue: mockILogger,
+					provide: WinstonAdapter,
+				},
+				{
+					provide: getRepositoryToken(UserEntity),
+					useValue: new MockRepository(() => entity),
+				},
+				{
+					provide: EntityManager,
+					useValue: new MockEntityManager<UserEntity>(),
+				},
+			],
+		}).compile();
 
-        service = module.get<UserService>(UserService);
-    });
+		service = module.get<UserService>(UserService);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Should be defined', () => {
-        expect(service).toBeDefined();
-    });
+	it('Should be defined', () => {
+		expect(service).toBeDefined();
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can create an entity', async () => {
-        const dto = new CreateUserDto();
-        dto.username = USERNAME;
-        dto.password = PASSWORD;
+	it('Can create an entity', async () => {
+		const dto = new CreateUserDto();
+		dto.username = USERNAME;
+		dto.password = PASSWORD;
 
-        const created = await service.create(dto);
-        expect(created).toBeInstanceOf(UserResponseDto);
-        expect(created.id).toEqual(ID);
-        expect(created.username).toEqual(USERNAME);
-        expect(created.password).toEqual(PASSWORD);
+		const created = await service.create(dto);
+		expect(created).toBeInstanceOf(UserResponseDto);
+		expect(created.id).toEqual(ID);
+		expect(created.username).toEqual(USERNAME);
+		expect(created.password).toEqual(PASSWORD);
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Finds all entities', async () => {
-        const data = await service.findAll();
+	it('Finds all entities', async () => {
+		const data = await service.findAll();
 
-        expect(data).toContainEqual(entity);
-        expect(data).toBeInstanceOf(Array);
+		expect(data).toContainEqual(entity);
+		expect(data).toBeInstanceOf(Array);
 
-        for (const item of data) {
-            expect(item).toBeInstanceOf(UserResponseDto);
-            expect(item.id).toBeTruthy();
-            expect(item.username).toBeTruthy();
-            expect(item.password).toBeTruthy();
-        }
+		for (const item of data) {
+			expect(item).toBeInstanceOf(UserResponseDto);
+			expect(item.id).toBeTruthy();
+			expect(item.username).toBeTruthy();
+			expect(item.password).toBeTruthy();
+		}
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Finds an entity by id', async () => {
-        const data = await service.findOne(ID);
+	it('Finds an entity by id', async () => {
+		const data = await service.findOne(ID);
 
-        expect(data).toEqual(entity);
-        expect(data).toBeInstanceOf(UserResponseDto);
-        expect(data.id).toEqual(ID);
-        expect(data.username).toEqual(USERNAME);
-        expect(data.password).toEqual(PASSWORD);
+		expect(data).toEqual(entity);
+		expect(data).toBeInstanceOf(UserResponseDto);
+		expect(data.id).toEqual(ID);
+		expect(data.username).toEqual(USERNAME);
+		expect(data.password).toEqual(PASSWORD);
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Throws when unable to find an entity by id', async () => {
-        const id = 69;
+	it('Throws when unable to find an entity by id', async () => {
+		const id = 69;
 
-        await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
-        expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${id}`);
-    });
+		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${id}`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can update an entity', async () => {
-        const dto = new UpdateUserDto();
-        dto.username = 'updated';
-        dto.password = 'updatedpass';
+	it('Can update an entity', async () => {
+		const dto = new UpdateUserDto();
+		dto.username = 'updated';
+		dto.password = 'updatedpass';
 
-        const updated = await service.update(ID, dto);
-        expect(updated).not.toEqual(entity);
+		const updated = await service.update(ID, dto);
+		expect(updated).not.toEqual(entity);
 
-        expect(updated).toBeInstanceOf(UserResponseDto);
-        expect(updated.id).toEqual(ID);
-        expect(updated.username).toEqual(dto.username);
-        expect(updated.password).toEqual(dto.password);
+		expect(updated).toBeInstanceOf(UserResponseDto);
+		expect(updated.id).toEqual(ID);
+		expect(updated.username).toEqual(dto.username);
+		expect(updated.password).toEqual(dto.password);
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can delete an entity', async () => {
-        const data = await service.remove(ID);
-        expect(data).toBeUndefined();
+	it('Can delete an entity', async () => {
+		const data = await service.remove(ID);
+		expect(data).toBeUndefined();
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can observe events', async () => {
-        const observable = await service.observe();
+	it('Can observe events', async () => {
+		const observable = await service.observe();
 
-        expect(observable).toBeDefined();
-        expect(observable).toHaveProperty('subscribe');
+		expect(observable).toBeDefined();
+		expect(observable).toHaveProperty('subscribe');
 
-        expect(mockILogger.info).toHaveBeenCalledWith(`Observing template events`);
-    });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Observing template events`);
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it('Can emit an event', () => {
-        const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
-        const spy = jest.spyOn(events, 'next');
+	it('Can emit an event', () => {
+		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
+		const spy = jest.spyOn(events, 'next');
 
-        const data = UserEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
-        service.emit(data);
+		const data = UserEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
+		service.emit(data);
 
-        expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
-        expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${data.id}`);
-    });
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${data.id}`);
+	});
 });
