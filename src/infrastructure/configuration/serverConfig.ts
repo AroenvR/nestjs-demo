@@ -10,6 +10,13 @@ import { serverJsonSchema } from './serverJsonSchema';
 const defaultConfig: IServerConfig = {
 	security: {
 		secure_cookie: true,
+		cors: {
+			origin: ['http://localhost:3000'],
+			allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent', 'X-Correlation-ID'],
+			methods: ['GET'],
+			credentials: true,
+			maxAge: 3600, // Cache preflight response for 3600 seconds
+		},
 	},
 	logging: {
 		appName: 'NestJS_API',

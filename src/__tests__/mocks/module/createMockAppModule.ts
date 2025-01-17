@@ -44,6 +44,8 @@ export const createMockAppModule = async (module: Type<any>) => {
 		}),
 	);
 
+	app.enableCors(serverConfig().security.cors);
+
 	// Enable API versioning
 	app.enableVersioning({
 		type: VersioningType.URI, // Use URI versioning type

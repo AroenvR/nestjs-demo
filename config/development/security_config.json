@@ -1,3 +1,22 @@
 {
-    "secure_cookie": false
+    "secure_cookie": false,
+    "cors": {
+        "origin": [
+            "TODO: Block anything not in my shells (using a custom origin blocking middleware)"
+        ],
+        "allowedHeaders": [
+            "Content-Type",
+            "Authorization",
+            "User-Agent",
+            "X-Correlation-ID"
+        ],
+        "methods": [
+            "POST",
+            "GET",
+            "PATCH",
+            "DELETE"
+        ],
+        "credentials": true,
+        "maxAge": 3600
+    }
 }

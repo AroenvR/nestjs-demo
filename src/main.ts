@@ -6,6 +6,7 @@ import { BadRequestException, ValidationError, ValidationPipe, VersioningType } 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpErrorFilter } from './http_api/filters/http_error/HttpErrorFilter';
 import { WinstonAdapter } from './infrastructure/logging/adapters/WinstonAdapter';
+import { serverConfig } from './infrastructure/configuration/serverConfig';
 
 async function bootstrap() {
 	// TODO's:
@@ -52,6 +53,8 @@ async function bootstrap() {
 			},
 		}),
 	);
+
+	app.enableCors(serverConfig().security.cors);
 
 	// Enable API versioning
 	app.enableVersioning({

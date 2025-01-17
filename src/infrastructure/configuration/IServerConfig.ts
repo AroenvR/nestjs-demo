@@ -1,3 +1,4 @@
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { TDatabaseConfig } from '../database/TDatabaseConfig';
 import { ILoggerConfig } from '../logging/ILoggerConfig';
 
@@ -7,6 +8,7 @@ import { ILoggerConfig } from '../logging/ILoggerConfig';
  */
 type TSecurityConfig = {
 	secure_cookie: boolean;
+	cors: CorsOptions;
 };
 
 /**
