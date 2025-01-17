@@ -8,35 +8,40 @@ import { UserEntity } from '../../../domain/user/UserEntity';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { expiredJwt, mockJwt } from '../../../__tests__/mocks/mockJwt';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { copyEntity } from '../../../__tests__/mocks/entity/copyEntity';
+import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
+import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 
 const TEST_NAME = 'UserModule'; // Value to change
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
+	const ENDPOINT = '/v1/user'; // Value to change
+
 	let app: INestApplication;
 	let repository: Repository<unknown>;
 
-	const ENDPOINT = '/v1/user'; // Value to change
-	const USERNAME = 'Initial'; // Value to change
-	const PASSWORD = 'password'; // Value to change
+	let entity: UserEntity;
+	let createDto: CreateUserDto;
+	let updateDto: UpdateUserDto;
 
 	beforeEach(async () => {
 		app = await createMockAppModule(UserModule); // Value to change
-
-		// Populate 1 entity for testing
 		repository = app.get(getRepositoryToken(UserEntity)); // Value to change
+	});
 
-		const dto = new CreateUserDto(); // Value to change
-		dto.username = USERNAME; // Value to change
-		dto.password = PASSWORD; // Value to change
+	beforeEach(async () => {
+		createDto = MockCreateUserDto.get(); // Value to change
+		updateDto = MockUpdateUserDto.get(); // Value to change
 
-		const entity = new UserEntity(dto); // Value to change
-		await repository.save(entity);
+		const data = MockUserEntity.get(); // Value to change
+		entity = await repository.save(data);
 	});
 
 	afterEach(async () => {
-		await repository.query(`DELETE FROM user_entity`); // Value to change
-		await repository.query(`DELETE FROM sqlite_sequence WHERE name='user_entity'`); // For SQLite & Value to change
+		await repository.clear();
 	});
 
 	// --------------------------------------------------
@@ -48,18 +53,17 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('POST /user', () => {
-		const data = { username: 'Bob', password: 'something' }; // Value to change
-
 		it('Can create an entity', async () => {
 			const response = await request(app.getHttpServer())
 				.post(ENDPOINT)
-				.send(data)
+				.send(createDto)
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CREATED);
 
-			expect(response.body.id).toEqual(3); // 3 because 1 is being seeded and 1 is being inserted in the beforeEach.
-			expect(response.body.username).toEqual(data.username);
-			expect(response.body.password).toEqual(data.password);
+			expect(response.body.id).toEqual(entity.id + 1);
+
+			expect(response.body.username).toEqual(createDto.username);
+			expect(response.body.password).toEqual(createDto.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Creating a new entity`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Creating a new entity`)).resolves.toBe(true);
@@ -71,7 +75,7 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).post(ENDPOINT).send(data).expect(401);
+			await request(app.getHttpServer()).post(ENDPOINT).send(createDto).expect(401);
 		});
 
 		// --------------------------------------------------
@@ -87,11 +91,11 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it('Should return an error when inserting a duplicate entity', async () => {
-			data.username = USERNAME; // Value to change
+			const copy = copyEntity(entity);
 
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
-				.send(data)
+				.send(copy)
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CONFLICT);
 		});
@@ -101,7 +105,7 @@ describe(TEST_NAME, () => {
 		it('Should return an error when using an expired JWT', async () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
-				.send(data)
+				.send(createDto)
 				.set('Cookie', [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
@@ -116,10 +120,15 @@ describe(TEST_NAME, () => {
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
-			expect(response.body.length).toBeGreaterThanOrEqual(1);
-			expect(response.body[1].id).toEqual(2);
-			expect(response.body[1].username).toEqual(USERNAME);
-			expect(response.body[1].password).toEqual(PASSWORD);
+			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
+			if (!found) fail('Did not find the entity we expected.');
+
+			expect(found.id).toEqual(entity.id);
+			expect(found.uuid).toEqual(entity.uuid);
+			expect(found.createdAt).toEqual(entity.createdAt);
+
+			expect(found.username).toEqual(entity.username);
+			expect(found.password).toEqual(entity.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Finding all entities`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Finding all entities`)).resolves.toBe(true);
@@ -144,20 +153,18 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('GET /user/:id', () => {
-		const expected = { id: 2, username: USERNAME, password: PASSWORD }; // Value to change
-
 		it('Can find an entity by id', async () => {
 			const response = await request(app.getHttpServer())
-				.get(`${ENDPOINT}/${expected.id}`)
+				.get(`${ENDPOINT}/${entity.id}`)
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
-			expect(response.body.id).toEqual(expected.id);
-			expect(response.body.username).toEqual(expected.username);
-			expect(response.body.password).toEqual(expected.password);
+			expect(response.body.id).toEqual(entity.id);
+			expect(response.body.username).toEqual(entity.username);
+			expect(response.body.password).toEqual(entity.password);
 
-			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by id ${expected.id}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by id ${expected.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by id ${entity.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -181,14 +188,14 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).get(`${ENDPOINT}/${expected.id}`).expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).get(`${ENDPOINT}/${entity.id}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
 		it('Should return an error when using an expired JWT', async () => {
 			await request(app.getHttpServer())
-				.get(`${ENDPOINT}/${expected.id}`)
+				.get(`${ENDPOINT}/${entity.id}`)
 				.set('Cookie', [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
@@ -197,25 +204,22 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe('PATCH /user/:id', () => {
-		const data = { username: 'Bob', password: 'something' }; // Value to change
-		const expected = { id: 1, username: 'Bob', password: 'something' }; // Value to change
-
 		it('Can update an entity', async () => {
 			const response = await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${expected.id}`)
-				.send(data)
+				.patch(`${ENDPOINT}/${entity.id}`)
+				.send(updateDto)
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
-			expect(response.body.id).toEqual(expected.id);
-			expect(response.body.username).toEqual(expected.username);
-			expect(response.body.password).toEqual(expected.password);
+			expect(response.body.id).toEqual(entity.id);
+			expect(response.body.username).toEqual(updateDto.username);
+			expect(response.body.password).toEqual(updateDto.password);
 
-			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by id ${expected.id}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by id ${expected.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by id ${entity.id}`)).resolves.toBe(true);
 
-			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${expected.id} was updated`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${expected.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${entity.id} was updated`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${entity.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -223,7 +227,7 @@ describe(TEST_NAME, () => {
 		it('Should return an error when updating a non-existent entity', async () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/9999`)
-				.send(data)
+				.send(updateDto)
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
@@ -231,15 +235,15 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it('Should return an error when missing a JWT', async () => {
-			await request(app.getHttpServer()).patch(`${ENDPOINT}/${expected.id}`).send(data).expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).patch(`${ENDPOINT}/${entity.id}`).send(updateDto).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
 		it('Should return an error when using an expired JWT', async () => {
 			await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${expected.id}`)
-				.send(data)
+				.patch(`${ENDPOINT}/${entity.id}`)
+				.send(updateDto)
 				.set('Cookie', [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
@@ -248,7 +252,7 @@ describe(TEST_NAME, () => {
 
 		it('Should return an error when using an invalid data format', async () => {
 			await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${expected.id}`)
+				.patch(`${ENDPOINT}/${entity.id}`)
 				.send({ username: 12345 })
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);

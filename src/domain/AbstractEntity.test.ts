@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { AbstractEntity } from './AbstractEntity';
 import { randomUUID } from 'crypto';
+import { NotImplementedException } from '@nestjs/common';
 
 /**
  * Mock Entity to test the {@link AbstractEntity}'s functionality.
@@ -121,6 +122,12 @@ describe('AbstractEntity', () => {
 				captureAndValdiate({ uuid: value });
 				captureAndValdiate({ createdAt: value });
 			}
+		});
+
+		// --------------------------------------------------
+
+		it("Throws when the static 'create' factory is not implemented", () => {
+			expect(() => MockEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, data: DATA })).toThrow(NotImplementedException);
 		});
 	});
 });

@@ -2,6 +2,8 @@ import Joi from 'joi';
 import { Column, Entity } from 'typeorm';
 import { AbstractEntity } from '../AbstractEntity';
 import { userConstants } from '../../common/constants/userConstants';
+import { CreateUserDto } from '../../http_api/dtos/user/CreateUserDto';
+import { UpdateUserDto } from '../../http_api/dtos/user/UpdateUserDto';
 
 /**
  * Represents a user entity in the database.
@@ -15,7 +17,7 @@ export class UserEntity extends AbstractEntity {
 	@Column({ nullable: false })
 	password: string;
 
-	constructor(entity: Partial<UserEntity>) {
+	protected constructor(entity: Partial<UserEntity>) {
 		super(entity);
 
 		if (entity) {
@@ -27,7 +29,14 @@ export class UserEntity extends AbstractEntity {
 	/**
 	 *
 	 */
-	public update(entity: Partial<UserEntity>) {
+	public static create(data: Partial<UserEntity> | CreateUserDto) {
+		return new UserEntity(data);
+	}
+
+	/**
+	 *
+	 */
+	public update(entity: Partial<UserEntity> | UpdateUserDto) {
 		if (entity.username) this.username = entity.username;
 		if (entity.password) this.password = entity.password;
 

@@ -13,31 +13,26 @@ import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { randomUUID } from 'crypto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 describe('UserService Unit', () => {
-	const ID = 1;
-	const UUID = randomUUID();
-	const CREATED_AT = Date.now();
-	const USERNAME = 'test';
-	const PASSWORD = 'testpass';
-
-	let entity: UserEntity;
+	let mockedResponse: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 
 	beforeEach(async () => {
-		entity = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
+		mockedResponse = MockUserEntity.get();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				UserService,
 				{
-					useValue: mockILogger,
 					provide: WinstonAdapter,
+					useValue: mockILogger,
 				},
 				{
 					provide: getRepositoryToken(UserEntity),
-					useValue: new MockRepository(() => entity),
+					useValue: new MockRepository(() => mockedResponse),
 				},
 				{
 					provide: EntityManager,
@@ -58,15 +53,13 @@ describe('UserService Unit', () => {
 	// --------------------------------------------------
 
 	it('Can create an entity', async () => {
-		const dto = new CreateUserDto();
-		dto.username = USERNAME;
-		dto.password = PASSWORD;
+		const createDto = MockCreateUserDto.get();
 
-		const created = await service.create(dto);
+		const created = await service.create(createDto);
 		expect(created).toBeInstanceOf(UserResponseDto);
-		expect(created.id).toEqual(ID);
-		expect(created.username).toEqual(USERNAME);
-		expect(created.password).toEqual(PASSWORD);
+
+		expect(created.username).toEqual(createDto.username);
+		expect(created.password).toEqual(createDto.password);
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
 	});
@@ -74,17 +67,19 @@ describe('UserService Unit', () => {
 	// --------------------------------------------------
 
 	it('Finds all entities', async () => {
-		const data = await service.findAll();
+		const entities = await service.findAll();
 
-		expect(data).toContainEqual(entity);
-		expect(data).toBeInstanceOf(Array);
+		const found = entities.find((data) => data.id === mockedResponse.id);
+		if (!found) fail('Expected entity was not found.');
 
-		for (const item of data) {
-			expect(item).toBeInstanceOf(UserResponseDto);
-			expect(item.id).toBeTruthy();
-			expect(item.username).toBeTruthy();
-			expect(item.password).toBeTruthy();
-		}
+		expect(found).toBeInstanceOf(UserResponseDto);
+
+		expect(found.id).toEqual(mockedResponse.id);
+		expect(found.uuid).toEqual(mockedResponse.uuid);
+		expect(found.createdAt).toEqual(mockedResponse.createdAt);
+
+		expect(found.username).toEqual(mockedResponse.username);
+		expect(found.password).toEqual(mockedResponse.password);
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
 	});
@@ -92,15 +87,19 @@ describe('UserService Unit', () => {
 	// --------------------------------------------------
 
 	it('Finds an entity by id', async () => {
-		const data = await service.findOne(ID);
+		const data = await service.findOne(mockedResponse.id);
 
-		expect(data).toEqual(entity);
+		expect(data).toEqual(mockedResponse);
 		expect(data).toBeInstanceOf(UserResponseDto);
-		expect(data.id).toEqual(ID);
-		expect(data.username).toEqual(USERNAME);
-		expect(data.password).toEqual(PASSWORD);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
+		expect(data.id).toEqual(mockedResponse.id);
+		expect(data.uuid).toEqual(mockedResponse.uuid);
+		expect(data.createdAt).toEqual(mockedResponse.createdAt);
+
+		expect(data.username).toEqual(mockedResponse.username);
+		expect(data.password).toEqual(mockedResponse.password);
+
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${mockedResponse.id}`);
 	});
 
 	// --------------------------------------------------
@@ -115,28 +114,27 @@ describe('UserService Unit', () => {
 	// --------------------------------------------------
 
 	it('Can update an entity', async () => {
-		const dto = new UpdateUserDto();
-		dto.username = 'updated';
-		dto.password = 'updatedpass';
+		const dto = MockUpdateUserDto.get();
 
-		const updated = await service.update(ID, dto);
-		expect(updated).not.toEqual(entity);
+		const updated = await service.update(mockedResponse.id, dto);
+		expect(updated).not.toEqual(mockedResponse);
 
 		expect(updated).toBeInstanceOf(UserResponseDto);
-		expect(updated.id).toEqual(ID);
+		expect(updated.uuid).toEqual(mockedResponse.uuid);
+		expect(updated.createdAt).toEqual(mockedResponse.createdAt);
+
 		expect(updated.username).toEqual(dto.username);
 		expect(updated.password).toEqual(dto.password);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${mockedResponse.id}`);
 	});
 
 	// --------------------------------------------------
 
 	it('Can delete an entity', async () => {
-		const data = await service.remove(ID);
-		expect(data).toBeUndefined();
+		await expect(service.remove(mockedResponse.id)).resolves.not.toThrow();
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${mockedResponse.id}`);
 	});
 
 	// --------------------------------------------------
@@ -156,10 +154,9 @@ describe('UserService Unit', () => {
 		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
 		const spy = jest.spyOn(events, 'next');
 
-		const data = new UserEntity({ id: ID, uuid: UUID, createdAt: CREATED_AT, username: USERNAME, password: PASSWORD });
-		service.emit(data);
+		service.emit(mockedResponse);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(data) });
-		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${data.id}`);
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(mockedResponse) });
+		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${mockedResponse.id}`);
 	});
 });
