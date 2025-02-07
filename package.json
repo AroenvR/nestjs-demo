@@ -38,6 +38,7 @@
         "passport-local": "^1.0.0",
         "reflect-metadata": "^0.2.0",
         "rxjs": "^7.8.1",
+        "sqlite3": "^5.1.7",
         "ts-istruthy": "^1.0.2",
         "typeorm": "^0.3.20",
         "winston": "^3.17.0"

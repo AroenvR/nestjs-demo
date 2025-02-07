@@ -2,7 +2,7 @@
 
 # Define variables
 DB_FILE="encrypted.db"
-ENCRYPTION_KEY="your-encryption-key"
+ENCRYPTION_KEY="yourencryptionkey"
 SQL_SCRIPT="create_script.sql"
 
 # Execute SQLCipher commands
