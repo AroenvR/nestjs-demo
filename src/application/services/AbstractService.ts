@@ -15,7 +15,6 @@ import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAda
  */
 @Injectable()
 export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDTO extends ResponseDto> implements OnModuleInit {
-	private _seedRequirement = false;
 	protected logger: ILogger;
 	protected readonly events = new Subject<ISseMessage<RDTO>>();
 

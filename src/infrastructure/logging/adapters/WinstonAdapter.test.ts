@@ -43,6 +43,7 @@ const CONFIG: ILoggerConfig = {
 	http: {
 		enabled: false,
 	},
+	database: false,
 	useWhitelist: true,
 	prefixWhitelist: [
 		'VerboseContext',

@@ -7,7 +7,8 @@ import { userConstants } from '../../../common/constants/userConstants';
  * This class is responsible for receiving data from a client to create a {@link UserEntity}.
  * It provides Swagger documentation for the API.
  * It JSON validates the following fields:
- * - username: string, at least 3 characters long.
+ * - username: string between 3 and 50 characters
+ * - password: string minimum 8 characters
  */
 export class CreateUserDto extends CreateDto {
 	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })

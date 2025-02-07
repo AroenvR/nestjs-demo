@@ -14,6 +14,12 @@ type TFindOneQuery = {
 export class MockRepository<Entity extends AbstractEntity> {
 	constructor(private createEntity: () => Entity) {}
 
+	count = jest.fn().mockResolvedValue(0);
+
+	save = jest.fn().mockResolvedValue((data: unknown) => {
+		return data;
+	});
+
 	find = jest.fn().mockResolvedValue([this.createEntity()]);
 
 	findOne = jest.fn().mockImplementation((query: TFindOneQuery) => {

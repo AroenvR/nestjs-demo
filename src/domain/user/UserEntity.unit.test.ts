@@ -1,4 +1,4 @@
-import { MockUpdateUserDto } from '../../__tests__/dto/MockUserDto';
+import { MockUpdateUserDto } from '../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../__tests__/mocks/entity/MockUserEntity';
 import { UserEntity } from './UserEntity';
 

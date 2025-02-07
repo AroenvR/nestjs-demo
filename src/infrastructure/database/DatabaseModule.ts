@@ -11,6 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const databaseConfig = configService.get<IServerConfig['database']>('database');
+				const loggingConfig = configService.get<IServerConfig['logging']>('logging');
 
 				return {
 					type: databaseConfig.driver,
@@ -21,9 +22,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
 					synchronize: databaseConfig.synchronize,
 					autoLoadEntities: true,
+					logging: loggingConfig.database,
 				};
 			},
 		}),
 	],
 })
-export class DatabaseModule {} // TODO: Add support for Postgres & MariaDB
+export class DatabaseModule {} // TODO: Add support for Postgres & MariaDBz

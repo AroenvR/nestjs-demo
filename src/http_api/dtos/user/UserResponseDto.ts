@@ -5,8 +5,6 @@ import { ResponseDto } from '../ResponseDto';
 /**
  * This class is responsible for returning a {@link UserEntity} to the client.
  * It provides Swagger documentation for the API.
- * It JSON validates the following fields:
- * - username: string, at least 3 characters long.
  */
 export class UserResponseDto extends ResponseDto {
 	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
@@ -21,7 +19,10 @@ export class UserResponseDto extends ResponseDto {
 		this.password = entity.password;
 	}
 
-	static fromEntity(entity: UserEntity): UserResponseDto {
+	/**
+	 *
+	 */
+	static create(entity: UserEntity): UserResponseDto {
 		return new UserResponseDto(entity);
 	}
 }

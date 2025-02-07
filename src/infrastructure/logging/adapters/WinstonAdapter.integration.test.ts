@@ -26,6 +26,7 @@ const CONFIG_TEXT: ILoggerConfig = {
 	http: {
 		enabled: false,
 	},
+	database: false,
 	useWhitelist: false,
 	prefixWhitelist: [],
 };

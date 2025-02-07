@@ -56,6 +56,7 @@ export const loggingSchema = Joi.object({
 	console: Joi.boolean().required(),
 	file: loggerFileConfigSchema.required(),
 	http: loggerHTTPConfigSchema.required(),
+	database: Joi.boolean().optional(),
 	useWhitelist: Joi.boolean().required(),
 	prefixWhitelist: Joi.array().items(Joi.string()).required(),
 }).required();

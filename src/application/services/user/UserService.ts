@@ -34,7 +34,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.fromEntity(transaction);
+		return UserResponseDto.create(transaction);
 	}
 
 	/**
@@ -46,7 +46,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		const data = await this.repository.find();
 		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
 
-		return entities.map((entity) => UserResponseDto.fromEntity(entity));
+		return entities.map((entity) => UserResponseDto.create(entity));
 	}
 
 	/**
@@ -60,7 +60,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
 		const entity = UserEntity.create(data); // Validate the data
 
-		return UserResponseDto.fromEntity(entity);
+		return UserResponseDto.create(entity);
 	}
 
 	/**
@@ -79,7 +79,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.fromEntity(transaction);
+		return UserResponseDto.create(transaction);
 	}
 
 	/**
@@ -108,8 +108,12 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public async emit(data: UserEntity) {
 		this.logger.info(`Emitting entity by id: ${data.id}`);
 
-		const entity = UserEntity.create(data); // Validate the data
-		this.events.next({ data: UserResponseDto.fromEntity(entity) });
+		try {
+			const entity = UserEntity.create(data); // Validate the data
+			this.events.next({ data: UserResponseDto.create(entity) });
+		} catch (err) {
+			this.logger.error(`Failed to emit entity.`, err);
+		}
 	}
 
 	/**

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UUID } from 'crypto';
-import { AbstractEntity } from '../../domain/AbstractEntity'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { AbstractEntity } from '../../domain/AbstractEntity';
+import { NotImplementedException } from '@nestjs/common';
 
 /**
  * ResponseDto represents the standardized API response object for returning an {@link AbstractEntity} to the client.
@@ -30,5 +31,14 @@ export class ResponseDto {
 		this.id = entity.id;
 		this.uuid = entity.uuid;
 		this.createdAt = entity.createdAt;
+	}
+
+	/**
+	 * A static factory to create a Reponse DTO.
+	 * @param entity The entity to create this entity from.
+	 * @returns The created DTO to return to the client.
+	 */
+	public static create(_: AbstractEntity): ResponseDto {
+		throw new NotImplementedException(`${this.constructor.name}: Static 'create' factory not implemented.`);
 	}
 }
