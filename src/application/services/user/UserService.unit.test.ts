@@ -1,7 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Subject } from 'rxjs';
 import { UserService } from './UserService';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
@@ -10,7 +9,6 @@ import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
 import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
 import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
 import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
-import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
