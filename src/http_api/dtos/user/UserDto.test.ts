@@ -2,22 +2,19 @@ import { validate } from 'class-validator';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { UpdateUserDto } from './UpdateUserDto';
 import { UserResponseDto } from './UserResponseDto';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 import { CreateUserDto } from './CreateUserDto';
 import { userConstants } from '../../../common/constants/userConstants';
+import { falsyValues } from '../../../__tests__/helpers/falsyValues';
 
 describe("User DTO's", () => {
 	let createDto: CreateUserDto;
 	let updateDto: UpdateUserDto;
 
-	let badValues: unknown[];
-
 	beforeEach(() => {
 		createDto = MockCreateUserDto.get();
 		updateDto = MockUpdateUserDto.get();
-
-		badValues = [null, undefined, '', 0, -100, true, false, [], {}, Symbol('')];
 	});
 
 	describe('Create DTO', () => {
@@ -33,10 +30,7 @@ describe("User DTO's", () => {
 		// --------------------------------------------------
 
 		it('Username must be a string adhering to min/max lengths', async () => {
-			badValues.push('a'.repeat(userConstants.minUsernameLength - 1));
-			badValues.push('b'.repeat(userConstants.maxUsernameLength + 1));
-
-			for (const value of badValues) {
+			for (const value of falsyValues()) {
 				// @ts-expect-error: expects a string.
 				createDto.username = value;
 
@@ -48,9 +42,7 @@ describe("User DTO's", () => {
 		// --------------------------------------------------
 
 		it('Password must be a string adhering to min length', async () => {
-			badValues.push('a'.repeat(userConstants.minPasswordLength - 1));
-
-			for (const value of badValues) {
+			for (const value of falsyValues(userConstants.minPasswordLength)) {
 				// @ts-expect-error: expects a string.
 				createDto.password = value;
 
@@ -77,10 +69,7 @@ describe("User DTO's", () => {
 		// --------------------------------------------------
 
 		it('Username must be a string adhering to min/max length', async () => {
-			badValues.push('a'.repeat(userConstants.minUsernameLength - 1));
-			badValues.push('b'.repeat(userConstants.maxUsernameLength + 1));
-
-			for (const value of badValues) {
+			for (const value of falsyValues(userConstants.minUsernameLength, userConstants.maxUsernameLength, true)) {
 				// @ts-expect-error: Username expects a string.
 				updateDto.username = value;
 
@@ -92,9 +81,7 @@ describe("User DTO's", () => {
 		// --------------------------------------------------
 
 		it('Password must be a string adhering to min length', async () => {
-			badValues.push('a'.repeat(userConstants.minPasswordLength - 1));
-
-			for (const value of badValues) {
+			for (const value of falsyValues(userConstants.minPasswordLength, null, true)) {
 				// @ts-expect-error: Username expects a string.
 				updateDto.password = value;
 
@@ -109,7 +96,7 @@ describe("User DTO's", () => {
 	describe('Response DTO', () => {
 		it('Can be created from the entity', async () => {
 			const entity = MockUserEntity.get();
-			const dto = new UserResponseDto(entity);
+			const dto = UserResponseDto.create(entity);
 
 			expect(dto.id).toEqual(entity.id);
 			expect(dto.uuid).toEqual(entity.uuid);

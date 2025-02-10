@@ -1,5 +1,5 @@
-import { CreateUserDto } from '../../http_api/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../http_api/dtos/user/UpdateUserDto';
+import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
+import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
 
 /**
  * A Mock {@link CreateUserDto} for testing purposes.

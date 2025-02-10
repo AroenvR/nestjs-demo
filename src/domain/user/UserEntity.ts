@@ -7,7 +7,8 @@ import { UpdateUserDto } from '../../http_api/dtos/user/UpdateUserDto';
 
 /**
  * Represents a user entity in the database.
- * @column username TEXT NOT NULL UNIQUE
+ * @Column username TEXT NOT NULL UNIQUE
+ * @Column password TEXT NOT NULL
  */
 @Entity()
 export class UserEntity extends AbstractEntity {

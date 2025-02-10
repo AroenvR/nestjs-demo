@@ -30,6 +30,7 @@ const defaultConfig: IServerConfig = {
 		http: {
 			enabled: false,
 		},
+		database: false,
 		useWhitelist: false,
 		prefixWhitelist: [],
 	},

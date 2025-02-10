@@ -7,12 +7,12 @@ import { UpdateDto } from '../http_api/dtos/UpdateDto';
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
-// import { Entity } from 'typeorm';
+// import { Entity, Column } from 'typeorm';
 // import { AbstractEntity } from '../AbstractEntity';
 
 // /**
 //  * Represents a FOO entity in the database.
-//  * @column
+//  * @Column
 //  */
 // @Entity()
 // export class FooEntity extends AbstractEntity {
@@ -57,7 +57,7 @@ import { UpdateDto } from '../http_api/dtos/UpdateDto';
  * @column id INTEGER PRIMARY KEY AUTOINCREMENT
  * @column uuid TEXT NOT NULL UNIQUE
  * @column created_at INTEGER NOT NULL
- * @devnote check the test file to see how to use this class.
+ * @devnote Check the [test file](./AbstractEntity.test.ts) for an example of using this class.
  */
 export abstract class AbstractEntity {
 	@PrimaryGeneratedColumn()
@@ -70,6 +70,8 @@ export abstract class AbstractEntity {
 	createdAt: number;
 
 	protected constructor(entity: Partial<AbstractEntity>) {
+		if (entity === null) throw new Error(`${this.constructor.name}: No data was given.`);
+
 		if (entity) {
 			// When adding new values to this AbstractEntity, remember to add it to the parentSchema below.
 			this.id = entity.id;
@@ -124,10 +126,10 @@ export abstract class AbstractEntity {
 	 * @devnote Check the {@link childSchema} getter for more info.
 	 */
 	private validateChild(entity: Partial<AbstractEntity>): void {
-		const { error } = Joi.alternatives() // Allow either a full parent+child schema or a child-only schema.
-			.try(this.parentSchema.concat(this.childSchema), this.childSchema)
-			.strict()
-			.validate(entity, { abortEarly: false, allowUnknown: false });
+		const isCompleteEntity = (entity.uuid !== undefined && entity.createdAt !== undefined) || entity.id !== undefined;
+		const schemaToUse = isCompleteEntity ? this.parentSchema.concat(this.childSchema) : this.childSchema;
+
+		const { error } = schemaToUse.strict().validate(entity, { abortEarly: false, allowUnknown: false });
 
 		if (error)
 			throw new BadRequestException(
@@ -140,22 +142,14 @@ export abstract class AbstractEntity {
 	 * @param error The Joi ValidationError to generate a message from.
 	 */
 	private generateJsonSchemaErrorMessage(error: Joi.ValidationError): string {
-		let message = error.message;
-
-		const disallowedKeys: string[] = [];
+		const issues: string[] = [];
 		if (error.details) {
 			for (const detail of error.details) {
-				const value = detail.context?.value;
-
-				if (detail.context && value && typeof value === 'object') {
-					const keys = Object.keys(value);
-					disallowedKeys.push(...keys);
-				}
+				if (detail.message) issues.push(detail.message);
 			}
 		}
 
-		if (disallowedKeys.length >= 1) message += ` - Problematic keys: ${disallowedKeys.join(', ')}`;
-		return message;
+		return issues.join(', ');
 	}
 
 	/* Getters & Setters */

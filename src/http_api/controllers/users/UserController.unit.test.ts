@@ -6,7 +6,7 @@ import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
 import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { GuardedController } from '../GuardedController';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 describe('UserController Unit', () => {
@@ -16,7 +16,7 @@ describe('UserController Unit', () => {
 	let mockedResponse: UserResponseDto; // Value to change
 
 	beforeEach(async () => {
-		mockedResponse = new UserResponseDto(MockUserEntity.get());
+		mockedResponse = UserResponseDto.create(MockUserEntity.get());
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [UserController], // Value to change

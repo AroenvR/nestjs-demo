@@ -1,7 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Subject } from 'rxjs';
 import { UserService } from './UserService';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
@@ -10,10 +9,9 @@ import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
 import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
 import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
 import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
-import { ISseMessage } from '../../../application/events/ISseMessage';
 import { AbstractService } from '../AbstractService';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 describe('UserService Unit', () => {
@@ -150,13 +148,13 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can emit an event', () => {
-		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
+	it('Can emit an event', async () => {
+		const events = service['events'];
 		const spy = jest.spyOn(events, 'next');
 
-		service.emit(mockedResponse);
+		await service.emit(mockedResponse);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(mockedResponse) });
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(mockedResponse) });
 		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${mockedResponse.id}`);
 	});
 });

@@ -10,7 +10,7 @@ import { GuardedController } from '../GuardedController';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
 import { UserModule } from '../../../http_api/modules/users/UserModule';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 
 describe('UserController Integration', () => {
 	const TEST_NAME = 'UserController_Integration'; // Value to change
@@ -74,7 +74,7 @@ describe('UserController Integration', () => {
 
 	describe('FIND ALL', () => {
 		it('Finds all entities', async () => {
-			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.fromEntity(entity)]); // Value to change
+			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.create(entity)]); // Value to change
 			await expect(wasLogged(TEST_NAME, `${className}: Finding all entities`)).resolves.toBe(true);
 		});
 
@@ -97,10 +97,10 @@ describe('UserController Integration', () => {
 
 	describe('FIND ONE', () => {
 		it('Finds an entity by id', async () => {
-			const response = UserResponseDto.fromEntity(entity); // Value to change
+			const response = UserResponseDto.create(entity); // Value to change
 
 			await expect(controller.findOne(entity.id)).resolves.toEqual(response);
-			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id 1`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id ${entity.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -123,7 +123,7 @@ describe('UserController Integration', () => {
 
 	describe('UPDATE', () => {
 		it('Updates an entity', async () => {
-			const response = UserResponseDto.fromEntity(entity.update(updateDto)); // Value to change
+			const response = UserResponseDto.create(entity.update(updateDto)); // Value to change
 
 			await expect(controller.update(entity.id, updateDto)).resolves.toEqual(response);
 			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by id ${entity.id}`)).resolves.toBe(true);

@@ -66,6 +66,7 @@ export interface ILoggerConfig {
 	console: boolean;
 	file: TLoggerFileConfig;
 	http: TLoggerHTTPConfig;
+	database: boolean;
 	useWhitelist: boolean;
 	prefixWhitelist: string[];
 }

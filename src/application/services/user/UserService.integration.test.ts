@@ -1,5 +1,4 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Subject } from 'rxjs';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
 import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
@@ -8,10 +7,9 @@ import { UserEntity } from '../../../domain/user/UserEntity';
 import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { AbstractService } from '../AbstractService';
-import { ISseMessage } from '../../../application/events/ISseMessage';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
 import { UserModule } from '../../../http_api/modules/users/UserModule';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/dto/MockUserDto';
+import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 // Value to change
@@ -144,12 +142,12 @@ describe('UserService Integration', () => {
 	// --------------------------------------------------
 
 	it('Can emit events', async () => {
-		const events = service['events'] as Subject<ISseMessage<UserResponseDto>>;
+		const events = service['events'];
 		const spy = jest.spyOn(events, 'next');
 
-		service.emit(entity);
+		await service.emit(entity);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.fromEntity(entity) });
+		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(entity) });
 		await expect(wasLogged(testName, `${className}: Emitting entity by id: ${entity.id}`)).resolves.toBe(true);
 	});
 });
