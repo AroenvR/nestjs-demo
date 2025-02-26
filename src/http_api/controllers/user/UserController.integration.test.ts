@@ -8,7 +8,7 @@ import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
 import { GuardedController } from '../GuardedController';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../../http_api/modules/users/UserModule';
+import { UserModule } from '../../modules/user/UserModule';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 

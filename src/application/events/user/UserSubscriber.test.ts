@@ -1,6 +1,6 @@
 import { DataSource, InsertEvent, UpdateEvent } from 'typeorm';
 import { UserSubscriber } from './UserSubscriber';
-import { UserService } from '../../../application/services/user/UserService';
+import { UserService } from '../../services/user/UserService';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';

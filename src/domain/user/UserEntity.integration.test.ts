@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { MockUserEntity } from '../../__tests__/mocks/entity/MockUserEntity';
 import { copyEntity } from '../../__tests__/mocks/entity/copyEntity';
 import { createMockAppModule } from '../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../http_api/modules/users/UserModule';
+import { UserModule } from '../../http_api/modules/user/UserModule';
 
 describe('UserEntity_Integration', () => {
 	let entity: UserEntity;

@@ -98,7 +98,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	 *
 	 */
 	public async observe() {
-		this.logger.info(`Observing template events`);
+		this.logger.info(`Observing events`);
 		return this.events.asObservable();
 	}
 

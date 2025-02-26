@@ -11,8 +11,8 @@ import { createMockAppModule } from '../../../__tests__/mocks/module/createMockA
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 import { copyEntity } from '../../../__tests__/mocks/entity/copyEntity';
-import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
-import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
+import { UserResponseDto } from '../../dtos/user/UserResponseDto';
+import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
 
 const TEST_NAME = 'UserModule'; // Value to change
 describe(TEST_NAME, () => {

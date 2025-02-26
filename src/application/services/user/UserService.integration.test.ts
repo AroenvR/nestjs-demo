@@ -8,7 +8,7 @@ import { UserService } from './UserService';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { AbstractService } from '../AbstractService';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../../http_api/modules/users/UserModule';
+import { UserModule } from '../../../http_api/modules/user/UserModule';
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
@@ -136,7 +136,7 @@ describe('UserService Integration', () => {
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty('subscribe');
 
-		await expect(wasLogged(testName, `${className}: Observing template events`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `${className}: Observing events`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------

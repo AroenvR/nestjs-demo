@@ -143,7 +143,7 @@ describe('UserService Unit', () => {
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty('subscribe');
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Observing template events`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Observing events`);
 	});
 
 	// --------------------------------------------------
