@@ -68,7 +68,7 @@ describe('UserEntity_Integration', () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 
-			await expect(repository.save(copy)).rejects.toThrow('SQLITE_CONSTRAINT: UNIQUE constraint failed: user_entity.username');
+			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: user_entity.username');
 		});
 	});
 });
