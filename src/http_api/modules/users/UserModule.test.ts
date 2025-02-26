@@ -60,12 +60,21 @@ describe(TEST_NAME, () => {
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CREATED);
 
-			expect(response.body.id).toEqual(entity.id + 1);
+			expect(response.body.id).toBeTruthy();
+			expect(response.body.uuid).toBeTruthy();
+			expect(response.body.createdAt).toBeTruthy();
 
 			expect(response.body.username).toEqual(createDto.username);
 			expect(response.body.password).toEqual(createDto.password);
 
-			await expect(repository.findOne({ where: { id: entity.id } })).resolves.toEqual(entity);
+			// Verify the created entity in the database
+
+			const found = await repository.findOne({ where: { id: response.body.id } });
+
+			expect(found).toEqual(response.body);
+
+			expect(found.username).toEqual(createDto.username);
+			expect(found.password).toEqual(createDto.password);
 
 			await expect(wasLogged(TEST_NAME, `UserController: Creating a new entity`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Creating a new entity`)).resolves.toBe(true);

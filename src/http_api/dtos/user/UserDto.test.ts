@@ -30,7 +30,7 @@ describe("User DTO's", () => {
 		// --------------------------------------------------
 
 		it('Username must be a string adhering to min/max lengths', async () => {
-			for (const value of falsyValues()) {
+			for (const value of falsyValues(userConstants.minUsernameLength, userConstants.maxUsernameLength)) {
 				// @ts-expect-error: expects a string.
 				createDto.username = value;
 

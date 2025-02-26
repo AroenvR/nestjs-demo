@@ -8,6 +8,10 @@ type TFindOneQuery = {
 	relations: string[];
 };
 
+type TFindManyQuery = {
+	id: { _value: number[] };
+};
+
 /**
  * Mocks a repository with CRUD operations.
  */
@@ -21,6 +25,12 @@ export class MockRepository<Entity extends AbstractEntity> {
 	});
 
 	find = jest.fn().mockResolvedValue([this.createEntity()]);
+
+	findBy = jest.fn().mockResolvedValue((query: TFindManyQuery) => {
+		if (query.id._value.length === 0) return [];
+
+		return [this.createEntity()];
+	});
 
 	findOne = jest.fn().mockImplementation((query: TFindOneQuery) => {
 		if (query.where.id === 69) return null; // To test the error handling
