@@ -8,6 +8,8 @@ import fs from 'fs-extra';
  * @returns If the log message was logged.
  */
 export async function wasLogged(logFile: string, logMessage: string): Promise<boolean> {
+	await new Promise((resolve) => setTimeout(resolve, 10));
+
 	const logFilePath = path.join(__dirname, '..', '..', '..', 'logs', `${logFile}.test.log`);
 	if (!(await fs.exists(logFilePath))) return false;
 
