@@ -41,10 +41,18 @@ export class WinstonAdapter implements IPrefixedLogger {
 			level: config.level || 'info', // Fallback log level
 			transports: winstonTransports,
 		});
+		this.winston.warn('Logger intitialized', {
+			context: 'WinstonAdapter',
+			metadata: { level: config.level },
+			correlationId: this.correlationManager.getCorrelationId(),
+		});
 	}
 
 	public verbose(context: string, message: string, metadata?: TLogMetadata) {
 		if (!this.isWhitelistApproved(context)) return;
+
+		// @Security The log line below cannot exist in a production environment. Comment it out or delete it.
+		// \@CICD #1\
 		this.winston.verbose(message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
 	}
 

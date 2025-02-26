@@ -97,7 +97,8 @@ export class RequestBuilder implements IRequestBuilder {
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);
 				}
 
-				this.logger.debug(`Full response: ${JSON.stringify(response)}`);
+				// @Security - This could log sensitive data (response payloads from external API's)
+				this.logger.verbose(`Full response: ${JSON.stringify(response)}`);
 				throw new Error(`${this.name}: ${this.method} request to ${url} | Status: ${response.status} | Message: ${response.statusText}`);
 			})
 			.catch((err) => {
@@ -152,7 +153,8 @@ export class RequestBuilder implements IRequestBuilder {
 			else url += `/${this.endpoint}`;
 		}
 
-		this.logger.debug(`URL being built: ${url}`);
+		// @Security - On older API's, sensitive data can exist in URL's so this could log sensitive data.
+		this.logger.verbose(`URL being built: ${url}`);
 		return new URL(url);
 	}
 
@@ -180,7 +182,8 @@ export class RequestBuilder implements IRequestBuilder {
 			if (this.body instanceof ArrayBuffer) payload.body = this.body;
 		}
 
-		this.logger.debug(`Payload being built: ${JSON.stringify(payload)}`);
+		// @Security - This can log sensitive data (f.ex. payloads to external API's).
+		this.logger.verbose(`Payload being built: ${JSON.stringify(payload)}`);
 		return payload;
 	}
 

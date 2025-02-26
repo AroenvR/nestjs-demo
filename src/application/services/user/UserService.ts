@@ -132,7 +132,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 
 		const seedRequirement = (await this.repository.count()) === 0;
 		if (!seedRequirement) {
-			this.logger.info(`Seeding requirement not met. Not seeding data.`);
+			this.logger.info(`Seed data exists. Not seeding data.`);
 			return;
 		}
 

@@ -23,8 +23,10 @@ export class LoggerMiddleware implements NestMiddleware {
 		this.logger.correlationManager.runWithCorrelationId(correlationId, () => {
 			// Log the incoming request
 			this.logger.log(`Request: ${method} ${originalUrl}`);
-			this.logger.verbose(`Request Headers: ${JSON.stringify(req.headers)}`);
 
+			// @Security - These three verbose logs can log sensitive data like data coming in and going out of this API
+			//              As well as important security headers.
+			this.logger.verbose(`Request Headers: ${JSON.stringify(req.headers)}`);
 			if (isTruthy(req.body)) this.logger.verbose(`Request Body: ${JSON.stringify(req.body)}`);
 			if (isTruthy(req.query)) this.logger.verbose(`Request Query: ${JSON.stringify(req.query)}`);
 

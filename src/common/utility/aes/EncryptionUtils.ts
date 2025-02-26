@@ -51,7 +51,7 @@ export class EncryptionUtils {
 
 		const encrypted = strategy.encrypt(data);
 
-		this.logger.info(`Successfully encrypted data using ${algorithm}`);
+		this.logger.debug(`Successfully encrypted data using ${algorithm}`);
 		return encrypted;
 	}
 
@@ -68,7 +68,7 @@ export class EncryptionUtils {
 
 		const decrypted = strategy.decrypt(data);
 
-		this.logger.info(`Successfully decrypted data using ${data.algorithm}`);
+		this.logger.debug(`Successfully decrypted data using ${data.algorithm}`);
 		return decrypted;
 	}
 

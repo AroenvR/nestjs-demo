@@ -70,7 +70,7 @@ export class AuthService implements IAuthService {
 			version: CURRENT_JWT_VERSION,
 		};
 
-		this.logger.info(`Signing JWT`);
+		this.logger.debug(`Signing JWT`);
 		const token = await this.jwtService.signAsync(tokenPayload);
 
 		return { accessToken: token };
