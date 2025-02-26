@@ -10,83 +10,83 @@ import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/d
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
 describe('UserController Unit', () => {
-	let controller: GuardedController;
+    let controller: GuardedController;
 
-	const ID = 1;
-	let mockedResponse: UserResponseDto; // Value to change
+    const ID = 1;
+    let mockedResponse: UserResponseDto; // Value to change
 
-	beforeEach(async () => {
-		mockedResponse = UserResponseDto.create(MockUserEntity.get());
+    beforeEach(async () => {
+        mockedResponse = UserResponseDto.create(MockUserEntity.get());
 
-		const module: TestingModule = await Test.createTestingModule({
-			controllers: [UserController], // Value to change
-			providers: [
-				{
-					provide: UserService, // Value to change
-					useValue: new MockService(() => mockedResponse),
-				},
-				{
-					provide: WinstonAdapter,
-					useValue: mockILogger,
-				},
-			],
-		}).compile();
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [UserController], // Value to change
+            providers: [
+                {
+                    provide: UserService, // Value to change
+                    useValue: new MockService(() => mockedResponse),
+                },
+                {
+                    provide: WinstonAdapter,
+                    useValue: mockILogger,
+                },
+            ],
+        }).compile();
 
-		controller = module.get<UserController>(UserController); // Value to change
-	});
+        controller = module.get<UserController>(UserController); // Value to change
+    });
 
-	// --------------------------------------------------
+    // --------------------------------------------------
 
-	it('Should be defined', () => {
-		expect(controller).toBeDefined();
-	});
+    it('Should be defined', () => {
+        expect(controller).toBeDefined();
+    });
 
-	// -------------------------------------------------- \\
+    // -------------------------------------------------- \\
 
-	describe('CREATE', () => {
-		it('Can create an entity', async () => {
-			const dto = MockCreateUserDto.get();
+    describe('CREATE', () => {
+        it('Can create an entity', async () => {
+            const dto = MockCreateUserDto.get();
 
-			await expect(controller.create(dto)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
-		});
-	});
+            await expect(controller.create(dto)).resolves.toEqual(mockedResponse);
+            expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
+        });
+    });
 
-	// -------------------------------------------------- \\
+    // -------------------------------------------------- \\
 
-	describe('FIND ALL', () => {
-		it('Finds all entities', async () => {
-			await expect(controller.findAll()).resolves.toEqual([mockedResponse]);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
-		});
-	});
+    describe('FIND ALL', () => {
+        it('Finds all entities', async () => {
+            await expect(controller.findAll({})).resolves.toEqual([mockedResponse]);
+            expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
+        });
+    });
 
-	// -------------------------------------------------- \\
+    // -------------------------------------------------- \\
 
-	describe('FIND ONE', () => {
-		it('Finds an entity by id', async () => {
-			await expect(controller.findOne(ID)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
-		});
-	});
+    describe('FIND ONE', () => {
+        it('Finds an entity by id', async () => {
+            await expect(controller.findOne(ID)).resolves.toEqual(mockedResponse);
+            expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
+        });
+    });
 
-	// -------------------------------------------------- \\
+    // -------------------------------------------------- \\
 
-	describe('UPDATE', () => {
-		it('Updates an entity', async () => {
-			const dto = MockUpdateUserDto.get();
+    describe('UPDATE', () => {
+        it('Updates an entity', async () => {
+            const dto = MockUpdateUserDto.get();
 
-			await expect(controller.update(ID, dto)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
-		});
-	});
+            await expect(controller.update(ID, dto)).resolves.toEqual(mockedResponse);
+            expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
+        });
+    });
 
-	// -------------------------------------------------- \\
+    // -------------------------------------------------- \\
 
-	describe('DELETE', () => {
-		it('Deletes an entity', async () => {
-			await expect(controller.remove(ID)).resolves.toBeUndefined();
-			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
-		});
-	});
+    describe('DELETE', () => {
+        it('Deletes an entity', async () => {
+            await expect(controller.remove(ID)).resolves.toBeUndefined();
+            expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
+        });
+    });
 });

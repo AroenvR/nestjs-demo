@@ -12,6 +12,7 @@ import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { UserService } from '../../../application/services/user/UserService';
 import { GuardedController } from '../GuardedController';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { UserQueryDto } from '../../../http_api/dtos/user/UserQueryDto';
 
 const ENDPOINT = 'user'; // Just finished the unit test, on to the integration and the module tests.
 
@@ -19,40 +20,40 @@ const ENDPOINT = 'user'; // Just finished the unit test, on to the integration a
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
 export class UserController extends GuardedController {
-	constructor(
-		protected readonly logAdapter: WinstonAdapter,
-		protected readonly service: UserService,
-	) {
-		super(logAdapter, service);
-	}
+    constructor(
+        protected readonly logAdapter: WinstonAdapter,
+        protected readonly service: UserService,
+    ) {
+        super(logAdapter, service);
+    }
 
-	@PostEndpoint(ENDPOINT, UserResponseDto)
-	public async create(createDto: CreateUserDto) {
-		return super.create(createDto);
-	}
+    @PostEndpoint(ENDPOINT, UserResponseDto)
+    public async create(createDto: CreateUserDto) {
+        return super.create(createDto);
+    }
 
-	@GetEndpoint(ENDPOINT, UserResponseDto)
-	public async findAll() {
-		return super.findAll();
-	}
+    @GetEndpoint(ENDPOINT, UserResponseDto)
+    public async findAll(query: UserQueryDto) {
+        return super.findAll(query);
+    }
 
-	@SseEndpoint(ENDPOINT, UserResponseDto)
-	public events() {
-		return super.events();
-	}
+    @SseEndpoint(ENDPOINT, UserResponseDto)
+    public events() {
+        return super.events();
+    }
 
-	@GetByIdEndpoint(ENDPOINT, UserResponseDto)
-	public async findOne(id: number) {
-		return super.findOne(id);
-	}
+    @GetByIdEndpoint(ENDPOINT, UserResponseDto)
+    public async findOne(id: number) {
+        return super.findOne(id);
+    }
 
-	@PatchEndpoint(ENDPOINT, UserResponseDto)
-	public async update(id: number, updateDto: UpdateUserDto) {
-		return super.update(id, updateDto);
-	}
+    @PatchEndpoint(ENDPOINT, UserResponseDto)
+    public async update(id: number, updateDto: UpdateUserDto) {
+        return super.update(id, updateDto);
+    }
 
-	@DeleteEndpoint(ENDPOINT)
-	public async remove(id: number) {
-		return super.remove(id);
-	}
+    @DeleteEndpoint(ENDPOINT)
+    public async remove(id: number) {
+        return super.remove(id);
+    }
 }
