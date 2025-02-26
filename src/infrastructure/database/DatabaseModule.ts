@@ -11,7 +11,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService<IServerConfig>) => {
 				const databaseConfig = configService.get<IServerConfig['database']>('database');
-				const loggingConfig = configService.get<IServerConfig['logging']>('logging');
+				const logConfig = configService.get<IServerConfig['logging']>('logging');
+
+				let enableDbLogging = false;
+				if (logConfig.level === 'verbose' && logConfig.console === true) {
+					enableDbLogging = logConfig.database;
+				}
 
 				return {
 					type: databaseConfig.driver,
@@ -22,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
 					synchronize: databaseConfig.synchronize,
 					autoLoadEntities: true,
-					logging: loggingConfig.database,
+					logging: enableDbLogging,
 				};
 			},
 		}),
