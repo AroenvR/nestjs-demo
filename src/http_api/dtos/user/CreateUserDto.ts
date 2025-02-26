@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import { CreateDto } from '../CreateDto';
 import { userConstants } from '../../../common/constants/userConstants';
+import { UserEntity } from '../../../domain/user/UserEntity'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * This class is responsible for receiving data from a client to create a {@link UserEntity}.

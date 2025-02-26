@@ -1,5 +1,5 @@
 /**
- * Shared constatns for user entities and dto's.
+ * Shared constants for user entities and dto's.
  */
 export const userConstants = {
 	minUsernameLength: 3,
