@@ -6,6 +6,7 @@ import { AuthModule } from '../http_api/modules/auth/AuthModule';
 import { ConfigModule } from '@nestjs/config';
 import { serverConfig } from './configuration/serverConfig';
 import { UserModule } from '../http_api/modules/user/UserModule';
+import { UtilityModule } from '../common/utility/UtilityModule';
 
 const ENDPOINT_MODULES = [AuthModule, UserModule];
 
@@ -17,6 +18,7 @@ const ENDPOINT_MODULES = [AuthModule, UserModule];
 		}),
 		LoggerModule,
 		DatabaseModule,
+		UtilityModule,
 		...ENDPOINT_MODULES,
 	],
 })

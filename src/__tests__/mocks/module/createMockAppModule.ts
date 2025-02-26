@@ -7,6 +7,7 @@ import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule'
 import { AuthModule } from '../../../http_api/modules/auth/AuthModule';
 import { HttpErrorFilter } from '../../../http_api/filters/http_error/HttpErrorFilter';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { UtilityModule } from '../../../common/utility/UtilityModule';
 
 /**
  * Mocks the app module for testing.
@@ -22,6 +23,7 @@ export const createMockAppModule = async (module: Type<any>) => {
 			}),
 			LoggerModule,
 			DatabaseModule,
+			UtilityModule,
 			AuthModule,
 			module,
 		],
