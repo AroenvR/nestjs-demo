@@ -8,15 +8,16 @@
  * @returns An array of unkown 'falsy' values.
  */
 export const falsyValues = (min?: number, max?: number, noNullOrUndefined: boolean = false): unknown[] => {
-	const values = ['', 0, -100, true, false, [], {}, Symbol('')];
+    const values = ['', 0, -100, true, false, [], {}, Symbol('')];
 
-	if (min) values.push('a'.repeat(min - 1));
-	if (max) values.push('b'.repeat(max + 1));
+    if (min === 0) values.splice(values.indexOf(''), 1);
+    if (min) values.push('a'.repeat(min - 1));
+    if (max) values.push('b'.repeat(max + 1));
 
-	if (!noNullOrUndefined) {
-		values.push(null);
-		values.push(undefined);
-	}
+    if (!noNullOrUndefined) {
+        values.push(null);
+        values.push(undefined);
+    }
 
-	return values;
+    return values;
 };
