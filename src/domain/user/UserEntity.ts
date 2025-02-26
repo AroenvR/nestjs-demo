@@ -31,7 +31,15 @@ export class UserEntity extends AbstractEntity {
 	 *
 	 */
 	public static create(data: Partial<UserEntity> | CreateUserDto) {
-		return new UserEntity(data);
+		const parentData = UserEntity.parentDataHolder(data);
+
+		const dataHolder: Partial<UserEntity> = {
+			...parentData,
+			username: data.username,
+			password: data.password,
+		};
+
+		return new UserEntity(dataHolder);
 	}
 
 	/**
@@ -50,7 +58,7 @@ export class UserEntity extends AbstractEntity {
 	protected get childSchema() {
 		return Joi.object({
 			username: Joi.string().min(userConstants.minUsernameLength).max(userConstants.maxUsernameLength).required(),
-			password: Joi.string().optional(),
+			password: Joi.string().required(),
 		});
 	}
 }

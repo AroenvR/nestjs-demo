@@ -11,7 +11,7 @@ import { UpdateDto } from '../http_api/dtos/UpdateDto';
 // import { AbstractEntity } from '../AbstractEntity';
 
 // /**
-//  * Represents a FOO entity in the database.
+//  * Represents a Foo entity in the database.
 //  * @Column
 //  */
 // @Entity()
@@ -28,8 +28,14 @@ import { UpdateDto } from '../http_api/dtos/UpdateDto';
 //      /**
 //       *
 //       */
-//      public static create(data: Partial<FooEntity> | CreateFooDto) {
-//          return new FooEntity(data);
+//     public static create(data: Partial<FooEntity> | CreateFooDto) {
+//          const parentData = FooEntity.parentDataHolder(data);
+
+//          const dataHolder: Partial<FooEntity> = {
+//               ...parentData,
+//          }
+
+//          return new FooEntity(dataHolder);
 //     }
 
 //     /**
@@ -73,12 +79,15 @@ export abstract class AbstractEntity {
 		if (entity === null) throw new Error(`${this.constructor.name}: No data was given.`);
 
 		if (entity) {
-			// When adding new values to this AbstractEntity, remember to add it to the parentSchema below.
 			this.id = entity.id;
 			this.uuid = entity.uuid ?? randomUUID();
 			this.createdAt = entity.createdAt ?? Date.now();
 
 			this.validate(entity); // Validate the children's incoming data.
+
+			/* When adding new values to this AbstractEntity, remember to add the variables to the following below:
+                1. parentDataHolder function
+                2. parentSchema getter */
 		}
 	}
 
@@ -89,6 +98,27 @@ export abstract class AbstractEntity {
 	 */
 	public static create(_: Partial<AbstractEntity> | CreateDto): AbstractEntity {
 		throw new NotImplementedException(`${this.constructor.name}: Static 'create' factory not implemented.`);
+	}
+
+	/**
+	 * A data holder the AbstractEntity (the parent's) base data.
+	 * This is used to ensure that a child entity's create function can pass this parent's JSON schema,
+	 * regardless of whether it has the base values (like an entity would) or not (like a dto would).
+	 * @param data To create the base data holder from.
+	 * @returns The base data holder, ready to be expanded with en child entity's expected data.
+	 */
+	protected static parentDataHolder(data: Partial<AbstractEntity> | CreateDto): Partial<AbstractEntity> {
+		const dataHolder: Partial<AbstractEntity> = {
+			id: 'id' in data && data.id ? data.id : undefined,
+			uuid: 'uuid' in data && data.uuid ? data.uuid : undefined,
+			createdAt: 'createdAt' in data && data.createdAt ? data.createdAt : undefined,
+		};
+
+		if (dataHolder.id === undefined) delete dataHolder.id;
+		if (dataHolder.uuid === undefined) delete dataHolder.uuid;
+		if (dataHolder.createdAt === undefined) delete dataHolder.createdAt;
+
+		return dataHolder;
 	}
 
 	/**
