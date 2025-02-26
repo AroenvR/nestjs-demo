@@ -43,9 +43,11 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public async findAll() {
 		this.logger.info(`Finding all entities`);
 
-		const data = await this.repository.find();
-		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
+		const data = await this.repository.find({
+			relations: [],
+		});
 
+		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
 		return entities.map((entity) => UserResponseDto.create(entity));
 	}
 
@@ -55,7 +57,10 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public async findOne(id: number) {
 		this.logger.info(`Finding entity by id ${id}`);
 
-		const data = await this.repository.findOneBy({ id });
+		const data = await this.repository.findOne({
+			where: { id: id },
+			relations: [],
+		});
 
 		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
 		const entity = UserEntity.create(data); // Validate the data
@@ -70,7 +75,10 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		this.logger.info(`Updating entity by id ${id}`);
 
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const data = await this.repository.findOneBy({ id });
+			const data = await this.repository.findOne({
+				where: { id: id },
+				relations: [],
+			});
 			if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
 
 			const entity = UserEntity.create(data); // Validate the data
