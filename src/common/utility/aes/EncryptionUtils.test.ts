@@ -60,6 +60,16 @@ describe('Encryption Utils', () => {
 
 	// --------------------------------------------------
 
+	it('Throws when an unsupported algorithm is used', () => {
+		// @ts-expect-error: "some-algorithm" isn't supported.
+		expect(() => encryptionUtil.aesEncrypt(DATA, 'some-algorithm')).toThrow('No encryption strategy found');
+
+		// @ts-expect-error: "some-algorithm" isn't supported.
+		expect(() => encryptionUtil.aesDecrypt({ algorithm: 'some-algorithm' })).toThrow('No decryption strategy found');
+	});
+
+	// --------------------------------------------------
+
 	describe('AES encryption/decryption', () => {
 		it('Can encrypt string-based data using the AES-GCM algorithm', async () => {
 			const algorithm: TSupportedAesAlgorithms = 'aes-256-gcm';
