@@ -14,11 +14,11 @@ import { copyEntity } from '../../../__tests__/mocks/entity/copyEntity';
 import { UserResponseDto } from '../../dtos/user/UserResponseDto';
 import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
 
-const TEST_NAME = 'UserModule'; // Value to change
+const TEST_NAME = 'UserModule';
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
-	const ENDPOINT = '/v1/user'; // Value to change
+	const ENDPOINT = '/v1/user';
 
 	let app: INestApplication;
 	let repository: Repository<UserEntity>;
@@ -28,15 +28,15 @@ describe(TEST_NAME, () => {
 	let updateDto: UpdateUserDto;
 
 	beforeEach(async () => {
-		app = await createMockAppModule(UserModule); // Value to change
-		repository = app.get(getRepositoryToken(UserEntity)); // Value to change
+		app = await createMockAppModule(UserModule);
+		repository = app.get(getRepositoryToken(UserEntity));
 	});
 
 	beforeEach(async () => {
-		createDto = MockCreateUserDto.get(); // Value to change
-		updateDto = MockUpdateUserDto.get(); // Value to change
+		createDto = MockCreateUserDto.get();
+		updateDto = MockUpdateUserDto.get();
 
-		const data = MockUserEntity.get(); // Value to change
+		const data = MockUserEntity.get();
 		entity = await repository.save(data);
 	});
 

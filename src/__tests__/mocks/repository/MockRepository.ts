@@ -44,7 +44,7 @@ export class MockRepository<Entity extends AbstractEntity> {
 		return this.createEntity();
 	});
 
-	delete = jest.fn().mockImplementation((_) => {
-		return undefined;
+	remove = jest.fn().mockImplementation((_) => {
+		return null;
 	});
 }
