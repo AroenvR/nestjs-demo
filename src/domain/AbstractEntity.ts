@@ -4,6 +4,7 @@ import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { CreateDto } from '../http_api/dtos/CreateDto';
 import { UpdateDto } from '../http_api/dtos/UpdateDto';
+import { isTruthy } from 'ts-istruthy';
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
@@ -86,8 +87,8 @@ export abstract class AbstractEntity {
 			this.validate(entity); // Validate the children's incoming data.
 
 			/* When adding new values to this AbstractEntity, remember to add the variables to the following below:
-                1. parentDataHolder function
-                2. parentSchema getter */
+				1. parentDataHolder function
+				2. parentSchema getter */
 		}
 	}
 
@@ -200,5 +201,15 @@ export abstract class AbstractEntity {
 			uuid: Joi.string().uuid({ version: 'uuidv4' }).required(),
 			createdAt: Joi.number().integer().positive().required(),
 		});
+	}
+
+	/**
+	 * A helper function to check if the provided data is a non-empty array.
+	 * @param data The data to check.
+	 * @returns The data if it is a non-empty array, or an empty array otherwise.
+	 */
+	protected dataOrEmptyArray<T>(data: T) {
+		if (isTruthy(data) && Array.isArray(data) && data.length > 0) return data;
+		else return [];
 	}
 }
