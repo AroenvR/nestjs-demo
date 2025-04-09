@@ -72,7 +72,7 @@ describe('SessionService Unit', () => {
 		const exists = await service.exists(mockedUser.uuid);
 		expect(exists).toBe(true);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user ${mockedUser.uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user uuid ${mockedUser.uuid}`);
 	});
 
 	// --------------------------------------------------
@@ -88,8 +88,8 @@ describe('SessionService Unit', () => {
 
 		await service.create(createDto);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Session already exists for user ${mockedUser.uuid}`);
-		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity for uuid ${mockedUser.uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Session already exists for user uuid ${mockedUser.uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity for user uuid ${mockedUser.uuid}`);
 	});
 
 	// --------------------------------------------------
@@ -98,7 +98,7 @@ describe('SessionService Unit', () => {
 		const uuid = '167ad25f-0f91-4ac0-a9ed-99cef801ba9e';
 
 		await expect(service.exists(uuid)).rejects.toThrow(`User by uuid ${uuid} not found`);
-		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user ${uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user uuid ${uuid}`);
 	});
 
 	// --------------------------------------------------
@@ -109,8 +109,8 @@ describe('SessionService Unit', () => {
 		(userRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(mockedUser));
 		(sessionRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(null));
 
-		await expect(service.exists(mockedUser.uuid)).rejects.toThrow(`Session for uuid ${mockedUser.uuid} not found`);
-		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user ${mockedUser.uuid}`);
+		await expect(service.exists(mockedUser.uuid)).rejects.toThrow(`Session for user uuid ${mockedUser.uuid} not found`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user uuid ${mockedUser.uuid}`);
 	});
 
 	// --------------------------------------------------
@@ -140,7 +140,7 @@ describe('SessionService Unit', () => {
 		expect(savedEntity.token).toEqual(mockToken);
 		expect(savedEntity.refreshes).toEqual(mockedSession.refreshes + 1);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity for uuid ${mockedUser.uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity for user uuid ${mockedUser.uuid}`);
 
 		refreshTokenSpy.mockRestore();
 	});
@@ -150,6 +150,6 @@ describe('SessionService Unit', () => {
 	it('Can delete an entity', async () => {
 		await expect(service.remove(mockedUser.uuid)).resolves.not.toThrow();
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity for uuid ${mockedUser.uuid}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity for user uuid ${mockedUser.uuid}`);
 	});
 });

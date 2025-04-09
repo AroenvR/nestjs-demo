@@ -39,11 +39,11 @@ export class SessionService {
 		try {
 			await this.exists(user.uuid);
 
-			this.logger.info(`Session already exists for user ${user.uuid}`);
+			this.logger.info(`Session already exists for user uuid ${user.uuid}`);
 			return this.update(user.uuid);
 		} catch (err) {
 			// Swallowing the error since we know it doesn't exist
-			this.logger.info(`Session does not yet exist for user ${user.uuid}:`, err);
+			this.logger.info(`Session does not yet exist for user uuid ${user.uuid}:`, err);
 		}
 
 		const token = await this.fetchToken();
@@ -61,13 +61,13 @@ export class SessionService {
 	 *
 	 */
 	public async update(uuid: UUID) {
-		this.logger.info(`Updating entity for uuid ${uuid}`);
+		this.logger.info(`Updating entity for user uuid ${uuid}`);
 
 		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
 		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
 
 		const session = await this.repository.findOne({ where: { userUuid: user.uuid } });
-		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
+		if (!session) throw new NotFoundException(`Session for user uuid ${user.uuid} not found`);
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			const entity = SessionEntity.create(session);
@@ -85,13 +85,13 @@ export class SessionService {
 	 *
 	 */
 	public async remove(uuid: UUID) {
-		this.logger.info(`Deleting entity for uuid ${uuid}`);
+		this.logger.info(`Deleting entity for user uuid ${uuid}`);
 
 		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
 		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
 
 		const session = await this.repository.findOne({ where: { userUuid: user.uuid } });
-		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
+		if (!session) throw new NotFoundException(`Session for user uuid ${user.uuid} not found`);
 
 		await this.repository.remove(session);
 	}
@@ -102,13 +102,13 @@ export class SessionService {
 	 * @returns A boolean indicating whether the session exists.
 	 */
 	public async exists(uuid: UUID): Promise<boolean> {
-		this.logger.info(`Checking for an existing session for user ${uuid}`);
+		this.logger.info(`Checking for an existing session for user uuid ${uuid}`);
 
 		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
 		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
 
 		const session = await this.repository.findOne({ where: { userUuid: uuid } });
-		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
+		if (!session) throw new NotFoundException(`Session for user uuid ${user.uuid} not found`);
 
 		return true;
 	}

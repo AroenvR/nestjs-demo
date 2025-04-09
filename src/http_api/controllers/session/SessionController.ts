@@ -117,7 +117,7 @@ export class SessionController {
 
 			return dto;
 		} catch (err) {
-			this.logger.error(`Error updating session for uuid ${uuid}`, err);
+			this.logger.error(`Error updating Session for user uuid ${uuid}`, err);
 
 			if (err instanceof UnauthorizedException) {
 				await this.sessionService.remove(uuid);
@@ -154,7 +154,7 @@ export class SessionController {
 				const exists = await this.sessionService.exists(uuid);
 				if (exists) await this.sessionService.remove(uuid);
 			} catch (err) {
-				this.logger.info(`Session for uuid ${uuid} does not exist:`, err);
+				this.logger.info(`Session for user uuid ${uuid} does not exist:`, err);
 			}
 		}
 

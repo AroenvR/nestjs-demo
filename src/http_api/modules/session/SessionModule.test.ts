@@ -80,7 +80,7 @@ describe(TEST_NAME, () => {
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 
 			await expect(wasLogged(TEST_NAME, `SessionService: Creating a new entity`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Session does not yet exist for user ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Session does not yet exist for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionService: Fetching token for session`)).resolves.toBe(true);
 		});
 
@@ -131,7 +131,7 @@ describe(TEST_NAME, () => {
 			expect(refreshedSession.token).not.toEqual(originalToken);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Logging a user in`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Session already exists for user ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Session already exists for user uuid ${user.uuid}`)).resolves.toBe(true);
 		});
 	});
 
@@ -157,7 +157,7 @@ describe(TEST_NAME, () => {
 			verifyRefreshData(loginResponse, loginSession, refreshResponse, refreshedSession, jwtService);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 		});
@@ -177,7 +177,7 @@ describe(TEST_NAME, () => {
 			verifyRefreshData(loginResponse, loginSession, refreshResponse, refreshedSession, jwtService);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 		});
@@ -191,8 +191,8 @@ describe(TEST_NAME, () => {
 				.expect(HttpStatus.NOT_FOUND);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `NotFoundExceptionFilter: Session for uuid ${user.uuid} not found`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `NotFoundExceptionFilter: Session for user uuid ${user.uuid} not found`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -212,7 +212,7 @@ describe(TEST_NAME, () => {
 				.expect(HttpStatus.NOT_FOUND);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for uuid ${uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `NotFoundExceptionFilter: User by uuid ${uuid} not found`)).resolves.toBe(true);
 		});
 
@@ -286,7 +286,7 @@ describe(TEST_NAME, () => {
 				expect(session).toBeNull();
 
 				await expect(wasLogged(TEST_NAME, `SessionController: Logging a user out`)).resolves.toBe(true);
-				await expect(wasLogged(TEST_NAME, `SessionService: Deleting entity for uuid ${user.uuid}`)).resolves.toBe(true);
+				await expect(wasLogged(TEST_NAME, `SessionService: Deleting entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 				await expect(wasLogged(TEST_NAME, `SessionController: Logged out user with uuid ${user.uuid}`)).resolves.toBe(true);
 			});
 
@@ -344,7 +344,7 @@ describe(TEST_NAME, () => {
 				expect(emptyJwt).toBe(true);
 
 				await expect(wasLogged(TEST_NAME, `SessionController: Logging a user out`)).resolves.toBe(true);
-				await expect(wasLogged(TEST_NAME, `SessionController: Session for uuid ${user.uuid} does not exist`)).resolves.toBe(true);
+				await expect(wasLogged(TEST_NAME, `SessionController: Session for user uuid ${user.uuid} does not exist`)).resolves.toBe(true);
 				await expect(wasLogged(TEST_NAME, `SessionController: Logged out user with uuid ${user.uuid}`)).resolves.toBe(true);
 			});
 
@@ -365,7 +365,7 @@ describe(TEST_NAME, () => {
 				expect(emptyJwt).toBe(true);
 
 				await expect(wasLogged(TEST_NAME, `SessionController: Logging a user out`)).resolves.toBe(true);
-				await expect(wasLogged(TEST_NAME, `SessionController: Session for uuid ${user.uuid} does not exist`)).resolves.toBe(true);
+				await expect(wasLogged(TEST_NAME, `SessionController: Session for user uuid ${user.uuid} does not exist`)).resolves.toBe(true);
 				await expect(wasLogged(TEST_NAME, `SessionController: Logged out user with uuid ${user.uuid}`)).resolves.toBe(true);
 			});
 
