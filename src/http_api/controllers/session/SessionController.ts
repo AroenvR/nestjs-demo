@@ -176,7 +176,6 @@ export class SessionController {
 			uuid: responseDto.uuid,
 			username: responseDto.username,
 			uniquefier: randomUUID(),
-			version: config.version,
 			iat: now,
 			exp: now + config.expiry,
 		};

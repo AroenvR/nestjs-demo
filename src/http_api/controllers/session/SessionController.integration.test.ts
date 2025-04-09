@@ -64,15 +64,8 @@ describe('SessionController Integration', () => {
 
 	describe('CREATE', () => {
 		it('Can create an entity', async () => {
-			const bob = MockUserEntity.get();
-			bob.password = 'yolobolo';
-			await userRepo.save(bob);
-
-			const dto = MockCreateSessionDto.get();
-			dto.password = bob.password;
-
-			const created = (await controller.login(dto, mockResponse)) as SessionResponseDto;
-			expect(created.username).toEqual(bob.username);
+			const created = (await controller.login(user, mockResponse)) as SessionResponseDto;
+			expect(created.username).toEqual(user.username);
 
 			await expect(wasLogged(TEST_NAME, `${className}: Logging a user in`)).resolves.toBe(true);
 		});
@@ -89,6 +82,7 @@ describe('SessionController Integration', () => {
 
 	describe('UPDATE', () => {
 		it('Updates an entity', async () => {
+			await controller.login(user, mockResponse);
 			const response = SessionResponseDto.create(user);
 
 			await expect(controller.update(user.uuid, mockRequest, mockResponse)).resolves.toEqual(response);

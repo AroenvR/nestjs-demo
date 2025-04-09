@@ -5,8 +5,6 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { TJwtCookie } from '../types/TJwtCookie';
 
-export const CURRENT_JWT_VERSION = 1;
-
 /**
  * JWT strategy for authenticating users based on HTTP-Only cookies containing a JWT.
  */
@@ -33,11 +31,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		if (!payload) {
 			console.error(`Invalid JWT payload.`);
 			throw new UnauthorizedException(`Invalid JWT payload.`);
-		}
-
-		if (!payload.version || payload.version < CURRENT_JWT_VERSION) {
-			console.error(`Invalid JWT version.`);
-			throw new UnauthorizedException(`Invalid JWT version.`);
 		}
 
 		return payload;
