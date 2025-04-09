@@ -7,7 +7,6 @@ import { wasLogged } from '../../../__tests__/helpers/wasLogged';
 import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
 import { SessionModule } from '../../modules/session/SessionModule';
 import { MockSessionEntity } from '../../../__tests__/mocks/entity/MockSessionEntity';
-import { MockCreateSessionDto } from '../../../__tests__/mocks/dto/MockSessionDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 import { UserEntity } from '../../../domain/user/UserEntity';
 import { randomUUID } from 'crypto';
