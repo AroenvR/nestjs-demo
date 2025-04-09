@@ -12,9 +12,8 @@ import { UserModule } from '../../../http_api/modules/user/UserModule';
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 
-// Value to change
 describe('UserService Integration', () => {
-	const testName = 'UserService_Integration'; // Value to change
+	const testName = 'UserService_Integration';
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
 	let repository: Repository<unknown>;
@@ -27,8 +26,8 @@ describe('UserService Integration', () => {
 	beforeAll(async () => {
 		const module = await createMockAppModule(UserModule);
 
-		repository = module.get(getRepositoryToken(UserEntity)); // Value to change
-		service = module.get<UserService>(UserService); // Value to change
+		repository = module.get(getRepositoryToken(UserEntity));
+		service = module.get<UserService>(UserService);
 		className = service.constructor.name;
 	});
 

@@ -6,13 +6,12 @@ import { copyEntity } from '../../__tests__/mocks/entity/copyEntity';
 import { createMockAppModule } from '../../__tests__/mocks/module/createMockAppModule';
 import { UserModule } from '../../http_api/modules/user/UserModule';
 
-describe('UserEntity_Integration', () => {
+describe('UserEntity Integration', () => {
 	let entity: UserEntity;
 	let repository: Repository<UserEntity>;
 
 	beforeAll(async () => {
 		const module = await createMockAppModule(UserModule);
-
 		repository = module.get(getRepositoryToken(UserEntity));
 	});
 

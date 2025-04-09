@@ -9,7 +9,11 @@ import { serverJsonSchema } from './serverJsonSchema';
  */
 const defaultConfig: IServerConfig = {
 	security: {
-		secure_cookie: true,
+		cookie: {
+			version: 1,
+			secure: false,
+			expiry: 3600000,
+		},
 		cors: {
 			origin: ['http://localhost:3000'],
 			allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent', 'X-Correlation-ID'],

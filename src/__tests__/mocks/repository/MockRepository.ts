@@ -34,6 +34,7 @@ export class MockRepository<Entity extends AbstractEntity> {
 
 	findOne = jest.fn().mockImplementation((query: TFindOneQuery) => {
 		if (query.where.id === 69) return null; // To test the error handling
+		if (query.where.uuid === '167ad25f-0f91-4ac0-a9ed-99cef801ba9e') return null; // To test the error handling
 
 		return this.createEntity();
 	});
@@ -44,7 +45,7 @@ export class MockRepository<Entity extends AbstractEntity> {
 		return this.createEntity();
 	});
 
-	delete = jest.fn().mockImplementation((_) => {
-		return undefined;
+	remove = jest.fn().mockImplementation((_) => {
+		return null;
 	});
 }

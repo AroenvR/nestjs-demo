@@ -1,5 +1,9 @@
 {
-    "secure_cookie": false,
+    "cookie": {
+        "version": 1,
+        "secure": false,
+        "expiry": 3600000
+    },
     "cors": {
         "origin": [
             "TODO: Block anything not supertest"

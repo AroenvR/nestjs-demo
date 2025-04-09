@@ -13,16 +13,16 @@ describe('UserController Unit', () => {
 	let controller: GuardedController;
 
 	const ID = 1;
-	let mockedResponse: UserResponseDto; // Value to change
+	let mockedResponse: UserResponseDto;
 
 	beforeEach(async () => {
 		mockedResponse = UserResponseDto.create(MockUserEntity.get());
 
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [UserController], // Value to change
+			controllers: [UserController],
 			providers: [
 				{
-					provide: UserService, // Value to change
+					provide: UserService,
 					useValue: new MockService(() => mockedResponse),
 				},
 				{
@@ -32,7 +32,7 @@ describe('UserController Unit', () => {
 			],
 		}).compile();
 
-		controller = module.get<UserController>(UserController); // Value to change
+		controller = module.get<UserController>(UserController);
 	});
 
 	// --------------------------------------------------

@@ -99,7 +99,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		const data = await this.repository.findOneBy({ id });
 		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
 
-		await this.repository.delete({ id });
+		await this.repository.remove(data);
 	}
 
 	/**

@@ -7,10 +7,10 @@ import { ResponseDto } from '../ResponseDto';
  * It provides Swagger documentation for the API.
  */
 export class UserResponseDto extends ResponseDto {
-	@ApiProperty({ description: 'The unique username of the user entity', uniqueItems: true, required: true })
+	@ApiProperty({ description: 'The unique username of the user entity' })
 	username: string;
 
-	@ApiProperty({ description: 'The password of the user entity', required: true })
+	@ApiProperty({ description: 'The password of the user entity' })
 	password: string;
 
 	constructor(entity: UserEntity) {

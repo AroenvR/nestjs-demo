@@ -13,31 +13,31 @@ import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
 import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
 
 describe('UserController Integration', () => {
-	const TEST_NAME = 'UserController_Integration'; // Value to change
+	const TEST_NAME = 'UserController_Integration';
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	let className: string;
 	let controller: GuardedController;
 	let repository: Repository<unknown>;
 
-	let entity: UserEntity; // Value to change
-	let createDto: CreateUserDto; // Value to change
-	let updateDto: UpdateUserDto; // Value to change
+	let entity: UserEntity;
+	let createDto: CreateUserDto;
+	let updateDto: UpdateUserDto;
 
 	beforeAll(async () => {
 		const module = await createMockAppModule(UserModule);
 
-		controller = module.get<UserController>(UserController); // Value to change
-		repository = module.get(getRepositoryToken(UserEntity)); // Value to change
+		controller = module.get<UserController>(UserController);
+		repository = module.get(getRepositoryToken(UserEntity));
 
 		className = controller.constructor.name;
 	});
 
 	beforeEach(async () => {
-		createDto = MockCreateUserDto.get(); // Value to change
-		updateDto = MockUpdateUserDto.get(); // Value to change
+		createDto = MockCreateUserDto.get();
+		updateDto = MockUpdateUserDto.get();
 
-		const data = MockUserEntity.get(); // Value to change
+		const data = MockUserEntity.get();
 		entity = await repository.save(data);
 	});
 
@@ -74,7 +74,7 @@ describe('UserController Integration', () => {
 
 	describe('FIND ALL', () => {
 		it('Finds all entities', async () => {
-			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.create(entity)]); // Value to change
+			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.create(entity)]);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding all entities`)).resolves.toBe(true);
 		});
 
@@ -97,7 +97,7 @@ describe('UserController Integration', () => {
 
 	describe('FIND ONE', () => {
 		it('Finds an entity by id', async () => {
-			const response = UserResponseDto.create(entity); // Value to change
+			const response = UserResponseDto.create(entity);
 
 			await expect(controller.findOne(entity.id)).resolves.toEqual(response);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id ${entity.id}`)).resolves.toBe(true);
@@ -123,7 +123,7 @@ describe('UserController Integration', () => {
 
 	describe('UPDATE', () => {
 		it('Updates an entity', async () => {
-			const response = UserResponseDto.create(entity.update(updateDto)); // Value to change
+			const response = UserResponseDto.create(entity.update(updateDto));
 
 			await expect(controller.update(entity.id, updateDto)).resolves.toEqual(response);
 			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by id ${entity.id}`)).resolves.toBe(true);
