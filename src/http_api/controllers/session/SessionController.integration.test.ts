@@ -1,8 +1,6 @@
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { NotImplementedException } from '@nestjs/common';
 import { SessionController } from './SessionController';
-import { CreateSessionDto } from '../../dtos/session/CreateSessionDto';
 import { SessionEntity } from '../../../domain/session/SessionEntity';
 import { SessionResponseDto } from '../../dtos/session/SessionResponseDto';
 import { wasLogged } from '../../../__tests__/helpers/wasLogged';
@@ -24,7 +22,6 @@ describe('SessionController Integration', () => {
 	let repository: Repository<SessionEntity>;
 
 	let user: UserEntity;
-	let entity: SessionEntity;
 
 	let mockRequest: any;
 	let mockResponse: any;
@@ -44,7 +41,6 @@ describe('SessionController Integration', () => {
 
 		const data = MockSessionEntity.get();
 		data.userUuid = user.uuid;
-		entity = await repository.save(data);
 
 		mockRequest = { user: { uuid: user.uuid } };
 		mockResponse = {

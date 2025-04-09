@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
+import { SessionEntity } from '../../../domain/session/SessionEntity'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ResponseDto } from '../ResponseDto';
 import { UserEntity } from '../../../domain/user/UserEntity';
 

@@ -1,9 +1,7 @@
-import { UUID } from 'crypto';
 import { Request } from 'express';
 import * as cookie from 'cookie';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { TJwtPayload } from '../../application/services/auth/AuthService';
 import { TJwtCookie } from '../types/TJwtCookie';
 
 /**

@@ -42,7 +42,8 @@ export class SessionService {
 			this.logger.info(`Session already exists for user ${user.uuid}`);
 			return this.update(user.uuid);
 		} catch (err) {
-			this.logger.info(`Session does not yet exist for user ${user.uuid}`);
+			// Swallowing the error since we know it doesn't exist
+			this.logger.info(`Session does not yet exist for user ${user.uuid}:`, err);
 		}
 
 		const token = await this.fetchToken();

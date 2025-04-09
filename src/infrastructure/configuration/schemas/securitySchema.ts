@@ -1,6 +1,4 @@
-// src/config/schemas/security.schema.ts
 import Joi from 'joi';
-import { version } from 'os';
 
 /**
  * Joi schema for the server's security configuration.

@@ -1,11 +1,11 @@
-import { UUID } from 'crypto';
 import { Request } from 'express';
 import * as cookie from 'cookie';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UnauthorizedException } from '@nestjs/common';
-import { CURRENT_JWT_VERSION, TJwtPayload } from '../../application/services/auth/AuthService';
 import { TJwtCookie } from '../types/TJwtCookie';
+
+export const CURRENT_JWT_VERSION = 1;
 
 /**
  * JWT strategy for authenticating users based on HTTP-Only cookies containing a JWT.

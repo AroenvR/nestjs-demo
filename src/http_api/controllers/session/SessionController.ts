@@ -8,7 +8,6 @@ import {
 	HttpCode,
 	HttpException,
 	HttpStatus,
-	NotFoundException,
 	Param,
 	ParseUUIDPipe,
 	Patch,
@@ -155,7 +154,7 @@ export class SessionController {
 				const exists = await this.sessionService.exists(uuid);
 				if (exists) await this.sessionService.remove(uuid);
 			} catch (err) {
-				this.logger.info(`Session for uuid ${uuid} does not exist`);
+				this.logger.info(`Session for uuid ${uuid} does not exist:`, err);
 			}
 		}
 
