@@ -41,10 +41,10 @@ export class AuthController {
 	public async login(@Body() data: TSignInData, @Res({ passthrough: true }) response: Response): Promise<any> {
 		this.logger.info(`Logging in user ${data.username}`);
 
-		const result = await this.authService.login(data);
+		// const result = await this.authService.login(data);
 
-		const securityConfig = this.configService.get<IServerConfig['security']>('security');
-		response.cookie('jwt', result.accessToken, { secure: securityConfig.secure_cookie, httpOnly: true }); // Expires TODO
+		// const securityConfig = this.configService.get<IServerConfig['security']>('security');
+		// response.cookie('jwt', result.accessToken, { secure: securityConfig.secure_cookie, httpOnly: true }); // Expires TODO
 
 		return 'success';
 	}

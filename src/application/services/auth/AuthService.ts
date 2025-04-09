@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { ILogger } from '../../../infrastructure/logging/ILogger';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { UserEntity } from 'src/domain/user/UserEntity';
 
 export const CURRENT_JWT_VERSION = 1;
 
@@ -20,12 +21,12 @@ export interface IAuthService {
 	 *
 	 * @param data
 	 */
-	validate(data: TSignInData): Promise<TSignInData>;
+	validate(user: UserEntity): Promise<TSignInData>;
 
 	/**
 	 *
 	 */
-	login(data: TSignInData): Promise<TAuthResult>;
+	login(user: UserEntity): Promise<TAuthResult>;
 
 	/**
 	 *
@@ -58,10 +59,10 @@ export class AuthService implements IAuthService {
 	/**
 	 *
 	 */
-	public async login(data: TSignInData) {
-		this.logger.info(`Logging in user ${data.username}`);
+	public async login(user: UserEntity) {
+		this.logger.info(`Logging in user ${user.uuid}`);
 
-		await this.validate(data);
+		await this.validate(user);
 
 		const tokenPayload: TJwtPayload = {
 			sub: '69',

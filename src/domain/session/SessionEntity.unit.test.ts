@@ -23,7 +23,7 @@ describe("SessionEntity and its DTO's", () => {
 		expect(entity.createdAt).toBeTruthy();
 
 		expect(entity.userUuid).toEqual(data.userUuid);
-		expect(entity.longLivedJwt).toEqual(data.longLivedJwt);
+		expect(entity.token).toEqual(data.token);
 		expect(entity.refreshes).toEqual(data.refreshes);
 	});
 
@@ -37,21 +37,21 @@ describe("SessionEntity and its DTO's", () => {
 		expect(entity.createdAt).toEqual(data.createdAt);
 
 		expect(entity.userUuid).toEqual(data.userUuid);
-		expect(entity.longLivedJwt).toEqual(data.longLivedJwt);
+		expect(entity.token).toEqual(data.token);
 		expect(entity.refreshes).toEqual(data.refreshes);
 	});
 
 	// --------------------------------------------------
 
-	it('Can refresh its JWT', () => {
+	it('Can refresh its token', () => {
 		const entity = SessionEntity.create(data);
 
-		const newJwt = 'newJwt';
+		const newToken = 'yolobolo';
 		const currentRefreshes = entity.refreshes;
 
-		entity.refreshJwt(newJwt);
+		entity.refreshToken(newToken);
 
-		expect(entity.longLivedJwt).toEqual(newJwt);
+		expect(entity.token).toEqual(newToken);
 		expect(entity.refreshes).toEqual(currentRefreshes + 1);
 	});
 

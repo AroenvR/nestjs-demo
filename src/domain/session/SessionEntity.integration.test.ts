@@ -35,7 +35,7 @@ describe('SessionEntity Integration', () => {
 			expect(saved.createdAt).toEqual(entity.createdAt);
 
 			expect(saved.userUuid).toEqual(entity.userUuid);
-			expect(saved.longLivedJwt).toEqual(entity.longLivedJwt);
+			expect(saved.token).toEqual(entity.token);
 			expect(saved.refreshes).toEqual(entity.refreshes);
 		});
 
@@ -51,7 +51,7 @@ describe('SessionEntity Integration', () => {
 			expect(found.createdAt).toEqual(entity.createdAt);
 
 			expect(found.userUuid).toEqual(entity.userUuid);
-			expect(found.longLivedJwt).toEqual(entity.longLivedJwt);
+			expect(found.token).toEqual(entity.token);
 			expect(found.refreshes).toEqual(entity.refreshes);
 		});
 	});
@@ -70,27 +70,27 @@ describe('SessionEntity Integration', () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 			copy.uuid = randomUUID();
-			copy.longLivedJwt = 'foobar';
+			copy.token = 'foobar';
 
 			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: session_entity.userUuid');
 		});
 
 		// --------------------------------------------------
 
-		it('Long lived JWT cannot be null', async () => {
-			entity.longLivedJwt = null;
+		it('Token cannot be null', async () => {
+			entity.token = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});
 
 		// --------------------------------------------------
 
-		it('Long lived JWT must be unique', async () => {
+		it('Token must be unique', async () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 			copy.uuid = randomUUID();
 			copy.userUuid = randomUUID();
 
-			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: session_entity.longLivedJwt');
+			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: session_entity.token');
 		});
 
 		// --------------------------------------------------

@@ -3,4 +3,5 @@
  */
 export const sessionConstants = {
 	maxRefreshes: 10,
+	minTokenLength: 8,
 };

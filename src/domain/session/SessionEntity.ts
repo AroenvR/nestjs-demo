@@ -3,11 +3,12 @@ import { UUID } from 'crypto';
 import { Entity, Column } from 'typeorm';
 import { AbstractEntity } from '../AbstractEntity';
 import { sessionConstants } from '../../common/constants/sessionConstants';
+import { UnauthorizedException } from '@nestjs/common';
 
 /**
  * Represents a Session entity in the database.
  * @Column userUuid TEXT NOT NULL UNIQUE
- * @Column longLivedJwt TEXT NOT NULL UNIQUE
+ * @Column token TEXT NOT NULL UNIQUE
  * @Column refreshes INTEGER NOT NULL DEFAULT 0
  */
 @Entity()
@@ -16,7 +17,7 @@ export class SessionEntity extends AbstractEntity {
 	userUuid: UUID;
 
 	@Column({ nullable: false, unique: true })
-	longLivedJwt: string;
+	token: string;
 
 	@Column({ nullable: false, default: 0 })
 	refreshes: number;
@@ -26,7 +27,7 @@ export class SessionEntity extends AbstractEntity {
 
 		if (entity) {
 			this.userUuid = entity.userUuid;
-			this.longLivedJwt = entity.longLivedJwt;
+			this.token = entity.token;
 			this.refreshes = entity.refreshes ?? 0;
 		}
 	}
@@ -46,17 +47,17 @@ export class SessionEntity extends AbstractEntity {
 	}
 
 	/**
-	 * Refreshes the JWT for the user's session.
+	 * Refreshes the token for the user's session.
 	 * Increments the refresh count and validates the session.
-	 * @param jwt The new JWT to set
+	 * @param token The new token to set
 	 * @returns The updated SessionEntity
 	 */
-	public refreshJwt(jwt: string) {
-		this.longLivedJwt = jwt;
+	public refreshToken(token: string) {
+		this.token = token;
 		this.refreshes++;
 
 		if (this.refreshes > sessionConstants.maxRefreshes) {
-			throw new Error('Max refreshes exceeded');
+			throw new UnauthorizedException(`${this.constructor.name}: Maximum refreshes exceeded`);
 		}
 
 		this.validate(this);
@@ -76,7 +77,7 @@ export class SessionEntity extends AbstractEntity {
 	protected get childSchema() {
 		return Joi.object({
 			userUuid: Joi.string().uuid({ version: 'uuidv4' }).required(),
-			longLivedJwt: Joi.string().required(),
+			token: Joi.string().min(sessionConstants.minTokenLength).required(),
 			refreshes: Joi.number().integer().min(0).max(sessionConstants.maxRefreshes).default(0).required(),
 		});
 	}

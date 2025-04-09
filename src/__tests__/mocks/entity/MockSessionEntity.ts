@@ -14,7 +14,7 @@ export class MockSessionEntity {
 			id: 1001,
 			uuid: randomUUID(),
 			createdAt: Date.now(),
-			longLivedJwt: mockJwt,
+			token: mockJwt,
 			userUuid: MockUserEntity.get().uuid,
 			refreshes: 0,
 		});

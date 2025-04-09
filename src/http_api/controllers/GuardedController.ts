@@ -1,12 +1,7 @@
-import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseFilters, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ApiSecurity } from '@nestjs/swagger';
 import { isTruthy } from 'ts-istruthy';
-import { BadRequestExceptionFilter } from '../filters/bad_request/BadRequestExceptionFilter';
-import { HttpExceptionFilter } from '../filters/http_exception/HttpExceptionFilter';
-import { NotFoundExceptionFilter } from '../filters/not_found/NotFoundExceptionFilter';
-import { NotImplementedExceptionFilter } from '../filters/not_implemented/NotImplementedExceptionFilter';
-import { UnauthorizedExceptionFilter } from '../filters/unauthorized/UnauthorizedExceptionFilter';
 import { PassportJwtAuthGuard } from '../guards/PassportJwtAuthGuard';
 import { AbstractService } from '../../application/services/AbstractService';
 import { CreateDto } from '../dtos/CreateDto';
@@ -15,7 +10,7 @@ import { ResponseDto } from '../dtos/ResponseDto';
 import { ISseMessage } from '../../application/events/ISseMessage';
 import { ILogger } from '../../infrastructure/logging/ILogger';
 import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
-import { QueryFailedErrorFilter } from '../filters/query_failed/QueryFailedErrorFilter';
+import { UseErrorFilters } from '../decorators/UseErrorFilters';
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -25,15 +20,7 @@ import { QueryFailedErrorFilter } from '../filters/query_failed/QueryFailedError
  * - HTTP-only Cookie JWT Guard
  * - Preset error/exception filters
  */
-@UseFilters(
-	// NOTE: Remember to add an ApiResponse decorator when adding new response codes at src/decorators/DefaultErrorDecorators.ts
-	BadRequestExceptionFilter,
-	HttpExceptionFilter,
-	NotFoundExceptionFilter,
-	NotImplementedExceptionFilter,
-	QueryFailedErrorFilter,
-	UnauthorizedExceptionFilter,
-)
+@UseErrorFilters()
 @UseGuards(PassportJwtAuthGuard)
 @ApiSecurity('jwt')
 export class GuardedController {

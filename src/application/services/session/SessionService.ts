@@ -1,19 +1,20 @@
+import { randomUUID, UUID } from 'crypto';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { SessionEntity } from '../../../domain/session/SessionEntity';
 import { CreateSessionDto } from '../../../http_api/dtos/session/CreateSessionDto';
 import { SessionResponseDto } from '../../../http_api/dtos/session/SessionResponseDto';
-import { UpdateSessionDto } from '../../../http_api/dtos/session/UpdateSessionDto';
-import { AbstractService } from '../AbstractService';
 import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
 import { UserEntity } from '../../../domain/user/UserEntity';
+import { ILogger } from '../../../infrastructure/logging/ILogger';
 
 /**
  * A service class that provides basic CRUD operations for the SessionEntity.
- * Extends the {@link AbstractService} class and implements the required CRUD operations.
  */
-export class SessionService extends AbstractService<CreateSessionDto, UpdateSessionDto, SessionResponseDto> {
+export class SessionService {
+	protected logger: ILogger;
+
 	constructor(
 		@InjectRepository(SessionEntity)
 		protected readonly repository: Repository<SessionEntity>,
@@ -22,7 +23,7 @@ export class SessionService extends AbstractService<CreateSessionDto, UpdateSess
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: WinstonAdapter,
 	) {
-		super(repository, entityManager, logAdapter);
+		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 	}
 
 	/**
@@ -35,10 +36,19 @@ export class SessionService extends AbstractService<CreateSessionDto, UpdateSess
 		const user = await this.userRepo.findOne({ where: { password: createDto.password } });
 		if (!user) throw new NotFoundException(`User to create session for was not found`);
 
-		const jwt = await this.fetchLongLivedJwt();
+		try {
+			await this.exists(user.uuid);
+
+			this.logger.info(`Session already exists for user ${user.uuid}`);
+			return this.update(user.uuid);
+		} catch (err) {
+			this.logger.info(`Session does not yet exist for user ${user.uuid}`);
+		}
+
+		const token = await this.fetchToken();
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const entity = SessionEntity.create({ userUuid: user.uuid, longLivedJwt: jwt, refreshes: 0 });
+			const entity = SessionEntity.create({ userUuid: user.uuid, token: token, refreshes: 0 });
 
 			return entityManager.save(entity);
 		});
@@ -49,18 +59,20 @@ export class SessionService extends AbstractService<CreateSessionDto, UpdateSess
 	/**
 	 *
 	 */
-	public async update(id: number, updateDto: UpdateSessionDto) {
-		this.logger.info(`Updating entity by id ${id}`);
+	public async update(uuid: UUID) {
+		this.logger.info(`Updating entity for uuid ${uuid}`);
 
-		const data = await this.repository.findOne({ where: { id: id } });
-		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
+		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
+		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
 
-		const user = await this.userRepo.findOne({ where: { uuid: data.userUuid } });
-		if (!user) throw new NotFoundException(`User for session ${id} not found`);
+		const session = await this.repository.findOne({ where: { userUuid: user.uuid } });
+		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const entity = SessionEntity.create(data);
-			entity.refreshJwt(updateDto.jwt);
+			const entity = SessionEntity.create(session);
+
+			const token = await this.fetchToken();
+			entity.refreshToken(token);
 
 			return entityManager.save(entity);
 		});
@@ -71,20 +83,42 @@ export class SessionService extends AbstractService<CreateSessionDto, UpdateSess
 	/**
 	 *
 	 */
-	public async remove(id: number) {
-		this.logger.info(`Deleting entity by id ${id}`);
+	public async remove(uuid: UUID) {
+		this.logger.info(`Deleting entity for uuid ${uuid}`);
 
-		const data = await this.repository.findOneBy({ id });
-		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
+		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
+		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
 
-		await this.repository.remove(data);
+		const session = await this.repository.findOne({ where: { userUuid: user.uuid } });
+		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
+
+		await this.repository.remove(session);
 	}
 
 	/**
-	 * Fetches a long-lived JWT for the session.
-	 * @returns A long-lived JWT string.
+	 * Checks if a session exists for the given user UUID.
+	 * @param uuid The UUID of the user.
+	 * @returns A boolean indicating whether the session exists.
 	 */
-	private async fetchLongLivedJwt() {
-		return 'Not a valid JWT'; // Implementation detail per your requirements.
+	public async exists(uuid: UUID): Promise<boolean> {
+		this.logger.info(`Checking for an existing session for user ${uuid}`);
+
+		const user = await this.userRepo.findOne({ where: { uuid: uuid } });
+		if (!user) throw new NotFoundException(`User by uuid ${uuid} not found`);
+
+		const session = await this.repository.findOne({ where: { userUuid: uuid } });
+		if (!session) throw new NotFoundException(`Session for uuid ${user.uuid} not found`);
+
+		return true;
+	}
+
+	/**
+	 * Fetches a token for the session.
+	 * @returns A token string.
+	 */
+	private async fetchToken() {
+		this.logger.info(`Fetching token for session.`);
+
+		return randomUUID(); // Implementation detail per your requirements.
 	}
 }
