@@ -11,24 +11,22 @@ import { serverConfig } from './infrastructure/configuration/serverConfig';
 async function bootstrap() {
 	// TODO's:
 	/*
-        Implement Database Migrations
-        Create middlewares for:
-        - Rate limiting
-        - Sanitizing input
-        - CORS => Improve by implementing a cutstom origin whitelist middleware
-        - Helmet
-        
-        Create Websockets
-        Create a microservice for RabbitMQ
-        Implement Redis caching
-        Implement a Task manager
-        Implement a Queue manager
-        Implement a validator utility
-        Implement worker threads
-        Implement a custom session storage
-
-        Mermaid document architecture & API data flow
-    */
+		Implement Database Migrations
+		Create middlewares for:
+		- Rate limiting
+		- Sanitizing input
+		- CORS => Improve by implementing a cutstom origin whitelist middleware
+		- Helmet
+	    
+		Create Websockets
+		Create a microservice for RabbitMQ
+		Implement Redis caching
+		Implement a Task manager
+		Implement a Queue manager
+		Implement a validator utility
+		Implement worker threads
+		Implement a custom session storage
+	*/
 
 	// !!! IF ANY CHANGES ARE MADE HERE !!!
 	// Please update the createMockAppModule file in the /src/__tests__/mocks/module directory.
