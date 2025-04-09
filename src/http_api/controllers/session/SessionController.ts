@@ -87,8 +87,10 @@ export class SessionController {
 
 	/**
 	 * Refreshes the session and JWT for the user.
-	 * @param uuid
-	 * @returns
+	 * @param uuid The UUID of the session to refresh.
+	 * @param request The HTTP request object.
+	 * @param response The HTTP response object.
+	 * @returns A {@link SessionResponseDto} with the updated session information.
 	 */
 	@Patch('refresh/:uuid')
 	@HttpCode(HttpStatus.OK)
@@ -97,7 +99,7 @@ export class SessionController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND })
 	@DefaultErrorDecorators()
 	public async update(@Param('uuid', ParseUUIDPipe) uuid: UUID, @Request() request, @Res({ passthrough: true }) response: Response) {
-		this.logger.info(`Updating session and JWT for uuid ${uuid}`);
+		this.logger.info(`Updating session and JWT for user uuid ${uuid}`);
 
 		if (!isTruthy(request.user)) throw new UnauthorizedException('Missing JWT');
 		if (!isTruthy(uuid)) throw new HttpException('UUID parameter is empty', HttpStatus.BAD_REQUEST);
@@ -130,8 +132,9 @@ export class SessionController {
 
 	/**
 	 * Logs the user out by removing the session from the database and clearing the JWT cookie.
-	 * @param request
-	 * @param response
+	 * @param request The HTTP request object.
+	 * @param response The HTTP response object.
+	 * @returns A 204 No Content response.
 	 */
 	@Delete('logout')
 	@HttpCode(HttpStatus.NO_CONTENT)
@@ -169,7 +172,7 @@ export class SessionController {
 	 * @returns A signed JWT token.
 	 */
 	private async createAndSignJwt(responseDto: SessionResponseDto, config: ICookieConfig) {
-		this.logger.info(`Creating JWT for user ${responseDto.uuid}`);
+		this.logger.info(`Creating JWT for user uuid ${responseDto.uuid}`);
 
 		const now = Date.now();
 		const tokenPayload: TJwtCookie = {

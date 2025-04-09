@@ -76,7 +76,7 @@ describe(TEST_NAME, () => {
 			expect(emptyJwt).toBe(false);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Logging a user in`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 
 			await expect(wasLogged(TEST_NAME, `SessionService: Creating a new entity`)).resolves.toBe(true);
@@ -156,9 +156,9 @@ describe(TEST_NAME, () => {
 
 			verifyRefreshData(loginResponse, loginSession, refreshResponse, refreshedSession, jwtService);
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 		});
 
@@ -176,9 +176,9 @@ describe(TEST_NAME, () => {
 
 			verifyRefreshData(loginResponse, loginSession, refreshResponse, refreshedSession, jwtService);
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Creating JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionController: Signing JWT`)).resolves.toBe(true);
 		});
 
@@ -190,7 +190,7 @@ describe(TEST_NAME, () => {
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `NotFoundExceptionFilter: Session for user uuid ${user.uuid} not found`)).resolves.toBe(true);
 		});
@@ -211,7 +211,7 @@ describe(TEST_NAME, () => {
 				.set('Cookie', [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionService: Updating entity for user uuid ${uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `NotFoundExceptionFilter: User by uuid ${uuid} not found`)).resolves.toBe(true);
 		});
@@ -223,7 +223,7 @@ describe(TEST_NAME, () => {
 
 			await request(app.getHttpServer()).patch(`${ENDPOINT}/refresh/${user.uuid}`).expect(HttpStatus.UNAUTHORIZED);
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 		});
 
 		// -----------------------------------
@@ -252,7 +252,7 @@ describe(TEST_NAME, () => {
 			const refreshedSession = await repository.findOne({ where: { userUuid: user.uuid } });
 			expect(refreshedSession).toBeNull();
 
-			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for uuid ${user.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `SessionEntity: Maximum refreshes exceeded`)).resolves.toBe(true);
 		});
 	});

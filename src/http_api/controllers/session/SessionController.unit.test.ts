@@ -72,7 +72,7 @@ describe('SessionController Unit', () => {
 
 			await expect(controller.login(dto, mockResponse)).resolves.toEqual(mockedResponse);
 			expect(mockILogger.log).toHaveBeenCalledWith(`Logging a user in.`);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Creating JWT for user ${mockedResponse.uuid}`);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Creating JWT for user uuid ${mockedResponse.uuid}`);
 		});
 	});
 
@@ -81,7 +81,7 @@ describe('SessionController Unit', () => {
 	describe('UPDATE', () => {
 		it('Updates an entity', async () => {
 			await expect(controller.update(uuid, mockRequest, mockResponse)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Updating session and JWT for uuid ${uuid}`);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Updating session and JWT for user uuid ${uuid}`);
 		});
 	});
 

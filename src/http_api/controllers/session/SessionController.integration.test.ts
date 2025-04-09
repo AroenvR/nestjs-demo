@@ -85,7 +85,7 @@ describe('SessionController Integration', () => {
 			const response = SessionResponseDto.create(user);
 
 			await expect(controller.update(user.uuid, mockRequest, mockResponse)).resolves.toEqual(response);
-			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for uuid ${response.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for user uuid ${response.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -94,7 +94,7 @@ describe('SessionController Integration', () => {
 			const nonExistentId = randomUUID();
 
 			await expect(controller.update(nonExistentId, mockRequest, mockResponse)).rejects.toThrow(`User by uuid ${nonExistentId} not found`);
-			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for uuid ${nonExistentId}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for user uuid ${nonExistentId}`)).resolves.toBe(true);
 		});
 	});
 
