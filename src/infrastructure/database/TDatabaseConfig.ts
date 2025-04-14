@@ -3,7 +3,7 @@
  */
 export type TDatabaseConfig =
 	| {
-			driver: 'better-sqlite3';
+			driver: 'sqlite';
 			database: string;
 			synchronize: boolean;
 	  }

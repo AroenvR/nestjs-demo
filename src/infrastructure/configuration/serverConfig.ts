@@ -39,7 +39,7 @@ const defaultConfig: IServerConfig = {
 		prefixWhitelist: [],
 	},
 	database: {
-		driver: 'better-sqlite3',
+		driver: 'sqlite',
 		database: ':memory:',
 		synchronize: true,
 	},

@@ -1,5 +1,5 @@
 {
-    "driver": "better-sqlite3",
+    "driver": "sqlite",
     "database": ":memory:",
     "synchronize": true
 }
