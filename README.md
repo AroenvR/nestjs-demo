@@ -43,6 +43,10 @@ cd nestjs-demo
 npm install
 ```
 
+#### Create a .env & .env.test file
+- Copy the .env.example's contents to your .env file of choice.
+- Adjust the paths to the full directory paths on your environment.
+
 ## Compile and run the project
 ```bash
 # development
