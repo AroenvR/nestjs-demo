@@ -6,7 +6,6 @@ import Joi from 'joi';
 const sqliteConfigSchema = Joi.object({
 	driver: Joi.string().valid('sqlite').required(),
 	database: Joi.string().required(),
-	synchronize: Joi.boolean().required(),
 }).required();
 
 /**

@@ -41,7 +41,6 @@ const defaultConfig: IServerConfig = {
 	database: {
 		driver: 'sqlite',
 		database: ':memory:',
-		synchronize: true,
 	},
 };
 

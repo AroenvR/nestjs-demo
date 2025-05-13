@@ -5,7 +5,6 @@ export type TDatabaseConfig =
 	| {
 			driver: 'sqlite';
 			database: string;
-			synchronize: boolean;
 	  }
 	| {
 			driver: 'postgres';
