@@ -215,5 +215,25 @@ Filters in NestJS, specifically Exception Filters, handle and manage exceptions 
 - **Scope Flexibility**: Apply filters globally, to controllers, or individual routes.
 - **Integration with Logging**: Combine with logging mechanisms to record error details for debugging.
 
+## SQLCipher
+Quick guide on getting SQLCipher to work with this API on a Linux system.
+
+#### Commands:
+```
+sudo apt-get update  
+sudo apt-get install -y git build-essential python3 libssl-dev  
+sudo apt-get install -y libsqlcipher0 libsqlcipher-dev sqlcipher  
+
+export LDFLAGS="-L/usr/lib/x86_64-linux-gnu -lsqlcipher -lssl -lcrypto" 
+export CPPFLAGS="-I/usr/include/sqlcipher -I/usr/include/openssl" 
+export CXXFLAGS="$CPPFLAGS"
+
+npm install sqlite3 --build-from-source --sqlite_libname=sqlcipher --sqlite=/usr --verbose 
+```
+
+Set the DATABASE_ENCRYPTION_KEY environment variable and you're good to go.  
+Check out the [node-sqlite3](https://github.com/TryGhost/node-sqlite3) GitHub for more information.
+
+
 # License
 NestJS, as well as this template, are [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
