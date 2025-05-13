@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
 
 # Send a POST request to the login endpoint
-curl -c $COOKIE_JAR -X POST http://localhost:3000/v1/auth/login \
+curl -c $COOKIE_JAR -X POST http://localhost:3000/v1/session/login \
     -H "Content-Type: application/json" \
     -d "{\"username\":\"$1\", \"password\":\"$2\"}"
 
