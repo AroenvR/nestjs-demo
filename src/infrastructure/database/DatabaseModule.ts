@@ -31,7 +31,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
 					username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
 					password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
-					synchronize: databaseConfig.synchronize,
+					synchronize: false,
 					autoLoadEntities: true,
 					logging: enableDbLogging,
 				};
@@ -41,4 +41,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 		}),
 	],
 })
-export class DatabaseModule {} // TODO: Add support for Postgres & MariaDBz
+export class DatabaseModule {} // TODO: Add support for Postgres & MariaDB
