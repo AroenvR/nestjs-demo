@@ -18,6 +18,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					enableDbLogging = logConfig.database;
 				}
 
+				// I started messing around here when all the tests broke.
+				// This commit is safe, just to create the new main branch.
+
 				return {
 					type: databaseConfig.driver,
 					database: databaseConfig.database,
