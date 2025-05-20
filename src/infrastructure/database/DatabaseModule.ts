@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmOptionsFactory } from './TypeOrmOptionsFactory';
 
 @Module({
 	imports: [
@@ -18,29 +19,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					enableDbLogging = logConfig.database;
 				}
 
-				const DATABASE_ENCRYPTION_KEY = process.env.DATABASE_ENCRYPTION_KEY;
-				if (databaseConfig.driver === 'sqlite' && !DATABASE_ENCRYPTION_KEY) {
-					throw new Error('SQLCipher key is required for SQLite database encryption.');
-				}
-
-				// TODO: Refactor belows
-
-				const options: TypeOrmModuleOptions = {
-					type: databaseConfig.driver,
-					database: databaseConfig.database,
-					key: databaseConfig.driver === 'sqlite' ? DATABASE_ENCRYPTION_KEY : undefined,
-					// host: databaseConfig.driver !== 'sqlite' ? databaseConfig.host : undefined,
-					// port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
-					// username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
-					// password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
-					synchronize: databaseConfig.synchronize,
-					autoLoadEntities: true,
-					logging: enableDbLogging,
-				};
-
-				return options;
+				const factory = new TypeOrmOptionsFactory();
+				return factory.createTypeOrmModuleOptions(databaseConfig, enableDbLogging);
 			},
 		}),
 	],
 })
-export class DatabaseModule {} // TODO: Add support for Postgres & MariaDB
+export class DatabaseModule {}

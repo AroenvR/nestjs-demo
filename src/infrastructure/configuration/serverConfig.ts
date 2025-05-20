@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { ConfigModule } from '@nestjs/config'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { IServerConfig } from './IServerConfig';
 import { serverJsonSchema } from './serverJsonSchema';
+import { DatabaseDrivers } from '../database/TDatabaseConfig';
 
 /**
  * The application's default / fallback configuration settings.
@@ -39,7 +40,7 @@ const defaultConfig: IServerConfig = {
 		prefixWhitelist: [],
 	},
 	database: {
-		driver: 'better-sqlite3',
+		driver: DatabaseDrivers.BETTER_SQLITE3,
 		database: ':memory:',
 		synchronize: false,
 	},
