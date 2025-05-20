@@ -4,8 +4,9 @@ import Joi from 'joi';
  * Joi schema for SQLite configuration.
  */
 const sqliteConfigSchema = Joi.object({
-	driver: Joi.string().valid('sqlite').required(),
+	driver: Joi.string().valid('sqlite', 'better-sqlite3').required(),
 	database: Joi.string().required(),
+	synchronize: Joi.boolean().required(),
 }).required();
 
 /**

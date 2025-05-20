@@ -3,8 +3,9 @@
  */
 export type TDatabaseConfig =
 	| {
-			driver: 'sqlite';
+			driver: 'sqlite' | 'better-sqlite3';
 			database: string;
+			synchronize: boolean;
 	  }
 	| {
 			driver: 'postgres';

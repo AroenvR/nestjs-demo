@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { IServerConfig } from '../configuration/IServerConfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -23,15 +23,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 					throw new Error('SQLCipher key is required for SQLite database encryption.');
 				}
 
-				const options = {
+				// TODO: Refactor belows
+
+				const options: TypeOrmModuleOptions = {
 					type: databaseConfig.driver,
 					database: databaseConfig.database,
 					key: databaseConfig.driver === 'sqlite' ? DATABASE_ENCRYPTION_KEY : undefined,
-					host: databaseConfig.driver !== 'sqlite' ? databaseConfig.host : undefined,
-					port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
-					username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
-					password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
-					synchronize: false,
+					// host: databaseConfig.driver !== 'sqlite' ? databaseConfig.host : undefined,
+					// port: databaseConfig.driver !== 'sqlite' ? databaseConfig.port : undefined,
+					// username: databaseConfig.driver !== 'sqlite' ? databaseConfig.username : undefined,
+					// password: databaseConfig.driver !== 'sqlite' ? databaseConfig.password : undefined,
+					synchronize: databaseConfig.synchronize,
 					autoLoadEntities: true,
 					logging: enableDbLogging,
 				};
