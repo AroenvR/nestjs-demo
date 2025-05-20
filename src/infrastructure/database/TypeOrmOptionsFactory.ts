@@ -23,14 +23,14 @@ export class TypeOrmOptionsFactory {
 	 */
 	public createTypeOrmModuleOptions(config: TDatabaseConfig, logging: boolean): TypeOrmModuleOptions {
 		const strategy = this.strategies.get(config.driver);
-		if (!strategy) throw new Error(`No database strategy found for ${config.driver}`);
+		if (!strategy) throw new Error(`${this.constructor.name}: No database strategy found for ${config.driver}`);
 
 		return strategy.createOptionsObject(config, logging);
 	}
 
 	/**
 	 * Registers the database strategies.
-	 * Add new strategies here as needed.
+	 * @devnote Add new strategies here as needed.
 	 */
 	public registerStrategies() {
 		this.strategies.set(DatabaseDrivers.SQLITE, new SqliteOptionsStrategy());
