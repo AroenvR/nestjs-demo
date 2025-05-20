@@ -1,11 +1,11 @@
-import { DataSource, InsertEvent, UpdateEvent } from 'typeorm';
-import { UserSubscriber } from './UserSubscriber';
-import { UserService } from '../../services/user/UserService';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { DataSource, InsertEvent, UpdateEvent } from "typeorm";
+import { UserSubscriber } from "./UserSubscriber";
+import { UserService } from "../../services/user/UserService";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe('UserSubscriber', () => {
+describe("UserSubscriber", () => {
 	let userSubscriber: UserSubscriber;
 	let logAdapter: WinstonAdapter;
 	let dataSource: DataSource;
@@ -31,11 +31,11 @@ describe('UserSubscriber', () => {
 		userSubscriber = new UserSubscriber(logAdapter, dataSource, userService);
 	});
 
-	it('should listen to UserEntity events', () => {
+	it("should listen to UserEntity events", () => {
 		expect(userSubscriber.listenTo()).toBe(UserEntity);
 	});
 
-	it('should log and emit on afterInsert', () => {
+	it("should log and emit on afterInsert", () => {
 		// Prepare mock insert event
 		const entity = MockUserEntity.get();
 		const insertEvent = { entity } as InsertEvent<UserEntity>;
@@ -49,7 +49,7 @@ describe('UserSubscriber', () => {
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 
-	it('should log and emit on afterUpdate', () => {
+	it("should log and emit on afterUpdate", () => {
 		// Prepare mock update event
 		const entity = MockUserEntity.get();
 		const updateEvent = { entity } as unknown as UpdateEvent<UserEntity>;
@@ -63,7 +63,7 @@ describe('UserSubscriber', () => {
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 
-	it('should add itself to dataSource subscribers upon instantiation', () => {
+	it("should add itself to dataSource subscribers upon instantiation", () => {
 		expect(dataSource.subscribers).toContain(userSubscriber);
 	});
 });

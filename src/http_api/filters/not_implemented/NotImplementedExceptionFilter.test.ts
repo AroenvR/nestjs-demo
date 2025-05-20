@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { Controller, Get, HttpStatus, INestApplication, NotImplementedException, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { NotImplementedExceptionFilter } from './NotImplementedExceptionFilter';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import request from "supertest";
+import { Controller, Get, HttpStatus, INestApplication, NotImplementedException, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { NotImplementedExceptionFilter } from "./NotImplementedExceptionFilter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
-const error = new NotImplementedException('Not implemented exception test');
+const error = new NotImplementedException("Not implemented exception test");
 
-@Controller('test')
+@Controller("test")
 @UseFilters(NotImplementedExceptionFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('NotImplementedExceptionFilter', () => {
+describe("NotImplementedExceptionFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('NotImplementedExceptionFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.NOT_IMPLEMENTED)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.NOT_IMPLEMENTED,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.NOT_IMPLEMENTED,
 				});
 			});

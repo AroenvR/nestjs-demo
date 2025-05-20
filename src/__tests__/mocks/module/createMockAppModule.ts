@@ -1,13 +1,13 @@
-import { BadRequestException, Type, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
-import { LoggerModule } from '../../../infrastructure/logging/LoggerModule';
-import { DatabaseModule } from '../../../infrastructure/database/DatabaseModule';
-import { AuthModule } from '../../../http_api/modules/auth/AuthModule';
-import { HttpErrorFilter } from '../../../http_api/filters/http_error/HttpErrorFilter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { UtilityModule } from '../../../common/utility/UtilityModule';
+import { BadRequestException, Type, ValidationError, ValidationPipe, VersioningType } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
+import { LoggerModule } from "../../../infrastructure/logging/LoggerModule";
+import { DatabaseModule } from "../../../infrastructure/database/DatabaseModule";
+import { AuthModule } from "../../../http_api/modules/auth/AuthModule";
+import { HttpErrorFilter } from "../../../http_api/filters/http_error/HttpErrorFilter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { UtilityModule } from "../../../common/utility/UtilityModule";
 
 /**
  * Mocks the app module for testing.
@@ -41,7 +41,7 @@ export const createMockAppModule = async (module: Type<any>) => {
 		new ValidationPipe({
 			whitelist: true, // Strips away any properties that do not have a corresponding DTO property
 			exceptionFactory: (errors: ValidationError[]) => {
-				return new BadRequestException(`DTO validation failed: ${errors.map((error) => error.toString()).join(', ')}`);
+				return new BadRequestException(`DTO validation failed: ${errors.map((error) => error.toString()).join(", ")}`);
 			},
 		}),
 	);
@@ -51,7 +51,7 @@ export const createMockAppModule = async (module: Type<any>) => {
 	// Enable API versioning
 	app.enableVersioning({
 		type: VersioningType.URI, // Use URI versioning type
-		defaultVersion: '1', // Set the default version to '1'
+		defaultVersion: "1", // Set the default version to '1'
 		// Use the @Version decorator to specify the version of the controller or endpoint.
 	});
 

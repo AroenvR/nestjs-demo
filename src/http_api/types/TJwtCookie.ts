@@ -1,4 +1,4 @@
-import { UUID } from 'crypto';
+import { UUID } from "crypto";
 
 /**
  * Interface for the HTTP-Only JWT cookie.

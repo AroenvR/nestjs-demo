@@ -1,6 +1,6 @@
-import { Response } from 'supertest';
-import { JwtService } from '@nestjs/jwt';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
+import { Response } from "supertest";
+import { JwtService } from "@nestjs/jwt";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
 
 /**
  * Verifies that both the JWT and the session were updated after a /refresh call.
@@ -18,22 +18,22 @@ export const verifyRefreshData = (
 	jwtService: JwtService,
 ) => {
 	// Capture the login response's JWT data
-	let originalJwtCookie = '';
-	for (const header of originalResp.headers['set-cookie']) {
-		if (header.includes('jwt=ey')) originalJwtCookie = header;
+	let originalJwtCookie = "";
+	for (const header of originalResp.headers["set-cookie"]) {
+		if (header.includes("jwt=ey")) originalJwtCookie = header;
 	}
-	const originalJwt = originalJwtCookie.split(';')[0].replace('jwt=', '');
+	const originalJwt = originalJwtCookie.split(";")[0].replace("jwt=", "");
 
 	const originalPayload = jwtService.decode(originalJwt);
 	const originalIat = originalPayload.iat;
 	const originalExp = originalPayload.exp;
 
 	// Capture the refresh response's JWT data
-	let refreshedJwtCookie = '';
-	for (const header of refreshResp.headers['set-cookie']) {
-		if (header.includes('jwt=ey')) refreshedJwtCookie = header;
+	let refreshedJwtCookie = "";
+	for (const header of refreshResp.headers["set-cookie"]) {
+		if (header.includes("jwt=ey")) refreshedJwtCookie = header;
 	}
-	const refreshedJwt = refreshedJwtCookie.split(';')[0].replace('jwt=', '');
+	const refreshedJwt = refreshedJwtCookie.split(";")[0].replace("jwt=", "");
 
 	const refreshedPayload = jwtService.decode(refreshedJwt);
 	const refreshedIat = refreshedPayload.iat;

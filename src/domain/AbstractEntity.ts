@@ -1,10 +1,10 @@
-import Joi from 'joi';
-import { randomUUID, UUID } from 'crypto';
-import { BadRequestException, NotImplementedException } from '@nestjs/common';
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
-import { CreateDto } from '../http_api/dtos/CreateDto';
-import { UpdateDto } from '../http_api/dtos/UpdateDto';
-import { isTruthy } from 'ts-istruthy';
+import Joi from "joi";
+import { randomUUID, UUID } from "crypto";
+import { BadRequestException, NotImplementedException } from "@nestjs/common";
+import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { CreateDto } from "../http_api/dtos/CreateDto";
+import { UpdateDto } from "../http_api/dtos/UpdateDto";
+import { isTruthy } from "ts-istruthy";
 
 // START COPY-PASTE BLOCK: Just grab this to create a new Entity.
 // import Joi from 'joi';
@@ -70,10 +70,10 @@ export abstract class AbstractEntity {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column({ type: 'uuid', nullable: false, unique: true })
+	@Column({ type: "uuid", nullable: false, unique: true })
 	uuid: UUID;
 
-	@Column({ name: 'created_at', nullable: false })
+	@Column({ name: "created_at", nullable: false })
 	createdAt: number;
 
 	protected constructor(entity: Partial<AbstractEntity>) {
@@ -110,9 +110,9 @@ export abstract class AbstractEntity {
 	 */
 	protected static parentDataHolder(data: Partial<AbstractEntity> | CreateDto): Partial<AbstractEntity> {
 		const dataHolder: Partial<AbstractEntity> = {
-			id: 'id' in data && data.id ? data.id : undefined,
-			uuid: 'uuid' in data && data.uuid ? data.uuid : undefined,
-			createdAt: 'createdAt' in data && data.createdAt ? data.createdAt : undefined,
+			id: "id" in data && data.id ? data.id : undefined,
+			uuid: "uuid" in data && data.uuid ? data.uuid : undefined,
+			createdAt: "createdAt" in data && data.createdAt ? data.createdAt : undefined,
 		};
 
 		if (dataHolder.id === undefined) delete dataHolder.id;
@@ -180,7 +180,7 @@ export abstract class AbstractEntity {
 			}
 		}
 
-		return issues.join(', ');
+		return issues.join(", ");
 	}
 
 	/* Getters & Setters */
@@ -198,7 +198,7 @@ export abstract class AbstractEntity {
 	private get parentSchema(): Joi.ObjectSchema {
 		return Joi.object({
 			id: Joi.number().integer().positive().optional(), // Optional since a new entity might not have an ID yet.
-			uuid: Joi.string().uuid({ version: 'uuidv4' }).required(),
+			uuid: Joi.string().uuid({ version: "uuidv4" }).required(),
 			createdAt: Joi.number().integer().positive().required(),
 		});
 	}

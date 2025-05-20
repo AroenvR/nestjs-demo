@@ -1,10 +1,10 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DatabaseDrivers, TDatabaseConfig } from './TDatabaseConfig';
-import { ITypeOrmOptionsStrategy } from './strategies/ITypeOrmOptionsStrategy';
-import { SqliteOptionsStrategy } from './strategies/SqliteOptionsStrategy';
-import { PostgresOptionsStrategy } from './strategies/PostgresOptionsStrategy';
-import { BetterSqliteOptionsStrategy } from './strategies/BetterSqliteOptionsStrategy';
-import { SqlcipherOptionsStrategy } from './strategies/SqlcipherOptionsStrategy';
+import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { DatabaseDrivers, TDatabaseConfig } from "./TDatabaseConfig";
+import { ITypeOrmOptionsStrategy } from "./strategies/ITypeOrmOptionsStrategy";
+import { SqliteOptionsStrategy } from "./strategies/SqliteOptionsStrategy";
+import { PostgresOptionsStrategy } from "./strategies/PostgresOptionsStrategy";
+import { BetterSqliteOptionsStrategy } from "./strategies/BetterSqliteOptionsStrategy";
+import { SqlcipherOptionsStrategy } from "./strategies/SqlcipherOptionsStrategy";
 
 /**
  * A factory class for creating database options based on the provided server configuration.

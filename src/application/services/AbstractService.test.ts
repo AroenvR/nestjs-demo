@@ -1,11 +1,11 @@
-import { NotImplementedException } from '@nestjs/common';
-import { AbstractService } from './AbstractService';
-import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
-import { serverConfig } from '../../infrastructure/configuration/serverConfig';
-import { CorrelationManager } from '../../infrastructure/logging/correlation/CorrelationManager';
+import { NotImplementedException } from "@nestjs/common";
+import { AbstractService } from "./AbstractService";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { serverConfig } from "../../infrastructure/configuration/serverConfig";
+import { CorrelationManager } from "../../infrastructure/logging/correlation/CorrelationManager";
 
-describe('AbstractService', () => {
-	it('Throws NotImplementedException for all unimplemented methods.', async () => {
+describe("AbstractService", () => {
+	it("Throws NotImplementedException for all unimplemented methods.", async () => {
 		const adapter = new WinstonAdapter(serverConfig().logging, new CorrelationManager());
 		const service = new AbstractService(null, null, adapter);
 

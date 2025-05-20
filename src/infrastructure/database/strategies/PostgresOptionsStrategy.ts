@@ -1,6 +1,6 @@
-import { DatabaseDrivers, TDatabaseConfig } from '../TDatabaseConfig';
-import { ITypeOrmOptionsStrategy } from './ITypeOrmOptionsStrategy';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DatabaseDrivers, TDatabaseConfig } from "../TDatabaseConfig";
+import { ITypeOrmOptionsStrategy } from "./ITypeOrmOptionsStrategy";
+import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 /**
  * The Postgres database options strategy.

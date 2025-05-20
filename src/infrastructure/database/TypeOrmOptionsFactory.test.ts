@@ -1,11 +1,11 @@
-import { TypeOrmOptionsFactory } from './TypeOrmOptionsFactory';
-import { DatabaseDrivers, TDatabaseConfig } from './TDatabaseConfig';
+import { TypeOrmOptionsFactory } from "./TypeOrmOptionsFactory";
+import { DatabaseDrivers, TDatabaseConfig } from "./TDatabaseConfig";
 
-describe('TypeOrmOptionsFactory', () => {
+describe("TypeOrmOptionsFactory", () => {
 	let config: TDatabaseConfig;
 	let factory: TypeOrmOptionsFactory;
 
-	const ENCRYPTION_KEY = 'test-encryption-key';
+	const ENCRYPTION_KEY = "test-encryption-key";
 
 	beforeEach(() => {
 		factory = new TypeOrmOptionsFactory();
@@ -20,16 +20,16 @@ describe('TypeOrmOptionsFactory', () => {
 
 	// --------------------------------------------------
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(factory).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('should create SQLite options', () => {
+	it("should create SQLite options", () => {
 		config = {
 			driver: DatabaseDrivers.SQLITE,
-			database: 'test.db',
+			database: "test.db",
 			synchronize: true,
 		};
 
@@ -46,10 +46,10 @@ describe('TypeOrmOptionsFactory', () => {
 
 	// --------------------------------------------------
 
-	it('should create Better-SQLite3 options', () => {
+	it("should create Better-SQLite3 options", () => {
 		config = {
 			driver: DatabaseDrivers.BETTER_SQLITE3,
-			database: 'test.db',
+			database: "test.db",
 			synchronize: false,
 		};
 
@@ -66,10 +66,10 @@ describe('TypeOrmOptionsFactory', () => {
 
 	// --------------------------------------------------
 
-	it('should create SQLCipher options', () => {
+	it("should create SQLCipher options", () => {
 		config = {
 			driver: DatabaseDrivers.SQLCIPHER,
-			database: 'test.db',
+			database: "test.db",
 			synchronize: true,
 		};
 
@@ -87,14 +87,14 @@ describe('TypeOrmOptionsFactory', () => {
 
 	// --------------------------------------------------
 
-	it('should create PostgreSQL options', () => {
+	it("should create PostgreSQL options", () => {
 		config = {
 			driver: DatabaseDrivers.POSTGRES,
-			database: 'testdb',
-			host: 'localhost',
+			database: "testdb",
+			host: "localhost",
 			port: 5432,
-			username: 'postgres',
-			password: 'password',
+			username: "postgres",
+			password: "password",
 			synchronize: false,
 		};
 
@@ -115,32 +115,32 @@ describe('TypeOrmOptionsFactory', () => {
 
 	// --------------------------------------------------
 
-	it('should throw error for missing encryption key with SQLCipher', () => {
+	it("should throw error for missing encryption key with SQLCipher", () => {
 		delete process.env.DATABASE_ENCRYPTION_KEY;
 
 		config = {
 			driver: DatabaseDrivers.SQLCIPHER,
-			database: 'encrypted.db',
+			database: "encrypted.db",
 			synchronize: true,
 		};
 
 		expect(() => {
 			factory.createTypeOrmModuleOptions(config, false);
-		}).toThrow('SqlcipherOptionsStrategy: SQLCipher key is required for database encryption.');
+		}).toThrow("SqlcipherOptionsStrategy: SQLCipher key is required for database encryption.");
 	});
 
 	// --------------------------------------------------
 
-	it('should throw error for unsupported driver', () => {
+	it("should throw error for unsupported driver", () => {
 		config = {
 			// @ts-expect-error: Intentionally passing an invalid driver
-			driver: 'UNSUPPORTED_DRIVER',
-			database: 'test.db',
+			driver: "UNSUPPORTED_DRIVER",
+			database: "test.db",
 			synchronize: true,
 		};
 
 		expect(() => {
 			factory.createTypeOrmModuleOptions(config, false);
-		}).toThrow('TypeOrmOptionsFactory: No database strategy found for UNSUPPORTED_DRIVER');
+		}).toThrow("TypeOrmOptionsFactory: No database strategy found for UNSUPPORTED_DRIVER");
 	});
 });

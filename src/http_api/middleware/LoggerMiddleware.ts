@@ -1,9 +1,9 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { randomUUID } from 'crypto';
-import { isTruthy } from 'ts-istruthy';
-import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
-import { ILogger } from 'src/infrastructure/logging/ILogger';
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
+import { randomUUID } from "crypto";
+import { isTruthy } from "ts-istruthy";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger } from "src/infrastructure/logging/ILogger";
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -18,7 +18,7 @@ export class LoggerMiddleware implements NestMiddleware {
 		const { method, originalUrl } = req;
 
 		// Setup a correlation for the complete request/response cycle
-		const correlationId = (req.headers['x-correlation-id'] as string) || randomUUID();
+		const correlationId = (req.headers["x-correlation-id"] as string) || randomUUID();
 
 		this.logger.correlationManager.runWithCorrelationId(correlationId, () => {
 			// Log the incoming request
@@ -31,9 +31,9 @@ export class LoggerMiddleware implements NestMiddleware {
 			if (isTruthy(req.query)) this.logger.verbose(`Request Query: ${JSON.stringify(req.query)}`);
 
 			// Hook into the 'finish' event to log the response details
-			res.on('finish', () => {
+			res.on("finish", () => {
 				const { statusCode } = res;
-				const contentLength = res.get('Content-Length');
+				const contentLength = res.get("Content-Length");
 				const duration = performance.now() - startTime;
 
 				this.logger.log(

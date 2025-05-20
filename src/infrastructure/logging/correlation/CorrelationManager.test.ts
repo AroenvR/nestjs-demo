@@ -1,7 +1,7 @@
-import { CorrelationManager } from './CorrelationManager';
-import { ICorrelationManager } from './ICorrelationManager';
+import { CorrelationManager } from "./CorrelationManager";
+import { ICorrelationManager } from "./ICorrelationManager";
 
-describe('CorrelationManager', () => {
+describe("CorrelationManager", () => {
 	let correlationManager: ICorrelationManager;
 
 	beforeEach(() => {
@@ -15,8 +15,8 @@ describe('CorrelationManager', () => {
 
 	// ------------------------------
 
-	test('should run a callback with a correlation ID', () => {
-		const correlationId = 'test-correlation-id';
+	test("should run a callback with a correlation ID", () => {
+		const correlationId = "test-correlation-id";
 
 		correlationManager.runWithCorrelationId(correlationId, () => {
 			expect(correlationManager.getCorrelationId()).toBe(correlationId);
@@ -25,14 +25,14 @@ describe('CorrelationManager', () => {
 
 	// ------------------------------
 
-	test('should return undefined if no correlation ID is set', () => {
+	test("should return undefined if no correlation ID is set", () => {
 		expect(correlationManager.getCorrelationId()).toBeUndefined();
 	});
 
 	// ------------------------------
 
-	test('should maintain correlation ID across asynchronous calls', (done) => {
-		const correlationId = 'async-correlation-id';
+	test("should maintain correlation ID across asynchronous calls", (done) => {
+		const correlationId = "async-correlation-id";
 
 		correlationManager.runWithCorrelationId(correlationId, () => {
 			setTimeout(() => {
@@ -44,9 +44,9 @@ describe('CorrelationManager', () => {
 
 	// ------------------------------
 
-	test('should not leak correlation ID between different calls', (done) => {
-		const correlationId1 = 'first-correlation-id';
-		const correlationId2 = 'second-correlation-id';
+	test("should not leak correlation ID between different calls", (done) => {
+		const correlationId1 = "first-correlation-id";
+		const correlationId2 = "second-correlation-id";
 
 		correlationManager.runWithCorrelationId(correlationId1, () => {
 			expect(correlationManager.getCorrelationId()).toBe(correlationId1);
@@ -66,11 +66,11 @@ describe('CorrelationManager', () => {
 
 	// ------------------------------
 
-	test('Correlation ID should be correct between logging', () => {
-		const correlationId = 'log-correlation-id';
+	test("Correlation ID should be correct between logging", () => {
+		const correlationId = "log-correlation-id";
 
 		// Spy on console.log
-		const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+		const consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
 
 		const stubFunction = () => {
 			console.log(`${correlationManager.getCorrelationId()}: Some log message.`);

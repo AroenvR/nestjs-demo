@@ -1,20 +1,20 @@
-import { randomUUID } from 'crypto';
-import { Response } from 'express';
-import { Test, TestingModule } from '@nestjs/testing';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { SessionController } from './SessionController';
-import { MockService } from '../../../__tests__/mocks/service/MockService';
-import { SessionService } from '../../../application/services/session/SessionService';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { SessionResponseDto } from '../../dtos/session/SessionResponseDto';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateSessionDto } from '../../../__tests__/mocks/dto/MockSessionDto';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { MockJwtService } from '../../../__tests__/mocks/service/MockJwtService';
-import { MockConfigService } from '../../../__tests__/mocks/service/MockConfigService';
+import { randomUUID } from "crypto";
+import { Response } from "express";
+import { Test, TestingModule } from "@nestjs/testing";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { SessionController } from "./SessionController";
+import { MockService } from "../../../__tests__/mocks/service/MockService";
+import { SessionService } from "../../../application/services/session/SessionService";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { SessionResponseDto } from "../../dtos/session/SessionResponseDto";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { MockCreateSessionDto } from "../../../__tests__/mocks/dto/MockSessionDto";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { MockJwtService } from "../../../__tests__/mocks/service/MockJwtService";
+import { MockConfigService } from "../../../__tests__/mocks/service/MockConfigService";
 
-describe('SessionController Unit', () => {
+describe("SessionController Unit", () => {
 	let controller: SessionController;
 
 	let uuid = randomUUID();
@@ -60,14 +60,14 @@ describe('SessionController Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(controller).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('CREATE', () => {
-		it('Can create an entity', async () => {
+	describe("CREATE", () => {
+		it("Can create an entity", async () => {
 			const dto = MockCreateSessionDto.get();
 
 			await expect(controller.login(dto, mockResponse)).resolves.toEqual(mockedResponse);
@@ -78,8 +78,8 @@ describe('SessionController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('UPDATE', () => {
-		it('Updates an entity', async () => {
+	describe("UPDATE", () => {
+		it("Updates an entity", async () => {
 			await expect(controller.update(uuid, mockRequest, mockResponse)).resolves.toEqual(mockedResponse);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Updating session and JWT for user uuid ${uuid}`);
 		});
@@ -87,8 +87,8 @@ describe('SessionController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE', () => {
-		it('Deletes an entity', async () => {
+	describe("DELETE", () => {
+		it("Deletes an entity", async () => {
 			await expect(controller.logout(mockRequest, mockResponse)).resolves.toBeUndefined();
 			expect(mockILogger.log).toHaveBeenCalledWith(`Logging a user out.`);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Logged out user with uuid ${uuid}`);

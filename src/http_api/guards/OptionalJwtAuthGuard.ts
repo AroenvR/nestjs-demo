@@ -1,6 +1,6 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
+import { ExecutionContext, Injectable } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { Observable } from "rxjs";
 
 /**
  * Optional JWT authentication guard for public routes.
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
  * Instead, it simply returns the user object if available.
  */
 @Injectable()
-export class OptionalJwtAuthGuard extends AuthGuard('optional-jwt') {
+export class OptionalJwtAuthGuard extends AuthGuard("optional-jwt") {
 	canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 		try {
 			super.canActivate(context);

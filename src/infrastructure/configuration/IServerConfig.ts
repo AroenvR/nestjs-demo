@@ -1,6 +1,6 @@
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { TDatabaseConfig } from '../database/TDatabaseConfig';
-import { ILoggerConfig } from '../logging/ILoggerConfig';
+import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
+import { TDatabaseConfig } from "../database/TDatabaseConfig";
+import { ILoggerConfig } from "../logging/ILoggerConfig";
 
 /**
  * The server's cookie configuration interface.

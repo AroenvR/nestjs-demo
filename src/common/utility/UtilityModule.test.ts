@@ -1,9 +1,9 @@
-import { createMockAppModule } from '../../__tests__/mocks/module/createMockAppModule';
-import { UtilityModule } from './UtilityModule';
-import { EncryptionUtils } from './aes/EncryptionUtils';
-import { IRequestBuilder, RequestBuilder } from './request_builder/RequestBuilder';
+import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
+import { UtilityModule } from "./UtilityModule";
+import { EncryptionUtils } from "./aes/EncryptionUtils";
+import { IRequestBuilder, RequestBuilder } from "./request_builder/RequestBuilder";
 
-describe('Utility Module', () => {
+describe("Utility Module", () => {
 	let encryptionUtil: EncryptionUtils;
 	let requestBuilder: IRequestBuilder;
 
@@ -16,7 +16,7 @@ describe('Utility Module', () => {
 
 	// --------------------------------------------------
 
-	it('Utilities should be defined', () => {
+	it("Utilities should be defined", () => {
 		expect(encryptionUtil).toBeDefined();
 		expect(requestBuilder).toBeDefined();
 	});

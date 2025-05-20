@@ -1,26 +1,26 @@
-import request, { Response } from 'supertest';
-import { Repository } from 'typeorm';
-import { randomUUID } from 'crypto';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { SessionModule } from './SessionModule';
-import { CreateSessionDto } from '../../dtos/session/CreateSessionDto';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { expiredJwt, mockJwt } from '../../../__tests__/mocks/mockJwt';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { MockCreateSessionDto } from '../../../__tests__/mocks/dto/MockSessionDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { verifyRefreshData } from './sessionModuleTestingHelper';
-import { sessionConstants } from '../../../common/constants/sessionConstants';
+import request, { Response } from "supertest";
+import { Repository } from "typeorm";
+import { randomUUID } from "crypto";
+import { HttpStatus, INestApplication } from "@nestjs/common";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { JwtService } from "@nestjs/jwt";
+import { SessionModule } from "./SessionModule";
+import { CreateSessionDto } from "../../dtos/session/CreateSessionDto";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { expiredJwt, mockJwt } from "../../../__tests__/mocks/mockJwt";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { MockCreateSessionDto } from "../../../__tests__/mocks/dto/MockSessionDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { verifyRefreshData } from "./sessionModuleTestingHelper";
+import { sessionConstants } from "../../../common/constants/sessionConstants";
 
-const TEST_NAME = 'SessionModule';
+const TEST_NAME = "SessionModule";
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
-	const ENDPOINT = '/v1/session';
+	const ENDPOINT = "/v1/session";
 
 	let app: INestApplication;
 	let userRepo: Repository<UserEntity>;
@@ -51,14 +51,14 @@ describe(TEST_NAME, () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(app).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('POST /login', () => {
-		it('Can create a session with JWT', async () => {
+	describe("POST /login", () => {
+		it("Can create a session with JWT", async () => {
 			const response = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
 			expect(response.body.id).toEqual(user.id);
@@ -67,11 +67,11 @@ describe(TEST_NAME, () => {
 
 			expect(response.body.username).toEqual(user.username);
 
-			expect(response.headers['set-cookie']).toBeDefined();
+			expect(response.headers["set-cookie"]).toBeDefined();
 
 			let emptyJwt = true;
-			for (const header of response.headers['set-cookie']) {
-				if (header.includes('jwt=ey')) emptyJwt = false;
+			for (const header of response.headers["set-cookie"]) {
+				if (header.includes("jwt=ey")) emptyJwt = false;
 			}
 			expect(emptyJwt).toBe(false);
 
@@ -86,29 +86,29 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error without a JWT when missing a payload', async () => {
+		it("Should return an error without a JWT when missing a payload", async () => {
 			const response = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send({}).expect(HttpStatus.BAD_REQUEST);
-			expect(response.headers['set-cookie']).toBeUndefined();
+			expect(response.headers["set-cookie"]).toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `SessionController: Logging a user in`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error without a JWT when sending an invalid payload', async () => {
-			createDto.password = 'invalidpassword';
+		it("Should return an error without a JWT when sending an invalid payload", async () => {
+			createDto.password = "invalidpassword";
 			const response = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.NOT_FOUND);
-			expect(response.headers['set-cookie']).toBeUndefined();
+			expect(response.headers["set-cookie"]).toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `SessionController: Logging a user in`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it('Should refresh the JWT and session when a session already exists', async () => {
+		it("Should refresh the JWT and session when a session already exists", async () => {
 			const originalResponse = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
-			let originalJwt = '';
-			for (const header of originalResponse.headers['set-cookie']) {
-				if (header.includes('jwt=ey')) originalJwt = header;
+			let originalJwt = "";
+			for (const header of originalResponse.headers["set-cookie"]) {
+				if (header.includes("jwt=ey")) originalJwt = header;
 			}
 			expect(originalJwt).toBeDefined();
 
@@ -119,9 +119,9 @@ describe(TEST_NAME, () => {
 			// Try to login again
 			const refreshedResponse = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
-			let refreshedJwt = '';
-			for (const header of refreshedResponse.headers['set-cookie']) {
-				if (header.includes('jwt=ey')) refreshedJwt = header;
+			let refreshedJwt = "";
+			for (const header of refreshedResponse.headers["set-cookie"]) {
+				if (header.includes("jwt=ey")) refreshedJwt = header;
 			}
 			expect(refreshedJwt).toBeDefined();
 			expect(refreshedJwt).not.toEqual(originalJwt);
@@ -137,14 +137,14 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe('PATCH /refresh/:uuid', () => {
-		it('Can refresh its session and JWT', async () => {
+	describe("PATCH /refresh/:uuid", () => {
+		it("Can refresh its session and JWT", async () => {
 			const loginResponse: Response = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 			const loginSession = await repository.findOne({ where: { userUuid: user.uuid } });
 
 			const refreshResponse = await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh/${user.uuid}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 			const refreshedSession = await repository.findOne({ where: { userUuid: user.uuid } });
 
@@ -164,13 +164,13 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Refreshes the session and JWT when using an expired JWT', async () => {
+		it("Refreshes the session and JWT when using an expired JWT", async () => {
 			const loginResponse = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 			const loginSession = await repository.findOne({ where: { userUuid: user.uuid } });
 
 			const refreshResponse = await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh/${user.uuid}`)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.OK);
 			const refreshedSession = await repository.findOne({ where: { userUuid: user.uuid } });
 
@@ -184,10 +184,10 @@ describe(TEST_NAME, () => {
 
 		// -----------------------------------
 
-		it('Returns a NOT FOUND if no session exists', async () => {
+		it("Returns a NOT FOUND if no session exists", async () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh/${user.uuid}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${user.uuid}`)).resolves.toBe(true);
@@ -197,18 +197,18 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing or using a wrong UUID', async () => {
+		it("Should return an error when missing or using a wrong UUID", async () => {
 			await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 
 			const uuid = randomUUID();
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh/${uuid}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 
 			await expect(wasLogged(TEST_NAME, `SessionController: Updating session and JWT for user uuid ${uuid}`)).resolves.toBe(true);
@@ -218,7 +218,7 @@ describe(TEST_NAME, () => {
 
 		// ------------------------------------
 
-		it('Should return UNAUTHORIZED when refreshing without a JWT', async () => {
+		it("Should return UNAUTHORIZED when refreshing without a JWT", async () => {
 			await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
 			await request(app.getHttpServer()).patch(`${ENDPOINT}/refresh/${user.uuid}`).expect(HttpStatus.UNAUTHORIZED);
@@ -228,7 +228,7 @@ describe(TEST_NAME, () => {
 
 		// -----------------------------------
 
-		it('Logs the user out on reaching maximum refreshes', async () => {
+		it("Logs the user out on reaching maximum refreshes", async () => {
 			await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 
 			const loginSession = await repository.findOne({ where: { userUuid: user.uuid } });
@@ -237,7 +237,7 @@ describe(TEST_NAME, () => {
 			for (let i = 0; i < sessionConstants.maxRefreshes; i++) {
 				await request(app.getHttpServer())
 					.patch(`${ENDPOINT}/refresh/${user.uuid}`)
-					.set('Cookie', [`jwt=${mockJwt}`])
+					.set("Cookie", [`jwt=${mockJwt}`])
 					.expect(HttpStatus.OK);
 
 				const refreshedSession = await repository.findOne({ where: { userUuid: user.uuid } });
@@ -246,7 +246,7 @@ describe(TEST_NAME, () => {
 
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/refresh/${user.uuid}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 
 			const refreshedSession = await repository.findOne({ where: { userUuid: user.uuid } });
@@ -259,8 +259,8 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE /logout', () => {
-		describe('With an existing session', () => {
+	describe("DELETE /logout", () => {
+		describe("With an existing session", () => {
 			beforeEach(async () => {
 				await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 				expect(repository.findOne({ where: { userUuid: user.uuid } })).resolves.toBeDefined();
@@ -268,17 +268,17 @@ describe(TEST_NAME, () => {
 
 			// --------------------------------------------------
 
-			it('Clears the valid JWT and deletes the session', async () => {
+			it("Clears the valid JWT and deletes the session", async () => {
 				const response = await request(app.getHttpServer())
 					.delete(`${ENDPOINT}/logout`)
-					.set('Cookie', [`jwt=${mockJwt}`])
+					.set("Cookie", [`jwt=${mockJwt}`])
 					.expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 				expect(emptyJwt).toBe(true);
 
@@ -292,16 +292,16 @@ describe(TEST_NAME, () => {
 
 			// --------------------------------------------------
 
-			it('Clears the expired JWT and deletes the session', async () => {
+			it("Clears the expired JWT and deletes the session", async () => {
 				const response = await request(app.getHttpServer())
 					.delete(`${ENDPOINT}/logout`)
-					.set('Cookie', [`jwt=${expiredJwt}`])
+					.set("Cookie", [`jwt=${expiredJwt}`])
 					.expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 
 				const session = await repository.findOne({ where: { userUuid: user.uuid } });
@@ -312,13 +312,13 @@ describe(TEST_NAME, () => {
 
 			// --------------------------------------------------
 
-			it('Handles a call without JWT', async () => {
+			it("Handles a call without JWT", async () => {
 				const response = await request(app.getHttpServer()).delete(`${ENDPOINT}/logout`).expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 				expect(emptyJwt).toBe(true);
 
@@ -328,18 +328,18 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		describe('Without a session', () => {
-			it('Clears a valid JWT', async () => {
+		describe("Without a session", () => {
+			it("Clears a valid JWT", async () => {
 				const response = await request(app.getHttpServer())
 					.delete(`${ENDPOINT}/logout`)
-					.set('Cookie', [`jwt=${mockJwt}`])
+					.set("Cookie", [`jwt=${mockJwt}`])
 					.expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 				expect(emptyJwt).toBe(true);
 
@@ -350,17 +350,17 @@ describe(TEST_NAME, () => {
 
 			// --------------------------------------------------
 
-			it('Clears an expired JWT', async () => {
+			it("Clears an expired JWT", async () => {
 				const response = await request(app.getHttpServer())
 					.delete(`${ENDPOINT}/logout`)
-					.set('Cookie', [`jwt=${expiredJwt}`])
+					.set("Cookie", [`jwt=${expiredJwt}`])
 					.expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 				expect(emptyJwt).toBe(true);
 
@@ -371,13 +371,13 @@ describe(TEST_NAME, () => {
 
 			// --------------------------------------------------
 
-			it('Handles a logout call without JWT', async () => {
+			it("Handles a logout call without JWT", async () => {
 				const response = await request(app.getHttpServer()).delete(`${ENDPOINT}/logout`).expect(HttpStatus.NO_CONTENT);
 
-				expect(response.headers['set-cookie']).toBeDefined();
+				expect(response.headers["set-cookie"]).toBeDefined();
 				let emptyJwt = false;
-				for (const header of response.headers['set-cookie']) {
-					if (header.includes('jwt=;')) emptyJwt = true;
+				for (const header of response.headers["set-cookie"]) {
+					if (header.includes("jwt=;")) emptyJwt = true;
 				}
 				expect(emptyJwt).toBe(true);
 

@@ -1,13 +1,13 @@
-import { randomUUID, UUID } from 'crypto';
-import { EntityManager, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { CreateSessionDto } from '../../../http_api/dtos/session/CreateSessionDto';
-import { SessionResponseDto } from '../../../http_api/dtos/session/SessionResponseDto';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { ILogger } from '../../../infrastructure/logging/ILogger';
+import { randomUUID, UUID } from "crypto";
+import { EntityManager, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { NotFoundException } from "@nestjs/common";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { CreateSessionDto } from "../../../http_api/dtos/session/CreateSessionDto";
+import { SessionResponseDto } from "../../../http_api/dtos/session/SessionResponseDto";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { ILogger } from "../../../infrastructure/logging/ILogger";
 
 /**
  * A service class that provides basic CRUD operations for the SessionEntity.

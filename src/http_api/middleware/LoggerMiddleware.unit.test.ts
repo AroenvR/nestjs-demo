@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import { NestMiddleware } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerMiddleware } from './LoggerMiddleware';
-import { mockILogger } from '../../__tests__/mocks/mockLogAdapter';
-import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
+import { Request, Response, NextFunction } from "express";
+import { NestMiddleware } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { LoggerMiddleware } from "./LoggerMiddleware";
+import { mockILogger } from "../../__tests__/mocks/mockLogAdapter";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
-describe('LoggerMiddleware Unit', () => {
+describe("LoggerMiddleware Unit", () => {
 	let middleware: NestMiddleware;
 
 	beforeEach(async () => {
@@ -31,9 +31,9 @@ describe('LoggerMiddleware Unit', () => {
 
 	// --------------------------------------------------
 
-	it('logs request and response cycles with a correlation ID', () => {
-		const METHOD = 'GET';
-		const ENDPOINT = '/test';
+	it("logs request and response cycles with a correlation ID", () => {
+		const METHOD = "GET";
+		const ENDPOINT = "/test";
 		const STATUS = 200;
 		const CONTENT_LENGTH = 123;
 		const TIME_TAKEN = 1000;
@@ -46,7 +46,7 @@ describe('LoggerMiddleware Unit', () => {
 
 		const res = {
 			on: jest.fn((event, callback) => {
-				if (event === 'finish') {
+				if (event === "finish") {
 					callback(); // Simulate the finish event
 				}
 			}),
@@ -62,7 +62,7 @@ describe('LoggerMiddleware Unit', () => {
 		});
 
 		// Spy on performance.now()
-		const performanceNowSpy = jest.spyOn(performance, 'now');
+		const performanceNowSpy = jest.spyOn(performance, "now");
 		performanceNowSpy.mockReturnValueOnce(TIME_TAKEN).mockReturnValueOnce(TIME_TAKEN * 2);
 
 		middleware.use(req, res, next);
@@ -72,17 +72,17 @@ describe('LoggerMiddleware Unit', () => {
 			`Response: ${METHOD} ${ENDPOINT} - Status: ${STATUS} - Content-Length: ${CONTENT_LENGTH} bytes - Time: ${TIME_TAKEN} milliseconds.`,
 		);
 
-		expect(res.on).toHaveBeenCalledWith('finish', expect.any(Function));
+		expect(res.on).toHaveBeenCalledWith("finish", expect.any(Function));
 		expect(next).toHaveBeenCalled();
 	});
 
 	// --------------------------------------------------
 
-	it('uses provided correlation ID from request headers', () => {
+	it("uses provided correlation ID from request headers", () => {
 		const req = {
-			method: 'GET',
-			originalUrl: '/test',
-			headers: { 'x-correlation-id': 'provided-correlation-id' },
+			method: "GET",
+			originalUrl: "/test",
+			headers: { "x-correlation-id": "provided-correlation-id" },
 		} as unknown as Request;
 
 		const res = {
@@ -99,21 +99,21 @@ describe('LoggerMiddleware Unit', () => {
 		middleware.use(req, res, next);
 
 		// Verify provided correlation ID is used
-		expect(mockILogger.correlationManager.runWithCorrelationId).toHaveBeenCalledWith('provided-correlation-id', expect.any(Function));
+		expect(mockILogger.correlationManager.runWithCorrelationId).toHaveBeenCalledWith("provided-correlation-id", expect.any(Function));
 
 		expect(next).toHaveBeenCalled();
 	});
 
 	// --------------------------------------------------
 
-	it.only('logs request headers, body, query, and params when truthy', () => {
+	it.only("logs request headers, body, query, and params when truthy", () => {
 		const req = {
-			method: 'POST',
-			originalUrl: '/test',
-			headers: { 'content-type': 'application/json' },
-			body: { key: 'value' },
-			query: { search: 'queryValue' },
-			params: { id: '123' },
+			method: "POST",
+			originalUrl: "/test",
+			headers: { "content-type": "application/json" },
+			body: { key: "value" },
+			query: { search: "queryValue" },
+			params: { id: "123" },
 		} as unknown as Request;
 
 		const res = {

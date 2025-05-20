@@ -1,4 +1,4 @@
-import { AbstractEntity } from '../../../domain/AbstractEntity';
+import { AbstractEntity } from "../../../domain/AbstractEntity";
 
 /**
  * Criteria to execute a FindOne query.
@@ -34,7 +34,7 @@ export class MockRepository<Entity extends AbstractEntity> {
 
 	findOne = jest.fn().mockImplementation((query: TFindOneQuery) => {
 		if (query.where.id === 69) return null; // To test the error handling
-		if (query.where.uuid === '167ad25f-0f91-4ac0-a9ed-99cef801ba9e') return null; // To test the error handling
+		if (query.where.uuid === "167ad25f-0f91-4ac0-a9ed-99cef801ba9e") return null; // To test the error handling
 
 		return this.createEntity();
 	});

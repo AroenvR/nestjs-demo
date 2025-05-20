@@ -1,7 +1,7 @@
-import { applyDecorators, HttpCode, HttpStatus, Patch, Type } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { DefaultErrorDecorators } from './DefaultErrorDecorators';
+import { applyDecorators, HttpCode, HttpStatus, Patch, Type } from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
+import { DefaultErrorDecorators } from "./DefaultErrorDecorators";
 
 /**
  * Decorator for PATCH endpoints that returns a 201 status code
@@ -10,10 +10,10 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  */
 export function PatchEndpoint(entityName: string, entityType: Type<unknown>) {
 	return applyDecorators(
-		Patch(':id'),
+		Patch(":id"),
 		HttpCode(HttpStatus.OK),
 		ApiOperation({ summary: `Update an existing ${entityName}` }),
-		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
+		ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: entityType }),
 		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
 		ApiResponse({ status: HttpStatus.CONFLICT, description: HttpExceptionMessages.CONFLICT }),
 		DefaultErrorDecorators(),

@@ -1,16 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { ResponseDto } from '../ResponseDto';
+import { ApiProperty } from "@nestjs/swagger";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { ResponseDto } from "../ResponseDto";
 
 /**
  * This class is responsible for returning a {@link UserEntity} to the client.
  * It provides Swagger documentation for the API.
  */
 export class UserResponseDto extends ResponseDto {
-	@ApiProperty({ description: 'The unique username of the user entity' })
+	@ApiProperty({ description: "The unique username of the user entity" })
 	username: string;
 
-	@ApiProperty({ description: 'The password of the user entity' })
+	@ApiProperty({ description: "The password of the user entity" })
 	password: string;
 
 	constructor(entity: UserEntity) {

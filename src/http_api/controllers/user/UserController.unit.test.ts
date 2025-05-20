@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './UserController';
-import { MockService } from '../../../__tests__/mocks/service/MockService';
-import { UserService } from '../../../application/services/user/UserService';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { UserResponseDto } from '../../dtos/user/UserResponseDto';
-import { GuardedController } from '../GuardedController';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserController } from "./UserController";
+import { MockService } from "../../../__tests__/mocks/service/MockService";
+import { UserService } from "../../../application/services/user/UserService";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { UserResponseDto } from "../../dtos/user/UserResponseDto";
+import { GuardedController } from "../GuardedController";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe('UserController Unit', () => {
+describe("UserController Unit", () => {
 	let controller: GuardedController;
 
 	const ID = 1;
@@ -37,14 +37,14 @@ describe('UserController Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(controller).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('CREATE', () => {
-		it('Can create an entity', async () => {
+	describe("CREATE", () => {
+		it("Can create an entity", async () => {
 			const dto = MockCreateUserDto.get();
 
 			await expect(controller.create(dto)).resolves.toEqual(mockedResponse);
@@ -54,8 +54,8 @@ describe('UserController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('FIND ALL', () => {
-		it('Finds all entities', async () => {
+	describe("FIND ALL", () => {
+		it("Finds all entities", async () => {
 			await expect(controller.findAll()).resolves.toEqual([mockedResponse]);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
 		});
@@ -63,8 +63,8 @@ describe('UserController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('FIND ONE', () => {
-		it('Finds an entity by id', async () => {
+	describe("FIND ONE", () => {
+		it("Finds an entity by id", async () => {
 			await expect(controller.findOne(ID)).resolves.toEqual(mockedResponse);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
 		});
@@ -72,8 +72,8 @@ describe('UserController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('UPDATE', () => {
-		it('Updates an entity', async () => {
+	describe("UPDATE", () => {
+		it("Updates an entity", async () => {
 			const dto = MockUpdateUserDto.get();
 
 			await expect(controller.update(ID, dto)).resolves.toEqual(mockedResponse);
@@ -83,8 +83,8 @@ describe('UserController Unit', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE', () => {
-		it('Deletes an entity', async () => {
+	describe("DELETE", () => {
+		it("Deletes an entity", async () => {
 			await expect(controller.remove(ID)).resolves.toBeUndefined();
 			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
 		});

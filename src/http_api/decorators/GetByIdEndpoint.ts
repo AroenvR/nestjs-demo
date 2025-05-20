@@ -1,7 +1,7 @@
-import { applyDecorators, Get, HttpCode, HttpStatus, Type } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HttpExceptionMessages } from '../../common/enums/HttpExceptionMessages';
-import { DefaultErrorDecorators } from './DefaultErrorDecorators';
+import { applyDecorators, Get, HttpCode, HttpStatus, Type } from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
+import { DefaultErrorDecorators } from "./DefaultErrorDecorators";
 
 /**
  * Decorator for GET by id endpoint that returns a 200 status code
@@ -10,10 +10,10 @@ import { DefaultErrorDecorators } from './DefaultErrorDecorators';
  */
 export function GetByIdEndpoint(entityName: string, entityType: Type<unknown>) {
 	return applyDecorators(
-		Get(':id'),
+		Get(":id"),
 		HttpCode(HttpStatus.OK),
 		ApiOperation({ summary: `Find a(n) ${entityName} by id` }),
-		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType }),
+		ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: entityType }),
 		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
 		DefaultErrorDecorators(),
 	);

@@ -1,9 +1,9 @@
-import { Observable, of } from 'rxjs';
-import { CreateDto } from '../../../http_api/dtos/CreateDto';
-import { UpdateDto } from '../../../http_api/dtos/UpdateDto';
-import { ResponseDto } from '../../../http_api/dtos/ResponseDto';
-import { AbstractEntity } from '../../../domain/AbstractEntity';
-import { ISseMessage } from '../../../application/events/ISseMessage';
+import { Observable, of } from "rxjs";
+import { CreateDto } from "../../../http_api/dtos/CreateDto";
+import { UpdateDto } from "../../../http_api/dtos/UpdateDto";
+import { ResponseDto } from "../../../http_api/dtos/ResponseDto";
+import { AbstractEntity } from "../../../domain/AbstractEntity";
+import { ISseMessage } from "../../../application/events/ISseMessage";
 
 /**
  * Mocks a service with CRUD operations based on the {@link IService} interface.

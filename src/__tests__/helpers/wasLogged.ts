@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
+import path from "path";
+import fs from "fs-extra";
 
 /**
  * Check if a log message was logged in a log file.
@@ -10,9 +10,9 @@ import fs from 'fs-extra';
 export async function wasLogged(logFile: string, logMessage: string): Promise<boolean> {
 	await new Promise((resolve) => setTimeout(resolve, 10));
 
-	const logFilePath = path.join(__dirname, '..', '..', '..', 'logs', `${logFile}.test.log`);
+	const logFilePath = path.join(__dirname, "..", "..", "..", "logs", `${logFile}.test.log`);
 	if (!(await fs.exists(logFilePath))) return false;
 
-	const logContent = await fs.readFile(logFilePath, 'utf-8');
+	const logContent = await fs.readFile(logFilePath, "utf-8");
 	return logContent.includes(logMessage);
 }

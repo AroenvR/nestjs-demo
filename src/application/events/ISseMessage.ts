@@ -1,4 +1,4 @@
-import { ResponseDto } from '../../http_api/dtos/ResponseDto';
+import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 
 /**
  * Interface for Server-Sent Event messages.

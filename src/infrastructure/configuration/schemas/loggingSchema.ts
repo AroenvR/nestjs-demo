@@ -1,21 +1,21 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 /**
  * Joi schema for TLoggerFileConfig.
  */
 const loggerFileConfigSchema = Joi.object({
 	enabled: Joi.boolean().required(),
-	path: Joi.when('enabled', {
+	path: Joi.when("enabled", {
 		is: true,
 		then: Joi.string().required(),
 		otherwise: Joi.forbidden(),
 	}),
-	style: Joi.when('enabled', {
+	style: Joi.when("enabled", {
 		is: true,
-		then: Joi.string().required().valid('json', 'text'),
+		then: Joi.string().required().valid("json", "text"),
 		otherwise: Joi.forbidden(),
 	}),
-	name: Joi.when('enabled', {
+	name: Joi.when("enabled", {
 		is: true,
 		then: Joi.string().required(),
 		otherwise: Joi.forbidden(),
@@ -28,17 +28,17 @@ const loggerFileConfigSchema = Joi.object({
  */
 const loggerHTTPConfigSchema = Joi.object({
 	enabled: Joi.boolean().required(),
-	host: Joi.when('enabled', {
+	host: Joi.when("enabled", {
 		is: true,
 		then: Joi.string().required(),
 		otherwise: Joi.forbidden(),
 	}),
-	path: Joi.when('enabled', {
+	path: Joi.when("enabled", {
 		is: true,
 		then: Joi.number().required(),
 		otherwise: Joi.forbidden(),
 	}),
-	token: Joi.when('enabled', {
+	token: Joi.when("enabled", {
 		is: true,
 		then: Joi.string().required(),
 		otherwise: Joi.forbidden(),
@@ -50,9 +50,9 @@ const loggerHTTPConfigSchema = Joi.object({
  */
 export const loggingSchema = Joi.object({
 	appName: Joi.string().required(),
-	driver: Joi.string().valid('winston').required(),
+	driver: Joi.string().valid("winston").required(),
 	enableCorrelation: Joi.boolean().required(),
-	level: Joi.string().valid('verbose', 'debug', 'info', 'log', 'warn', 'error', 'critical').required(),
+	level: Joi.string().valid("verbose", "debug", "info", "log", "warn", "error", "critical").required(),
 	console: Joi.boolean().required(),
 	file: loggerFileConfigSchema.required(),
 	http: loggerHTTPConfigSchema.required(),

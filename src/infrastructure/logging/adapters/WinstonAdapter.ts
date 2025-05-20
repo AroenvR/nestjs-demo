@@ -1,10 +1,10 @@
-import path from 'path';
-import winston from 'winston';
-import { createLogger, format, Logger, transports } from 'winston';
-import { TransformableInfo } from 'logform';
-import { ILoggerConfig } from '../ILoggerConfig';
-import { ICorrelationManager } from '../correlation/ICorrelationManager';
-import { ILogger, IPrefixedLogger, TLogMetadata } from '../ILogger';
+import path from "path";
+import winston from "winston";
+import { createLogger, format, Logger, transports } from "winston";
+import { TransformableInfo } from "logform";
+import { ILoggerConfig } from "../ILoggerConfig";
+import { ICorrelationManager } from "../correlation/ICorrelationManager";
+import { ILogger, IPrefixedLogger, TLogMetadata } from "../ILogger";
 
 /**
  * A custom adapter for integrating Winston with NestJS.
@@ -38,11 +38,11 @@ export class WinstonAdapter implements IPrefixedLogger {
 		// Create the Winston Logger
 		this.winston = createLogger({
 			levels: customLevels,
-			level: config.level || 'info', // Fallback log level
+			level: config.level || "info", // Fallback log level
 			transports: winstonTransports,
 		});
-		this.winston.warn('Logger intitialized', {
-			context: 'WinstonAdapter',
+		this.winston.warn("Logger intitialized", {
+			context: "WinstonAdapter",
 			metadata: { level: config.level },
 			correlationId: this.correlationManager.getCorrelationId(),
 		});
@@ -68,7 +68,7 @@ export class WinstonAdapter implements IPrefixedLogger {
 
 	public log(context: string, message: string, metadata?: TLogMetadata) {
 		if (!this.isWhitelistApproved(context)) return;
-		this.winston.log('normal', message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
+		this.winston.log("normal", message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
 	}
 
 	public warn(context: string, message: string, metadata?: TLogMetadata) {
@@ -83,12 +83,12 @@ export class WinstonAdapter implements IPrefixedLogger {
 
 	public fatal(context: string, message: string, metadata?: TLogMetadata) {
 		if (!this.isWhitelistApproved(context)) return;
-		this.critical('critical', message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
+		this.critical("critical", message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
 	}
 
 	public critical(context: string, message: string, metadata?: TLogMetadata) {
 		if (!this.isWhitelistApproved(context)) return;
-		this.winston.log('critical', message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
+		this.winston.log("critical", message, { context, metadata, correlationId: this.correlationManager.getCorrelationId() });
 	}
 
 	/**
@@ -137,8 +137,8 @@ export class WinstonAdapter implements IPrefixedLogger {
 
 		const fullFilePath = path.join(this.config.file.path, this.config.file.name);
 
-		if (this.config.file.style === 'json') return new transports.File({ filename: fullFilePath, format: jsonFormat });
-		else if (this.config.file.style === 'text') return new transports.File({ filename: fullFilePath, format: textFormat });
+		if (this.config.file.style === "json") return new transports.File({ filename: fullFilePath, format: jsonFormat });
+		else if (this.config.file.style === "text") return new transports.File({ filename: fullFilePath, format: textFormat });
 	}
 
 	/**
@@ -165,17 +165,17 @@ export class WinstonAdapter implements IPrefixedLogger {
 	 * @returns The formatted text log message.
 	 */
 	private formatTextMessage(info: TransformableInfo) {
-		if (info.level === 'normal') info.level = 'log';
+		if (info.level === "normal") info.level = "log";
 
 		if (info.metadata && info.metadata instanceof Error) info.metadata = `\n${info.metadata.stack}`;
-		else if (info.metadata && typeof info.metadata === 'object') info.metadata = JSON.stringify(info.metadata);
+		else if (info.metadata && typeof info.metadata === "object") info.metadata = JSON.stringify(info.metadata);
 
-		let message = info.timestamp + ' ';
-		message += info.correlationId + ' '; // no correlation id?
-		message += info.level.toUpperCase() + ' - ';
-		message += info.context ? `${info.context}: ` : '';
-		message += info.message + ' ';
-		message += info.metadata ? info.metadata : '';
+		let message = info.timestamp + " ";
+		message += info.correlationId + " "; // no correlation id?
+		message += info.level.toUpperCase() + " - ";
+		message += info.context ? `${info.context}: ` : "";
+		message += info.message + " ";
+		message += info.metadata ? info.metadata : "";
 
 		return message;
 	}
@@ -187,19 +187,19 @@ export class WinstonAdapter implements IPrefixedLogger {
 	 * @returns The formatted JSON log message.
 	 */
 	private formatJsonMessage(info: TransformableInfo) {
-		if (info.level === 'normal') info.level = 'log';
+		if (info.level === "normal") info.level = "log";
 
 		if (info.metadata && info.metadata instanceof Error) info.error = `\n${info.metadata.stack}`;
-		else if (info.metadata && typeof info.metadata === 'object') info.metadata = JSON.stringify(info.metadata);
+		else if (info.metadata && typeof info.metadata === "object") info.metadata = JSON.stringify(info.metadata);
 
 		const obj = {
-			'@t': info.timestamp,
-			'@l': info.level.toUpperCase(),
-			'@cid': info.correlationId || '',
-			'@c': info.context ? info.context : '',
-			'@m': info.message,
-			'@x': info.error ? info.error : '',
-			'@md': info.metadata ? info.metadata : '',
+			"@t": info.timestamp,
+			"@l": info.level.toUpperCase(),
+			"@cid": info.correlationId || "",
+			"@c": info.context ? info.context : "",
+			"@m": info.message,
+			"@x": info.error ? info.error : "",
+			"@md": info.metadata ? info.metadata : "",
 		};
 		return JSON.stringify(obj);
 	}
@@ -225,7 +225,7 @@ export class WinstonAdapter implements IPrefixedLogger {
 	 * Otherwise all console logging functions are overwritten to do nothing.
 	 */
 	private overwriteConsole(): void {
-		if (this.config.level !== 'verbose') {
+		if (this.config.level !== "verbose") {
 			console.debug = () => {};
 			console.log = () => {};
 			console.info = () => {};

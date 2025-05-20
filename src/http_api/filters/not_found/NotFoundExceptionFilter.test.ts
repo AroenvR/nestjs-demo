@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundExceptionFilter } from './NotFoundExceptionFilter';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
+import request from "supertest";
+import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { NotFoundExceptionFilter } from "./NotFoundExceptionFilter";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
-const error = new NotFoundException('Not found exception test');
+const error = new NotFoundException("Not found exception test");
 
-@Controller('test')
+@Controller("test")
 @UseFilters(NotFoundExceptionFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('NotFoundExceptionFilter', () => {
+describe("NotFoundExceptionFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('NotFoundExceptionFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.NOT_FOUND)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.NOT_FOUND,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.NOT_FOUND,
 				});
 			});

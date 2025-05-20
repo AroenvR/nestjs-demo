@@ -1,5 +1,5 @@
-import Joi from 'joi';
-import { DatabaseDrivers, SqliteDatabaseDrivers } from '../../../infrastructure/database/TDatabaseConfig';
+import Joi from "joi";
+import { DatabaseDrivers, SqliteDatabaseDrivers } from "../../../infrastructure/database/TDatabaseConfig";
 
 /**
  * Joi schema for SQLite configuration.

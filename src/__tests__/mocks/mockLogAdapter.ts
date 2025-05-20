@@ -1,4 +1,4 @@
-import { IPrefixedLogger } from '../../infrastructure/logging/ILogger';
+import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
  * Mocked {@link IPrefixedLogger} for testing purposes.

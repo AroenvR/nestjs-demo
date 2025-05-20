@@ -1,15 +1,15 @@
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { EncryptionUtils } from './EncryptionUtils';
-import { UtilityModule } from '../UtilityModule';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { TSupportedAesAlgorithms } from './TSupportedAesAlgorithms';
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { EncryptionUtils } from "./EncryptionUtils";
+import { UtilityModule } from "../UtilityModule";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 
-describe('Encryption Utils', () => {
-	const testName = 'EncryptionUtils';
+describe("Encryption Utils", () => {
+	const testName = "EncryptionUtils";
 	process.env.TEST_NAME = testName;
 
 	const SECRET_LENGTH = 69;
-	const DATA = 'Hello, secret!';
+	const DATA = "Hello, secret!";
 
 	let encryptionUtil: EncryptionUtils;
 
@@ -20,21 +20,21 @@ describe('Encryption Utils', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', async () => {
+	it("Should be defined", async () => {
 		expect(encryptionUtil).toBeDefined();
 		await expect(wasLogged(testName, `${testName}: Registered an encryption/decryption strategy for aes-256-gcm`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
-	it('Can generate a random secret of a specified length', () => {
+	it("Can generate a random secret of a specified length", () => {
 		const secret = encryptionUtil.createRandomSecret(SECRET_LENGTH);
 		expect(secret).toHaveLength(SECRET_LENGTH);
 	});
 
 	// --------------------------------------------------
 
-	it('Does not generate the same secret twice', async () => {
+	it("Does not generate the same secret twice", async () => {
 		const NUM_TO_GENERATE = 100 * 1000;
 
 		const secretPromises: Promise<Buffer>[] = [];
@@ -50,7 +50,7 @@ describe('Encryption Utils', () => {
 		const resolves = await Promise.allSettled(secretPromises);
 
 		const secrets = resolves.map((r) => {
-			if (r.status === 'fulfilled') return r.value;
+			if (r.status === "fulfilled") return r.value;
 		});
 		expect(secrets.length).toEqual(NUM_TO_GENERATE);
 
@@ -60,19 +60,19 @@ describe('Encryption Utils', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when an unsupported algorithm is used', () => {
+	it("Throws when an unsupported algorithm is used", () => {
 		// @ts-expect-error: "some-algorithm" isn't supported.
-		expect(() => encryptionUtil.aesEncrypt(DATA, 'some-algorithm')).toThrow('No encryption strategy found');
+		expect(() => encryptionUtil.aesEncrypt(DATA, "some-algorithm")).toThrow("No encryption strategy found");
 
 		// @ts-expect-error: "some-algorithm" isn't supported.
-		expect(() => encryptionUtil.aesDecrypt({ algorithm: 'some-algorithm' })).toThrow('No decryption strategy found');
+		expect(() => encryptionUtil.aesDecrypt({ algorithm: "some-algorithm" })).toThrow("No decryption strategy found");
 	});
 
 	// --------------------------------------------------
 
-	describe('AES encryption/decryption', () => {
-		it('Can encrypt string-based data using the AES-GCM algorithm', async () => {
-			const algorithm: TSupportedAesAlgorithms = 'aes-256-gcm';
+	describe("AES encryption/decryption", () => {
+		it("Can encrypt string-based data using the AES-GCM algorithm", async () => {
+			const algorithm: TSupportedAesAlgorithms = "aes-256-gcm";
 			const aesData = encryptionUtil.aesEncrypt(DATA, algorithm);
 
 			expect(aesData.key).toHaveLength(44);
@@ -88,8 +88,8 @@ describe('Encryption Utils', () => {
 
 		// --------------------------------------------------
 
-		it('Can decrypt string-based data using the AES-GCM algorithm', async () => {
-			const algorithm: TSupportedAesAlgorithms = 'aes-256-gcm';
+		it("Can decrypt string-based data using the AES-GCM algorithm", async () => {
+			const algorithm: TSupportedAesAlgorithms = "aes-256-gcm";
 			const aesData = encryptionUtil.aesEncrypt(DATA, algorithm);
 			const decrypted = encryptionUtil.aesDecrypt(aesData);
 

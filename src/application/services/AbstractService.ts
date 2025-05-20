@@ -1,13 +1,13 @@
-import { EntityManager, Repository } from 'typeorm';
-import { Injectable, NotImplementedException, OnModuleInit } from '@nestjs/common';
-import { AbstractEntity } from '../../domain/AbstractEntity';
-import { CreateDto } from '../../http_api/dtos/CreateDto';
-import { ResponseDto } from '../../http_api/dtos/ResponseDto';
-import { UpdateDto } from '../../http_api/dtos/UpdateDto';
-import { Observable, Subject } from 'rxjs';
-import { ISseMessage } from '../events/ISseMessage';
-import { ILogger } from '../../infrastructure/logging/ILogger';
-import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
+import { EntityManager, Repository } from "typeorm";
+import { Injectable, NotImplementedException, OnModuleInit } from "@nestjs/common";
+import { AbstractEntity } from "../../domain/AbstractEntity";
+import { CreateDto } from "../../http_api/dtos/CreateDto";
+import { ResponseDto } from "../../http_api/dtos/ResponseDto";
+import { UpdateDto } from "../../http_api/dtos/UpdateDto";
+import { Observable, Subject } from "rxjs";
+import { ISseMessage } from "../events/ISseMessage";
+import { ILogger } from "../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
  * An abstract service class that enforces basic CRUD operations.

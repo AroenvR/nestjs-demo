@@ -1,7 +1,7 @@
-import { GenerateSecretCallback } from '../EncryptionUtils';
-import { IAesCipherData } from '../IAesCipherData';
-import { TSupportedAesAlgorithms } from '../TSupportedAesAlgorithms';
-import { EncryptionUtils } from '../EncryptionUtils'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { GenerateSecretCallback } from "../EncryptionUtils";
+import { IAesCipherData } from "../IAesCipherData";
+import { TSupportedAesAlgorithms } from "../TSupportedAesAlgorithms";
+import { EncryptionUtils } from "../EncryptionUtils"; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 /**
  * An interface for AES encryption strategies.

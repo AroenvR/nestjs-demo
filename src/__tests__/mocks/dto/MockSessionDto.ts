@@ -1,5 +1,5 @@
-import { CreateSessionDto } from '../../../http_api/dtos/session/CreateSessionDto';
-import { MockUserEntity } from '../entity/MockUserEntity';
+import { CreateSessionDto } from "../../../http_api/dtos/session/CreateSessionDto";
+import { MockUserEntity } from "../entity/MockUserEntity";
 
 /**
  * A Mock {@link CreateSessionDto} for testing purposes.

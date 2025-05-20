@@ -1,5 +1,5 @@
-import { MockSessionEntity } from '../../__tests__/mocks/entity/MockSessionEntity';
-import { SessionEntity } from './SessionEntity';
+import { MockSessionEntity } from "../../__tests__/mocks/entity/MockSessionEntity";
+import { SessionEntity } from "./SessionEntity";
 
 describe("SessionEntity and its DTO's", () => {
 	let data: SessionEntity;
@@ -10,7 +10,7 @@ describe("SessionEntity and its DTO's", () => {
 
 	// --------------------------------------------------
 
-	it('Can create itself from a partial object', () => {
+	it("Can create itself from a partial object", () => {
 		delete data.id;
 		delete data.uuid;
 		delete data.createdAt;
@@ -29,7 +29,7 @@ describe("SessionEntity and its DTO's", () => {
 
 	// --------------------------------------------------
 
-	it('Can create itself from a complete object', () => {
+	it("Can create itself from a complete object", () => {
 		const entity = SessionEntity.create(data);
 
 		expect(entity.id).toEqual(data.id);
@@ -43,10 +43,10 @@ describe("SessionEntity and its DTO's", () => {
 
 	// --------------------------------------------------
 
-	it('Can refresh its token', () => {
+	it("Can refresh its token", () => {
 		const entity = SessionEntity.create(data);
 
-		const newToken = 'yolobolo';
+		const newToken = "yolobolo";
 		const currentRefreshes = entity.refreshes;
 
 		entity.refreshToken(newToken);
@@ -57,8 +57,8 @@ describe("SessionEntity and its DTO's", () => {
 
 	// --------------------------------------------------
 
-	it('Can not be updated', () => {
+	it("Can not be updated", () => {
 		const entity = SessionEntity.create(data);
-		expect(() => entity.update({})).toThrow('Updating is not allowed');
+		expect(() => entity.update({})).toThrow("Updating is not allowed");
 	});
 });

@@ -1,7 +1,7 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { WinstonAdapter } from '../infrastructure/logging/adapters/WinstonAdapter';
-import { ILogger } from '../infrastructure/logging/ILogger';
-import { AbstractEntity } from './AbstractEntity';
+import { Injectable, NotImplementedException } from "@nestjs/common";
+import { WinstonAdapter } from "../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger } from "../infrastructure/logging/ILogger";
+import { AbstractEntity } from "./AbstractEntity";
 
 /**
  * An abstract class that provides a base for entity managers.
@@ -24,7 +24,7 @@ export class AbstractEntityManager<T extends AbstractEntity> {
 	 * @returns A promise that resolves to the created entity.
 	 */
 	public async create(_: unknown): Promise<T> {
-		this.logger.debug('Creating entity.');
+		this.logger.debug("Creating entity.");
 		throw new NotImplementedException(`${this.name}: Create method not implemented`);
 	}
 }

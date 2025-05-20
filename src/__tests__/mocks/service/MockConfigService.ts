@@ -1,4 +1,4 @@
-import { serverConfig } from '../../../infrastructure/configuration/serverConfig';
+import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
 
 /**
  * Mock implementation of the ConfigService for testing purposes.
@@ -6,13 +6,13 @@ import { serverConfig } from '../../../infrastructure/configuration/serverConfig
 export class MockConfigService {
 	get(key: string) {
 		switch (key) {
-			case 'security':
+			case "security":
 				return serverConfig().security;
 
-			case 'logging':
+			case "logging":
 				return serverConfig().logging;
 
-			case 'database':
+			case "database":
 				return serverConfig().database;
 
 			default:

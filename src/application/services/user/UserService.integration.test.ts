@@ -1,19 +1,19 @@
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
-import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { UserService } from './UserService';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { AbstractService } from '../AbstractService';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../../http_api/modules/user/UserModule';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
+import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
+import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { UserService } from "./UserService";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { AbstractService } from "../AbstractService";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { UserModule } from "../../../http_api/modules/user/UserModule";
+import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe('UserService Integration', () => {
-	const testName = 'UserService_Integration';
+describe("UserService Integration", () => {
+	const testName = "UserService_Integration";
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
 	let repository: Repository<unknown>;
@@ -44,13 +44,13 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(service).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('Can create an entity', async () => {
+	it("Can create an entity", async () => {
 		const response = await service.create(createDto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
@@ -64,7 +64,7 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Finds all entities', async () => {
+	it("Finds all entities", async () => {
 		const response = await service.findAll();
 
 		const found = response.find((data) => data.id === entity.id);
@@ -80,7 +80,7 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Finds an entity by id', async () => {
+	it("Finds an entity by id", async () => {
 		const response = await service.findOne(entity.id);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
@@ -96,7 +96,7 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when unable to find an entity by id', async () => {
+	it("Throws when unable to find an entity by id", async () => {
 		const id = 69;
 
 		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
@@ -105,7 +105,7 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Updates an entity', async () => {
+	it("Updates an entity", async () => {
 		const dto = MockUpdateUserDto.get();
 		const response = await service.update(entity.id, dto);
 
@@ -122,27 +122,27 @@ describe('UserService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Deletes an entity', async () => {
+	it("Deletes an entity", async () => {
 		await expect(service.remove(entity.id)).resolves.toBeUndefined();
 		await expect(wasLogged(testName, `${className}: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
-	it('Can observe events', async () => {
+	it("Can observe events", async () => {
 		const observable = await service.observe();
 
 		expect(observable).toBeDefined();
-		expect(observable).toHaveProperty('subscribe');
+		expect(observable).toHaveProperty("subscribe");
 
 		await expect(wasLogged(testName, `${className}: Observing events`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
-	it('Can emit events', async () => {
-		const events = service['events'];
-		const spy = jest.spyOn(events, 'next');
+	it("Can emit events", async () => {
+		const events = service["events"];
+		const spy = jest.spyOn(events, "next");
 
 		await service.emit(entity);
 

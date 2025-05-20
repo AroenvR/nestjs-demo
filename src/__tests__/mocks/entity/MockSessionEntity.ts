@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { MockUserEntity } from './MockUserEntity';
-import { mockJwt } from '../mockJwt';
+import { randomUUID } from "crypto";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { MockUserEntity } from "./MockUserEntity";
+import { mockJwt } from "../mockJwt";
 
 /**
  * A Mock {@link SessionEntity} for testing purposes.

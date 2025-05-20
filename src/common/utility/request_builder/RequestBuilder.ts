@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { ILogger } from '../../../infrastructure/logging/ILogger';
+import { Injectable } from "@nestjs/common";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger } from "../../../infrastructure/logging/ILogger";
 
 /**
  * The base interface an {@link IRequestBuilder} must adhere to.
@@ -52,12 +52,12 @@ export interface IRequestBuilder extends IBaseRequestBuilder {
 /**
  * HTTP Builder's supported response types.
  */
-export type BuilderResponse = 'json' | 'arrayBuffer';
+export type BuilderResponse = "json" | "arrayBuffer";
 
 /**
  * HTTP Builder's supported request methods.
  */
-export type BuilderMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type BuilderMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 /**
  * A builder for creating dynamic HTTP(s) requests.
@@ -92,8 +92,8 @@ export class RequestBuilder implements IRequestBuilder {
 		const response = await fetch(url, payload)
 			.then((response: Response) => {
 				if (response.ok) {
-					if (this.responseType === 'json') return response.json();
-					else if (this.responseType === 'arrayBuffer') return response.arrayBuffer();
+					if (this.responseType === "json") return response.json();
+					else if (this.responseType === "arrayBuffer") return response.arrayBuffer();
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);
 				}
 
@@ -105,14 +105,14 @@ export class RequestBuilder implements IRequestBuilder {
 				throw new Error(`${this.name}: error occurred: ${err}`);
 			});
 
-		this.setMethod('GET');
+		this.setMethod("GET");
 		this.setUseSsl(false);
 		this.setPort(null);
-		this.setDomain('');
+		this.setDomain("");
 		this.setEndpoint(null);
 		this.setBody(null);
 		this.setHeaders({});
-		this.setResponseType('json');
+		this.setResponseType("json");
 
 		return response;
 	}
@@ -143,13 +143,13 @@ export class RequestBuilder implements IRequestBuilder {
 	private urlBuilder() {
 		this.logger.debug(`Building URL.`);
 
-		let url = '';
-		url += this.useSsl ? 'https://' : 'http://';
+		let url = "";
+		url += this.useSsl ? "https://" : "http://";
 		url += this.domain;
 
 		if (this.port) url += `:${this.port}`;
 		if (this.endpoint) {
-			if (this.endpoint.startsWith('/')) url += this.endpoint;
+			if (this.endpoint.startsWith("/")) url += this.endpoint;
 			else url += `/${this.endpoint}`;
 		}
 
@@ -177,8 +177,8 @@ export class RequestBuilder implements IRequestBuilder {
 		};
 
 		if (this.body) {
-			if (typeof this.body === 'string') payload.body = this.body;
-			if (typeof this.body === 'object') payload.body = JSON.stringify(this.body);
+			if (typeof this.body === "string") payload.body = this.body;
+			if (typeof this.body === "object") payload.body = JSON.stringify(this.body);
 			if (this.body instanceof ArrayBuffer) payload.body = this.body;
 		}
 

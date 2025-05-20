@@ -1,4 +1,4 @@
-import { TSupportedAesAlgorithms } from './TSupportedAesAlgorithms';
+import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 
 /**
  * This interface represents the output of an AES encryption method

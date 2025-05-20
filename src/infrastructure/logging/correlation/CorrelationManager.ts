@@ -1,5 +1,5 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-import { ICorrelationManager } from './ICorrelationManager';
+import { AsyncLocalStorage } from "node:async_hooks";
+import { ICorrelationManager } from "./ICorrelationManager";
 
 /**
  * The correlation manager class, responsible for managing the correlation id for a callback.

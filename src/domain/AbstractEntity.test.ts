@@ -1,8 +1,8 @@
-import Joi from 'joi';
-import { randomUUID } from 'crypto';
-import { NotImplementedException } from '@nestjs/common';
-import { AbstractEntity } from './AbstractEntity';
-import { falsyValues } from '../__tests__/helpers/falsyValues';
+import Joi from "joi";
+import { randomUUID } from "crypto";
+import { NotImplementedException } from "@nestjs/common";
+import { AbstractEntity } from "./AbstractEntity";
+import { falsyValues } from "../__tests__/helpers/falsyValues";
 
 /**
  * Mock Entity to test the {@link AbstractEntity}'s throwing on an unimplemented 'create' function.
@@ -56,14 +56,14 @@ class MockEntity extends AbstractEntity {
 	}
 }
 
-describe('AbstractEntity', () => {
+describe("AbstractEntity", () => {
 	const ID = 1;
 	const UUID = randomUUID();
 	const CREATED_AT = Date.now();
-	const DATA = 'Foobar';
+	const DATA = "Foobar";
 
-	describe('Happy flow', () => {
-		it('Can create and validate children with maximal values', () => {
+	describe("Happy flow", () => {
+		it("Can create and validate children with maximal values", () => {
 			const entity = MockEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, data: DATA });
 
 			expect(entity).toBeInstanceOf(MockEntity);
@@ -75,23 +75,23 @@ describe('AbstractEntity', () => {
 
 		// --------------------------------------------------
 
-		it('Can create and validate children with minimal values', () => {
+		it("Can create and validate children with minimal values", () => {
 			const entity = MockEntity.create({ data: DATA });
 
 			expect(entity).toBeInstanceOf(MockEntity);
 			expect(entity.id).toBeUndefined();
 			expect(entity.uuid).toBeTruthy();
-			expect(typeof entity.uuid).toBe('string');
+			expect(typeof entity.uuid).toBe("string");
 			expect(entity.createdAt).toBeTruthy();
-			expect(typeof entity.createdAt).toBe('number');
+			expect(typeof entity.createdAt).toBe("number");
 
 			expect(entity.data).toEqual(DATA);
 		});
 
 		// --------------------------------------------------
 
-		it('Allows children to update their values', () => {
-			const UPDATED_VALUE = 'Bazqux';
+		it("Allows children to update their values", () => {
+			const UPDATED_VALUE = "Bazqux";
 
 			const maximalEntity = MockEntity.create({ id: ID, uuid: UUID, createdAt: CREATED_AT, data: DATA });
 			maximalEntity.update({ data: UPDATED_VALUE });
@@ -111,30 +111,30 @@ describe('AbstractEntity', () => {
 
 	// --------------------------------------------------
 
-	describe('Errors', () => {
-		it('Throws for unexpected values', () => {
+	describe("Errors", () => {
+		it("Throws for unexpected values", () => {
 			try {
 				// @ts-expect-error: Create method / constructor don't accept unknown values
-				MockEntity.create({ malicious: DATA, injection: 'SELECT *' });
+				MockEntity.create({ malicious: DATA, injection: "SELECT *" });
 			} catch (err) {
-				expect(err.message).toContain('JSON schema validation failed');
-				expect(err.message).toContain('malicious');
-				expect(err.message).toContain('injection');
+				expect(err.message).toContain("JSON schema validation failed");
+				expect(err.message).toContain("malicious");
+				expect(err.message).toContain("injection");
 			}
 		});
 
 		// --------------------------------------------------
 
-		it('Throws when the parent/child schemas fail', () => {
+		it("Throws when the parent/child schemas fail", () => {
 			const captureAndValdiate = (data: unknown) => {
 				try {
 					MockEntity.create(data);
-					fail('Expected an error to be thrown');
+					fail("Expected an error to be thrown");
 				} catch (err) {
 					// Both the parent and the child's schemas fail on these values. Object.keys(data)[0] is used to verify the error message is accurate.
-					if (err.message.includes('Parent')) expect(err.message).toContain(`Parent's JSON schema validation failed`);
-					else if (err.message.includes('Child')) expect(err.message).toContain(`Child's JSON schema validation failed`);
-					else fail('Unexpected error message received');
+					if (err.message.includes("Parent")) expect(err.message).toContain(`Parent's JSON schema validation failed`);
+					else if (err.message.includes("Child")) expect(err.message).toContain(`Child's JSON schema validation failed`);
+					else fail("Unexpected error message received");
 				}
 			};
 
@@ -147,7 +147,7 @@ describe('AbstractEntity', () => {
 
 		// --------------------------------------------------
 
-		it('Throws when given null', () => {
+		it("Throws when given null", () => {
 			expect(() => MockEntity.create(null)).toThrow(Error);
 		});
 

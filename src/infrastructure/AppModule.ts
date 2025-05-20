@@ -1,13 +1,13 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { LoggerMiddleware } from '../http_api/middleware/LoggerMiddleware';
-import { LoggerModule } from './logging/LoggerModule';
-import { DatabaseModule } from './database/DatabaseModule';
-import { AuthModule } from '../http_api/modules/auth/AuthModule';
-import { ConfigModule } from '@nestjs/config';
-import { serverConfig } from './configuration/serverConfig';
-import { UserModule } from '../http_api/modules/user/UserModule';
-import { UtilityModule } from '../common/utility/UtilityModule';
-import { SessionModule } from '../http_api/modules/session/SessionModule';
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
+import { LoggerModule } from "./logging/LoggerModule";
+import { DatabaseModule } from "./database/DatabaseModule";
+import { AuthModule } from "../http_api/modules/auth/AuthModule";
+import { ConfigModule } from "@nestjs/config";
+import { serverConfig } from "./configuration/serverConfig";
+import { UserModule } from "../http_api/modules/user/UserModule";
+import { UtilityModule } from "../common/utility/UtilityModule";
+import { SessionModule } from "../http_api/modules/session/SessionModule";
 
 const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule];
 
@@ -34,6 +34,6 @@ export class AppModule implements NestModule {
 	 * @param consumer - The middleware consumer to apply middleware.
 	 */
 	public configure(consumer: MiddlewareConsumer) {
-		consumer.apply(LoggerMiddleware).forRoutes('*'); // LoggerMiddleware has to come first to ensure a correlationId is set
+		consumer.apply(LoggerMiddleware).forRoutes("*"); // LoggerMiddleware has to come first to ensure a correlationId is set
 	}
 }

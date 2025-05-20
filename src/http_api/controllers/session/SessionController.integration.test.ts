@@ -1,18 +1,18 @@
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { SessionController } from './SessionController';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { SessionResponseDto } from '../../dtos/session/SessionResponseDto';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { SessionModule } from '../../modules/session/SessionModule';
-import { MockSessionEntity } from '../../../__tests__/mocks/entity/MockSessionEntity';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { randomUUID } from 'crypto';
+import { Repository } from "typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { SessionController } from "./SessionController";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { SessionResponseDto } from "../../dtos/session/SessionResponseDto";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { SessionModule } from "../../modules/session/SessionModule";
+import { MockSessionEntity } from "../../../__tests__/mocks/entity/MockSessionEntity";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { randomUUID } from "crypto";
 
-describe('SessionController Integration', () => {
-	const TEST_NAME = 'SessionController_Integration';
+describe("SessionController Integration", () => {
+	const TEST_NAME = "SessionController_Integration";
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	let className: string;
@@ -55,14 +55,14 @@ describe('SessionController Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(controller).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('CREATE', () => {
-		it('Can create an entity', async () => {
+	describe("CREATE", () => {
+		it("Can create an entity", async () => {
 			const created = (await controller.login(user, mockResponse)) as SessionResponseDto;
 			expect(created.username).toEqual(user.username);
 
@@ -71,7 +71,7 @@ describe('SessionController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('should fail with empty input', async () => {
+		it("should fail with empty input", async () => {
 			// @ts-expect-error: Null isn't a valid parameter
 			await expect(controller.login(null)).rejects.toThrow(`${className}: Create payload is empty.`);
 		});
@@ -79,8 +79,8 @@ describe('SessionController Integration', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('UPDATE', () => {
-		it('Updates an entity', async () => {
+	describe("UPDATE", () => {
+		it("Updates an entity", async () => {
 			await controller.login(user, mockResponse);
 			const response = SessionResponseDto.create(user);
 
@@ -90,7 +90,7 @@ describe('SessionController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('Fails to update a non-existent entity', async () => {
+		it("Fails to update a non-existent entity", async () => {
 			const nonExistentId = randomUUID();
 
 			await expect(controller.update(nonExistentId, mockRequest, mockResponse)).rejects.toThrow(`User by uuid ${nonExistentId} not found`);
@@ -100,15 +100,15 @@ describe('SessionController Integration', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE', () => {
-		it('Deletes an entity', async () => {
+	describe("DELETE", () => {
+		it("Deletes an entity", async () => {
 			await expect(controller.logout(mockRequest, mockResponse)).resolves.toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `${className}: Logging a user out`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it('Handles a logout request when no JWT is provided', async () => {
+		it("Handles a logout request when no JWT is provided", async () => {
 			await expect(controller.logout({}, mockResponse)).resolves.toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `${className}: Logging a user out`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `${className}: Missing JWT`)).resolves.toBe(true);

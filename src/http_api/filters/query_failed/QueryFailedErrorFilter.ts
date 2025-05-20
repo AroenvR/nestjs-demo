@@ -1,8 +1,8 @@
-import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { QueryFailedError } from 'typeorm';
-import { AbstractHttpFilter } from '../AbstractHttpFilter';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
+import { QueryFailedError } from "typeorm";
+import { AbstractHttpFilter } from "../AbstractHttpFilter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
 @Catch(QueryFailedError)
 export class QueryFailedErrorFilter extends AbstractHttpFilter {
@@ -14,7 +14,7 @@ export class QueryFailedErrorFilter extends AbstractHttpFilter {
 	}
 
 	catch(exception: QueryFailedError, host: ArgumentsHost): void {
-		if (exception.message.includes('UNIQUE constraint failed')) {
+		if (exception.message.includes("UNIQUE constraint failed")) {
 			this.status = HttpStatus.CONFLICT;
 			this.message = HttpExceptionMessages.CONFLICT;
 		}

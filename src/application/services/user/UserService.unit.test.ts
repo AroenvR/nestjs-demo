@@ -1,20 +1,20 @@
-import { EntityManager } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './UserService';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
-import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
-import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
-import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
-import { AbstractService } from '../AbstractService';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { EntityManager } from "typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserService } from "./UserService";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
+import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
+import { MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
+import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
+import { AbstractService } from "../AbstractService";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe('UserService Unit', () => {
+describe("UserService Unit", () => {
 	let mockedResponse: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 
@@ -44,13 +44,13 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(service).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('Can create an entity', async () => {
+	it("Can create an entity", async () => {
 		const createDto = MockCreateUserDto.get();
 
 		const created = await service.create(createDto);
@@ -64,11 +64,11 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Finds all entities', async () => {
+	it("Finds all entities", async () => {
 		const entities = await service.findAll();
 
 		const found = entities.find((data) => data.id === mockedResponse.id);
-		if (!found) fail('Expected entity was not found.');
+		if (!found) fail("Expected entity was not found.");
 
 		expect(found).toBeInstanceOf(UserResponseDto);
 
@@ -84,7 +84,7 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Finds an entity by id', async () => {
+	it("Finds an entity by id", async () => {
 		const data = await service.findOne(mockedResponse.id);
 
 		expect(data).toEqual(mockedResponse);
@@ -102,7 +102,7 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when unable to find an entity by id', async () => {
+	it("Throws when unable to find an entity by id", async () => {
 		const id = 69;
 
 		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
@@ -111,7 +111,7 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can update an entity', async () => {
+	it("Can update an entity", async () => {
 		const dto = MockUpdateUserDto.get();
 
 		const updated = await service.update(mockedResponse.id, dto);
@@ -129,7 +129,7 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can delete an entity', async () => {
+	it("Can delete an entity", async () => {
 		await expect(service.remove(mockedResponse.id)).resolves.not.toThrow();
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${mockedResponse.id}`);
@@ -137,20 +137,20 @@ describe('UserService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can observe events', async () => {
+	it("Can observe events", async () => {
 		const observable = await service.observe();
 
 		expect(observable).toBeDefined();
-		expect(observable).toHaveProperty('subscribe');
+		expect(observable).toHaveProperty("subscribe");
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Observing events`);
 	});
 
 	// --------------------------------------------------
 
-	it('Can emit an event', async () => {
-		const events = service['events'];
-		const spy = jest.spyOn(events, 'next');
+	it("Can emit an event", async () => {
+		const events = service["events"];
+		const spy = jest.spyOn(events, "next");
 
 		await service.emit(mockedResponse);
 

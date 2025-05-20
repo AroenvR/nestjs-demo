@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { ConfigModule } from '@nestjs/config'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { IServerConfig } from './IServerConfig';
-import { serverJsonSchema } from './serverJsonSchema';
-import { DatabaseDrivers } from '../database/TDatabaseConfig';
+import path from "path";
+import fs from "fs-extra";
+import { ConfigModule } from "@nestjs/config"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { IServerConfig } from "./IServerConfig";
+import { serverJsonSchema } from "./serverJsonSchema";
+import { DatabaseDrivers } from "../database/TDatabaseConfig";
 
 /**
  * The application's default / fallback configuration settings.
@@ -16,18 +16,18 @@ const defaultConfig: IServerConfig = {
 			expiry: 3600000,
 		},
 		cors: {
-			origin: ['http://localhost:3000'],
-			allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent', 'X-Correlation-ID'],
-			methods: ['GET'],
+			origin: ["http://localhost:3000"],
+			allowedHeaders: ["Content-Type", "Authorization", "User-Agent", "X-Correlation-ID"],
+			methods: ["GET"],
 			credentials: true,
 			maxAge: 3600, // Cache preflight response for 3600 seconds
 		},
 	},
 	logging: {
-		appName: 'NestJS_API',
-		driver: 'winston',
+		appName: "NestJS_API",
+		driver: "winston",
 		enableCorrelation: true,
-		level: 'info',
+		level: "info",
 		console: true,
 		file: {
 			enabled: false,
@@ -41,7 +41,7 @@ const defaultConfig: IServerConfig = {
 	},
 	database: {
 		driver: DatabaseDrivers.BETTER_SQLITE3,
-		database: ':memory:',
+		database: ":memory:",
 		synchronize: false,
 	},
 };
@@ -62,7 +62,7 @@ export const serverConfig = (): IServerConfig => {
 	// Logging configuration
 	try {
 		const loggerConfigPath = path.resolve(process.env.LOGSCRIBE_CONFIG);
-		const loggerConfig = fs.readFileSync(loggerConfigPath, 'utf8');
+		const loggerConfig = fs.readFileSync(loggerConfigPath, "utf8");
 		const logging = JSON.parse(loggerConfig);
 		config.logging = logging;
 	} catch (error: Error | unknown) {
@@ -72,7 +72,7 @@ export const serverConfig = (): IServerConfig => {
 	// Database configuration
 	try {
 		const databaseConfigPath = path.resolve(process.env.DATABASE_CONFIG);
-		const databaseConfig = fs.readFileSync(databaseConfigPath, 'utf8');
+		const databaseConfig = fs.readFileSync(databaseConfigPath, "utf8");
 		const database = JSON.parse(databaseConfig);
 		config.database = database;
 	} catch (error: Error | unknown) {
@@ -82,7 +82,7 @@ export const serverConfig = (): IServerConfig => {
 	// Security configuration
 	try {
 		const securityConfigPath = path.resolve(process.env.SECURITY_CONFIG);
-		const securityConfig = fs.readFileSync(securityConfigPath, 'utf8');
+		const securityConfig = fs.readFileSync(securityConfigPath, "utf8");
 		const security = JSON.parse(securityConfig);
 		config.security = security;
 	} catch (error: Error | unknown) {

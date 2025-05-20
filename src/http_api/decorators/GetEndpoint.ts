@@ -1,6 +1,6 @@
-import { applyDecorators, Get, HttpCode, HttpStatus, Type } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { DefaultErrorDecorators } from './DefaultErrorDecorators';
+import { applyDecorators, Get, HttpCode, HttpStatus, Type } from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { DefaultErrorDecorators } from "./DefaultErrorDecorators";
 
 /**
  * Decorator for GET endpoints that returns a 200 status code
@@ -12,7 +12,7 @@ export function GetEndpoint(entityName: string, entityType: Type<unknown>) {
 		Get(),
 		HttpCode(HttpStatus.OK),
 		ApiOperation({ summary: `Find all ${entityName}s` }),
-		ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: entityType, isArray: true }),
+		ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: entityType, isArray: true }),
 		DefaultErrorDecorators(),
 	);
 }

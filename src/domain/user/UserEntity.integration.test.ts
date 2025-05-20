@@ -1,12 +1,12 @@
-import { Repository } from 'typeorm';
-import { UserEntity } from './UserEntity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockUserEntity } from '../../__tests__/mocks/entity/MockUserEntity';
-import { copyEntity } from '../../__tests__/mocks/entity/copyEntity';
-import { createMockAppModule } from '../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../http_api/modules/user/UserModule';
+import { Repository } from "typeorm";
+import { UserEntity } from "./UserEntity";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { MockUserEntity } from "../../__tests__/mocks/entity/MockUserEntity";
+import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
+import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
+import { UserModule } from "../../http_api/modules/user/UserModule";
 
-describe('UserEntity Integration', () => {
+describe("UserEntity Integration", () => {
 	let entity: UserEntity;
 	let repository: Repository<UserEntity>;
 
@@ -25,8 +25,8 @@ describe('UserEntity Integration', () => {
 
 	// --------------------------------------------------
 
-	describe('Happy flow', () => {
-		it('Can be inserted into the database', async () => {
+	describe("Happy flow", () => {
+		it("Can be inserted into the database", async () => {
 			const saved = await repository.save(entity);
 
 			expect(saved.id).toEqual(entity.id);
@@ -39,7 +39,7 @@ describe('UserEntity Integration', () => {
 
 		// --------------------------------------------------
 
-		it('Can be found in the database', async () => {
+		it("Can be found in the database", async () => {
 			const found = await repository.save(entity).then(() => {
 				return repository.findOne({ where: { id: entity.id } });
 			});
@@ -55,19 +55,19 @@ describe('UserEntity Integration', () => {
 
 	// --------------------------------------------------
 
-	describe('Unhappy flow', () => {
-		it('Username cannot be null', async () => {
+	describe("Unhappy flow", () => {
+		it("Username cannot be null", async () => {
 			entity.username = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});
 
 		// --------------------------------------------------
 
-		it('Username must be unique', async () => {
+		it("Username must be unique", async () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 
-			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: user_entity.username');
+			await expect(repository.save(copy)).rejects.toThrow("UNIQUE constraint failed: user_entity.username");
 		});
 	});
 });

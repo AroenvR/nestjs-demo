@@ -5,7 +5,7 @@
  * 2. Add the driver to the {@link LoggerFactory.createInstance} method.
  * 3. Create a new {@link AbstractAdapter} for the driver.
  */
-type TLogDrivers = 'winston';
+type TLogDrivers = "winston";
 
 /**
  * The configuration settings for the file logger.
@@ -21,7 +21,7 @@ type TLoggerFileConfig =
 	| {
 			enabled: true;
 			path?: string;
-			style?: 'json' | 'text';
+			style?: "json" | "text";
 			name?: string;
 	  };
 
@@ -48,7 +48,7 @@ type TLoggerHTTPConfig =
  * The logging levels supported by the application.
  * These levels are used to determine the verbosity of the logs.
  */
-export type TLogLevels = 'verbose' | 'debug' | 'info' | 'log' | 'warn' | 'error' | 'critical';
+export type TLogLevels = "verbose" | "debug" | "info" | "log" | "warn" | "error" | "critical";
 
 /**
  * The configuration settings for the logger.
@@ -82,11 +82,11 @@ export interface ILoggerConfig {
  */
 export type TLoggerLoadOptions =
 	| {
-			loader: 'file';
+			loader: "file";
 			path: string;
 	  }
 	| {
-			loader: 'object';
+			loader: "object";
 			config: ILoggerConfig;
 	  };
 export {};

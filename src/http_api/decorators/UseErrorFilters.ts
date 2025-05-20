@@ -1,10 +1,10 @@
-import { applyDecorators, UseFilters } from '@nestjs/common';
-import { BadRequestExceptionFilter } from '../filters/bad_request/BadRequestExceptionFilter';
-import { HttpExceptionFilter } from '../filters/http_exception/HttpExceptionFilter';
-import { NotFoundExceptionFilter } from '../filters/not_found/NotFoundExceptionFilter';
-import { NotImplementedExceptionFilter } from '../filters/not_implemented/NotImplementedExceptionFilter';
-import { QueryFailedErrorFilter } from '../filters/query_failed/QueryFailedErrorFilter';
-import { UnauthorizedExceptionFilter } from '../filters/unauthorized/UnauthorizedExceptionFilter';
+import { applyDecorators, UseFilters } from "@nestjs/common";
+import { BadRequestExceptionFilter } from "../filters/bad_request/BadRequestExceptionFilter";
+import { HttpExceptionFilter } from "../filters/http_exception/HttpExceptionFilter";
+import { NotFoundExceptionFilter } from "../filters/not_found/NotFoundExceptionFilter";
+import { NotImplementedExceptionFilter } from "../filters/not_implemented/NotImplementedExceptionFilter";
+import { QueryFailedErrorFilter } from "../filters/query_failed/QueryFailedErrorFilter";
+import { UnauthorizedExceptionFilter } from "../filters/unauthorized/UnauthorizedExceptionFilter";
 
 /**
  * Decorator for applying error filters to a controller or method.

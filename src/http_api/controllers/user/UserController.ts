@@ -1,19 +1,19 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { DeleteEndpoint } from '../../decorators/DeleteEndpoint';
-import { PatchEndpoint } from '../../decorators/PatchEndpoint';
-import { GetByIdEndpoint } from '../../decorators/GetByIdEndpoint';
-import { SseEndpoint } from '../../decorators/SseEndpoint';
-import { GetEndpoint } from '../../decorators/GetEndpoint';
-import { PostEndpoint } from '../../decorators/PostEndpoint';
-import { CreateUserDto } from '../../dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
-import { UserResponseDto } from '../../dtos/user/UserResponseDto';
-import { UserService } from '../../../application/services/user/UserService';
-import { GuardedController } from '../GuardedController';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { Controller } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { DeleteEndpoint } from "../../decorators/DeleteEndpoint";
+import { PatchEndpoint } from "../../decorators/PatchEndpoint";
+import { GetByIdEndpoint } from "../../decorators/GetByIdEndpoint";
+import { SseEndpoint } from "../../decorators/SseEndpoint";
+import { GetEndpoint } from "../../decorators/GetEndpoint";
+import { PostEndpoint } from "../../decorators/PostEndpoint";
+import { CreateUserDto } from "../../dtos/user/CreateUserDto";
+import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
+import { UserResponseDto } from "../../dtos/user/UserResponseDto";
+import { UserService } from "../../../application/services/user/UserService";
+import { GuardedController } from "../GuardedController";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
-const ENDPOINT = 'user'; // Just finished the unit test, on to the integration and the module tests.
+const ENDPOINT = "user"; // Just finished the unit test, on to the integration and the module tests.
 
 // NOTE: Endpoint ordering is important for NestJS to correctly resolve the routes
 @Controller(ENDPOINT)

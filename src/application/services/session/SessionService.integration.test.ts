@@ -1,19 +1,19 @@
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateSessionDto } from '../../../http_api/dtos/session/CreateSessionDto';
-import { SessionResponseDto } from '../../../http_api/dtos/session/SessionResponseDto';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { SessionService } from './SessionService';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { SessionModule } from '../../../http_api/modules/session/SessionModule';
-import { MockCreateSessionDto } from '../../../__tests__/mocks/dto/MockSessionDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { randomUUID } from 'crypto';
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CreateSessionDto } from "../../../http_api/dtos/session/CreateSessionDto";
+import { SessionResponseDto } from "../../../http_api/dtos/session/SessionResponseDto";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { SessionService } from "./SessionService";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { SessionModule } from "../../../http_api/modules/session/SessionModule";
+import { MockCreateSessionDto } from "../../../__tests__/mocks/dto/MockSessionDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { randomUUID } from "crypto";
 
-describe('SessionService Integration', () => {
-	const testName = 'SessionService_Integration';
+describe("SessionService Integration", () => {
+	const testName = "SessionService_Integration";
 	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
 
 	let userRepo: Repository<UserEntity>;
@@ -44,13 +44,13 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(service).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('Can create an entity', async () => {
+	it("Can create an entity", async () => {
 		const response = await service.create(createDto);
 
 		expect(response).toBeInstanceOf(SessionResponseDto);
@@ -67,7 +67,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Can verify if a session exists for a user', async () => {
+	it("Can verify if a session exists for a user", async () => {
 		await service.create(createDto);
 
 		const exists = await service.exists(user.uuid);
@@ -78,7 +78,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Refreshes a session when it already exists', async () => {
+	it("Refreshes a session when it already exists", async () => {
 		await service.create(createDto);
 
 		const originalSession = await repository.findOne({ where: { userUuid: user.uuid } });
@@ -97,7 +97,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when unable to find a user by uuid', async () => {
+	it("Throws when unable to find a user by uuid", async () => {
 		const uuid = randomUUID();
 
 		await expect(service.exists(uuid)).rejects.toThrow(`User by uuid ${uuid} not found`);
@@ -106,7 +106,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when user exists but session does not', async () => {
+	it("Throws when user exists but session does not", async () => {
 		const uuid = randomUUID();
 
 		// Create a real user but intentionally don't create a session
@@ -121,7 +121,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Updates an entity', async () => {
+	it("Updates an entity", async () => {
 		await service.create(createDto);
 		const session = await repository.findOne({ where: { userUuid: user.uuid } });
 
@@ -139,7 +139,7 @@ describe('SessionService Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Deletes an entity', async () => {
+	it("Deletes an entity", async () => {
 		const user = await service.create(createDto);
 
 		await expect(service.remove(user.uuid)).resolves.toBeUndefined();

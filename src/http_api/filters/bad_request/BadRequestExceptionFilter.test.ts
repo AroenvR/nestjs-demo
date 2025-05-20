@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { BadRequestException, Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestExceptionFilter } from './BadRequestExceptionFilter';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
+import request from "supertest";
+import { BadRequestException, Controller, Get, HttpStatus, INestApplication, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { BadRequestExceptionFilter } from "./BadRequestExceptionFilter";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
-const error = new BadRequestException('Bad request exception test');
+const error = new BadRequestException("Bad request exception test");
 
-@Controller('test')
+@Controller("test")
 @UseFilters(BadRequestExceptionFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('BadRequestExceptionFilter', () => {
+describe("BadRequestExceptionFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('BadRequestExceptionFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.BAD_REQUEST)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.BAD_REQUEST,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.BAD_REQUEST,
 				});
 			});

@@ -1,26 +1,26 @@
-import path from 'path';
-import fs from 'fs-extra';
-import { WinstonAdapter } from './WinstonAdapter';
-import { ILoggerConfig } from '../ILoggerConfig';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { CorrelationManager } from '../correlation/CorrelationManager';
-import { randomUUID } from 'crypto';
+import path from "path";
+import fs from "fs-extra";
+import { WinstonAdapter } from "./WinstonAdapter";
+import { ILoggerConfig } from "../ILoggerConfig";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { CorrelationManager } from "../correlation/CorrelationManager";
+import { randomUUID } from "crypto";
 
-const TEST_LOG_DIR = path.join(__dirname, '../', '../', '../', '../', 'logs');
-const TEST_NAME = 'WinstonAdapter_integration';
+const TEST_LOG_DIR = path.join(__dirname, "../", "../", "../", "../", "logs");
+const TEST_NAME = "WinstonAdapter_integration";
 const TEST_LOG_FILENAME_TEXT = `${TEST_NAME}_text`;
 const TEST_LOG_FILENAME_JSON = `${TEST_NAME}_json`;
 
 const CONFIG_TEXT: ILoggerConfig = {
-	appName: 'FileTest',
-	driver: 'winston',
+	appName: "FileTest",
+	driver: "winston",
 	enableCorrelation: true,
-	level: 'verbose',
+	level: "verbose",
 	console: false,
 	file: {
 		enabled: true,
 		path: TEST_LOG_DIR,
-		style: 'text',
+		style: "text",
 		name: `${TEST_LOG_FILENAME_TEXT}.test.log`,
 	},
 	http: {
@@ -36,7 +36,7 @@ const CONFIG_JSON: ILoggerConfig = {
 	file: {
 		enabled: true,
 		path: TEST_LOG_DIR,
-		style: 'json',
+		style: "json",
 		name: `${TEST_LOG_FILENAME_JSON}.test.log`,
 	},
 };
@@ -55,11 +55,11 @@ describe(TEST_NAME, () => {
 
 	// ------------------------------
 
-	it('should log messages in plain text format', async () => {
+	it("should log messages in plain text format", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_TEXT, correlationManager);
-		const message = 'Plain text log message';
-		const context = 'IntegrationTestText';
+		const message = "Plain text log message";
+		const context = "IntegrationTestText";
 
 		const logger = adapter.getPrefixedLogger(context);
 		logger.log(message);
@@ -70,12 +70,12 @@ describe(TEST_NAME, () => {
 
 	// ------------------------------
 
-	it('should log messages in plain text format', async () => {
+	it("should log messages in plain text format", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_TEXT, correlationManager);
-		const message = 'Plain text log message';
-		const context = 'IntegrationTestText';
-		adapter.verbose(context, message, { YOLONG: 'YOLONG' });
+		const message = "Plain text log message";
+		const context = "IntegrationTestText";
+		adapter.verbose(context, message, { YOLONG: "YOLONG" });
 		adapter.debug(context, message);
 		adapter.info(context, message);
 		adapter.log(context, message);
@@ -98,8 +98,8 @@ describe(TEST_NAME, () => {
 	it("logs with correlation Id's", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_TEXT, correlationManager);
-		const message = 'Plain text log message';
-		const context = 'IntegrationTestText';
+		const message = "Plain text log message";
+		const context = "IntegrationTestText";
 		const correlationId = randomUUID();
 
 		const logger = adapter.getPrefixedLogger(context);
@@ -114,11 +114,11 @@ describe(TEST_NAME, () => {
 
 	// ------------------------------
 
-	it('should log errors with their stack traces in plain text format', async () => {
+	it("should log errors with their stack traces in plain text format", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_TEXT, correlationManager);
-		const message = 'An error occurred somewhere.';
-		const context = 'IntegrationTestText';
+		const message = "An error occurred somewhere.";
+		const context = "IntegrationTestText";
 		const error = new Error(`Plain text error message`);
 
 		adapter.error(context, message, error);
@@ -128,11 +128,11 @@ describe(TEST_NAME, () => {
 
 	// ------------------------------
 
-	it('should log messages in JSON format', async () => {
+	it("should log messages in JSON format", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_JSON, correlationManager);
-		const message = 'JSON log message';
-		const context = 'IntegrationTestJson';
+		const message = "JSON log message";
+		const context = "IntegrationTestJson";
 
 		adapter.verbose(context, message);
 		adapter.debug(context, message);
@@ -142,9 +142,9 @@ describe(TEST_NAME, () => {
 		adapter.critical(context, message);
 
 		const obj = {
-			'@l': 'VERBOSE',
-			'@c': context,
-			'@m': message,
+			"@l": "VERBOSE",
+			"@c": context,
+			"@m": message,
 		};
 
 		await new Promise((resolve) => setTimeout(resolve, 10));
@@ -157,11 +157,11 @@ describe(TEST_NAME, () => {
 
 	// ------------------------------
 
-	it('should log errors with their stack traces in JSON format', async () => {
+	it("should log errors with their stack traces in JSON format", async () => {
 		const correlationManager = new CorrelationManager();
 		const adapter = new WinstonAdapter(CONFIG_JSON, correlationManager);
-		const message = 'An error occurred somewhere.';
-		const context = 'IntegrationTestText';
+		const message = "An error occurred somewhere.";
+		const context = "IntegrationTestText";
 
 		const error = new Error(message);
 
@@ -169,9 +169,9 @@ describe(TEST_NAME, () => {
 		await new Promise((resolve) => setTimeout(resolve, 10));
 
 		const obj = {
-			'@l': 'ERROR',
-			'@c': context,
-			'@m': message,
+			"@l": "ERROR",
+			"@c": context,
+			"@m": message,
 			// '@x': `\\n${error.name}: ${message}`, // I don't know why I can't get this tested.. But the stack is here.
 		};
 		for (const [key, value] of Object.entries(obj)) {

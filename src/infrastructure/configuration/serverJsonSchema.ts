@@ -1,7 +1,7 @@
-import Joi from 'joi';
-import { securitySchema } from './schemas/securitySchema';
-import { databaseSchema } from './schemas/databaseSchema';
-import { loggingSchema } from './schemas/loggingSchema';
+import Joi from "joi";
+import { securitySchema } from "./schemas/securitySchema";
+import { databaseSchema } from "./schemas/databaseSchema";
+import { loggingSchema } from "./schemas/loggingSchema";
 
 /**
  * JSON schema for the NestJS server.

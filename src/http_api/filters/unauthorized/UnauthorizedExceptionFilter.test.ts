@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { UnauthorizedExceptionFilter } from './UnauthorizedExceptionFilter';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import request from "supertest";
+import { Controller, Get, HttpStatus, INestApplication, UnauthorizedException, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { UnauthorizedExceptionFilter } from "./UnauthorizedExceptionFilter";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
-const error = new UnauthorizedException('Unauthorized exception test');
+const error = new UnauthorizedException("Unauthorized exception test");
 
-@Controller('test')
+@Controller("test")
 @UseFilters(UnauthorizedExceptionFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('UnauthorizedExceptionFilter', () => {
+describe("UnauthorizedExceptionFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('UnauthorizedExceptionFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.UNAUTHORIZED)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.UNAUTHORIZED,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.UNAUTHORIZED,
 				});
 			});

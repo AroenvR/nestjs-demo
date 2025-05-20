@@ -1,12 +1,12 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './infrastructure/AppModule';
-import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpErrorFilter } from './http_api/filters/http_error/HttpErrorFilter';
-import { WinstonAdapter } from './infrastructure/logging/adapters/WinstonAdapter';
-import { serverConfig } from './infrastructure/configuration/serverConfig';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./infrastructure/AppModule";
+import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from "@nestjs/common";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { HttpErrorFilter } from "./http_api/filters/http_error/HttpErrorFilter";
+import { WinstonAdapter } from "./infrastructure/logging/adapters/WinstonAdapter";
+import { serverConfig } from "./infrastructure/configuration/serverConfig";
 
 async function bootstrap() {
 	// TODO's:
@@ -47,7 +47,7 @@ async function bootstrap() {
 		new ValidationPipe({
 			whitelist: true, // Strips away any properties that do not have a corresponding DTO property
 			exceptionFactory: (errors: ValidationError[]) => {
-				return new BadRequestException(`DTO validation failed: ${errors.map((error) => error.toString()).join(', ')}`);
+				return new BadRequestException(`DTO validation failed: ${errors.map((error) => error.toString()).join(", ")}`);
 			},
 		}),
 	);
@@ -57,14 +57,14 @@ async function bootstrap() {
 	// Enable API versioning
 	app.enableVersioning({
 		type: VersioningType.URI, // Use URI versioning type
-		defaultVersion: '1', // Set the default version to '1'
+		defaultVersion: "1", // Set the default version to '1'
 		// Use the @Version decorator to specify the version of the controller or endpoint.
 	});
 
 	const swaggerConfig = new DocumentBuilder() // By default located at http://localhost:3000/api
-		.setTitle('NestJS Template API')
-		.setDescription('The NestJS template API Swagger documentation')
-		.setVersion('1.0')
+		.setTitle("NestJS Template API")
+		.setDescription("The NestJS template API Swagger documentation")
+		.setVersion("1.0")
 		// .addBearerAuth() // TODO
 		// .addCookieAuth('jwt', {
 		//     type: 'http',
@@ -73,10 +73,10 @@ async function bootstrap() {
 		// })
 		.build();
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
-	SwaggerModule.setup('api', app, document, {
+	SwaggerModule.setup("api", app, document, {
 		swaggerOptions: {
 			requestInterceptor: (req: any) => {
-				req.credentials = 'include';
+				req.credentials = "include";
 				return req;
 			},
 		},

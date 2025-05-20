@@ -1,19 +1,19 @@
-import { EntityManager } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
-import { SessionService } from './SessionService';
-import { SessionEntity } from '../../../domain/session/SessionEntity';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { MockEntityManager } from '../../../__tests__/mocks/entity_manager/MockEntityManager';
-import { MockRepository } from '../../../__tests__/mocks/repository/MockRepository';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { MockCreateSessionDto } from '../../../__tests__/mocks/dto/MockSessionDto';
-import { MockSessionEntity } from '../../../__tests__/mocks/entity/MockSessionEntity';
-import { SessionResponseDto } from '../../../http_api/dtos/session/SessionResponseDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
+import { EntityManager } from "typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Test, TestingModule } from "@nestjs/testing";
+import { SessionService } from "./SessionService";
+import { SessionEntity } from "../../../domain/session/SessionEntity";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
+import { MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { MockCreateSessionDto } from "../../../__tests__/mocks/dto/MockSessionDto";
+import { MockSessionEntity } from "../../../__tests__/mocks/entity/MockSessionEntity";
+import { SessionResponseDto } from "../../../http_api/dtos/session/SessionResponseDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe('SessionService Unit', () => {
+describe("SessionService Unit", () => {
 	let mockedSession: SessionEntity;
 	let mockedUser: UserEntity;
 	let service: SessionService;
@@ -49,13 +49,13 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(service).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('Can create an entity', async () => {
+	it("Can create an entity", async () => {
 		const createDto = MockCreateSessionDto.get();
 
 		const created = await service.create(createDto);
@@ -68,7 +68,7 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can verify if a session exists for a user', async () => {
+	it("Can verify if a session exists for a user", async () => {
 		const exists = await service.exists(mockedUser.uuid);
 		expect(exists).toBe(true);
 
@@ -77,12 +77,12 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Refreshes a session when it already exists', async () => {
+	it("Refreshes a session when it already exists", async () => {
 		const createDto = MockCreateSessionDto.get();
 		await service.create(createDto);
 
-		const userRepo = service['userRepo'];
-		const sessionRepo = service['repository'];
+		const userRepo = service["userRepo"];
+		const sessionRepo = service["repository"];
 		(userRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(mockedUser));
 		(sessionRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(mockedSession));
 
@@ -94,8 +94,8 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when unable to find a user by uuid', async () => {
-		const uuid = '167ad25f-0f91-4ac0-a9ed-99cef801ba9e';
+	it("Throws when unable to find a user by uuid", async () => {
+		const uuid = "167ad25f-0f91-4ac0-a9ed-99cef801ba9e";
 
 		await expect(service.exists(uuid)).rejects.toThrow(`User by uuid ${uuid} not found`);
 		expect(mockILogger.info).toHaveBeenCalledWith(`Checking for an existing session for user uuid ${uuid}`);
@@ -103,9 +103,9 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Throws when user exists but session does not', async () => {
-		const userRepo = service['userRepo'];
-		const sessionRepo = service['repository'];
+	it("Throws when user exists but session does not", async () => {
+		const userRepo = service["userRepo"];
+		const sessionRepo = service["repository"];
 		(userRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(mockedUser));
 		(sessionRepo.findOne as jest.Mock).mockImplementationOnce(() => Promise.resolve(null));
 
@@ -116,17 +116,17 @@ describe('SessionService Unit', () => {
 	// --------------------------------------------------
 
 	it("Can update a session's token", async () => {
-		const refreshTokenSpy = jest.spyOn(SessionEntity.prototype, 'refreshToken');
+		const refreshTokenSpy = jest.spyOn(SessionEntity.prototype, "refreshToken");
 
 		let savedEntity: SessionEntity;
-		const entityManagerMock = service['entityManager'];
+		const entityManagerMock = service["entityManager"];
 		(entityManagerMock.save as jest.Mock).mockImplementationOnce((entity) => {
 			savedEntity = entity;
 			return Promise.resolve(entity);
 		});
 
-		const mockToken = 'mocked token';
-		jest.spyOn(SessionService.prototype, 'fetchToken' as any).mockResolvedValue(mockToken);
+		const mockToken = "mocked token";
+		jest.spyOn(SessionService.prototype, "fetchToken" as any).mockResolvedValue(mockToken);
 
 		const updated = await service.update(mockedUser.uuid);
 
@@ -147,7 +147,7 @@ describe('SessionService Unit', () => {
 
 	// --------------------------------------------------
 
-	it('Can delete an entity', async () => {
+	it("Can delete an entity", async () => {
 		await expect(service.remove(mockedUser.uuid)).resolves.not.toThrow();
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity for user uuid ${mockedUser.uuid}`);

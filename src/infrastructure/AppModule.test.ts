@@ -1,27 +1,27 @@
-import request from 'supertest';
-import { Controller, Get, HttpStatus } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from './AppModule';
-import { LoggerMiddleware } from '../http_api/middleware/LoggerMiddleware';
-import { HttpErrorFilter } from '../http_api/filters/http_error/HttpErrorFilter';
-import { HttpExceptionMessages } from '../common/enums/HttpExceptionMessages';
-import { WinstonAdapter } from './logging/adapters/WinstonAdapter';
-import { mockILogger } from '../__tests__/mocks/mockLogAdapter';
+import request from "supertest";
+import { Controller, Get, HttpStatus } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppModule } from "./AppModule";
+import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
+import { HttpErrorFilter } from "../http_api/filters/http_error/HttpErrorFilter";
+import { HttpExceptionMessages } from "../common/enums/HttpExceptionMessages";
+import { WinstonAdapter } from "./logging/adapters/WinstonAdapter";
+import { mockILogger } from "../__tests__/mocks/mockLogAdapter";
 
-@Controller('mock')
+@Controller("mock")
 export class MockController {
 	@Get()
 	hello() {
-		return 'Hello, World!';
+		return "Hello, World!";
 	}
 
-	@Get('/error')
+	@Get("/error")
 	error() {
-		throw new Error('Error Filter test');
+		throw new Error("Error Filter test");
 	}
 }
 
-describe('AppModule', () => {
+describe("AppModule", () => {
 	let appModule: AppModule;
 
 	beforeEach(async () => {
@@ -34,13 +34,13 @@ describe('AppModule', () => {
 
 	// --------------------------------------------------
 
-	it('should be defined', () => {
+	it("should be defined", () => {
 		expect(appModule).toBeDefined();
 	});
 
 	// --------------------------------------------------
 
-	it('should apply LoggerMiddleware globally', () => {
+	it("should apply LoggerMiddleware globally", () => {
 		const consumerMock = {
 			apply: jest.fn().mockReturnThis(),
 			forRoutes: jest.fn(),
@@ -49,12 +49,12 @@ describe('AppModule', () => {
 		appModule.configure(consumerMock as any);
 
 		expect(consumerMock.apply).toHaveBeenCalledWith(LoggerMiddleware);
-		expect(consumerMock.forRoutes).toHaveBeenCalledWith('*');
+		expect(consumerMock.forRoutes).toHaveBeenCalledWith("*");
 	});
 
 	// --------------------------------------------------
 
-	it('Can execute a GET request', async () => {
+	it("Can execute a GET request", async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [MockController],
 			imports: [AppModule],
@@ -63,12 +63,12 @@ describe('AppModule', () => {
 		const app = moduleFixture.createNestApplication();
 		await app.init();
 
-		await request(app.getHttpServer()).get('/mock').expect(200);
+		await request(app.getHttpServer()).get("/mock").expect(200);
 	});
 
 	// --------------------------------------------------
 
-	it('Protects against any uncaught errors with a global filter', async () => {
+	it("Protects against any uncaught errors with a global filter", async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			controllers: [MockController],
 			providers: [
@@ -87,13 +87,13 @@ describe('AppModule', () => {
 		await app.init();
 
 		await request(app.getHttpServer())
-			.get('/mock/error')
+			.get("/mock/error")
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
-					path: '/mock/error',
+					path: "/mock/error",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});

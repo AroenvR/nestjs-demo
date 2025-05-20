@@ -1,4 +1,4 @@
-import { AbstractEntity } from '../../../domain/AbstractEntity';
+import { AbstractEntity } from "../../../domain/AbstractEntity";
 
 /**
  * Mocks a transaction manager with CRUD operations.

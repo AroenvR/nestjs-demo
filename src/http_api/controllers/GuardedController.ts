@@ -1,16 +1,16 @@
-import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { ApiSecurity } from '@nestjs/swagger';
-import { isTruthy } from 'ts-istruthy';
-import { PassportJwtAuthGuard } from '../guards/PassportJwtAuthGuard';
-import { AbstractService } from '../../application/services/AbstractService';
-import { CreateDto } from '../dtos/CreateDto';
-import { UpdateDto } from '../dtos/UpdateDto';
-import { ResponseDto } from '../dtos/ResponseDto';
-import { ISseMessage } from '../../application/events/ISseMessage';
-import { ILogger } from '../../infrastructure/logging/ILogger';
-import { WinstonAdapter } from '../../infrastructure/logging/adapters/WinstonAdapter';
-import { UseErrorFilters } from '../decorators/UseErrorFilters';
+import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseGuards } from "@nestjs/common";
+import { Observable } from "rxjs";
+import { ApiSecurity } from "@nestjs/swagger";
+import { isTruthy } from "ts-istruthy";
+import { PassportJwtAuthGuard } from "../guards/PassportJwtAuthGuard";
+import { AbstractService } from "../../application/services/AbstractService";
+import { CreateDto } from "../dtos/CreateDto";
+import { UpdateDto } from "../dtos/UpdateDto";
+import { ResponseDto } from "../dtos/ResponseDto";
+import { ISseMessage } from "../../application/events/ISseMessage";
+import { ILogger } from "../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { UseErrorFilters } from "../decorators/UseErrorFilters";
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -22,7 +22,7 @@ import { UseErrorFilters } from '../decorators/UseErrorFilters';
  */
 @UseErrorFilters()
 @UseGuards(PassportJwtAuthGuard)
-@ApiSecurity('jwt')
+@ApiSecurity("jwt")
 export class GuardedController {
 	protected logger: ILogger;
 
@@ -71,7 +71,7 @@ export class GuardedController {
 	 * @returns A {@link ResponseDto} payload.
 	 * @devnote Remember to decorate with the {@link GetByIdEndpoint} decorator.
 	 */
-	public async findOne(@Param('id', ParseIntPipe) id: number): Promise<ResponseDto> {
+	public async findOne(@Param("id", ParseIntPipe) id: number): Promise<ResponseDto> {
 		this.logger.info(`Finding entity by id ${id}`);
 		return this.service.findOne(id);
 	}
@@ -83,8 +83,8 @@ export class GuardedController {
 	 * @returns A {@link ResponseDto} payload.
 	 * @devnote Remember to decorate with the {@link PatchEndpoint} decorator.
 	 */
-	public async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<ResponseDto> {
-		if (!isTruthy(id)) throw new HttpException('ID is empty', HttpStatus.BAD_REQUEST);
+	public async update(@Param("id", ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<ResponseDto> {
+		if (!isTruthy(id)) throw new HttpException("ID is empty", HttpStatus.BAD_REQUEST);
 		if (!isTruthy(updateDto)) throw new BadRequestException(`${this.constructor.name}: Update payload is empty.`);
 
 		this.logger.info(`Updating entity by id ${id}`);
@@ -96,7 +96,7 @@ export class GuardedController {
 	 * @param id The id of the entity to remove.
 	 * @devnote Remember to decorate with the {@link DeleteEndpoint} decorator.
 	 */
-	public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+	public async remove(@Param("id", ParseIntPipe) id: number): Promise<void> {
 		this.logger.info(`Deleting entity by id ${id}`);
 		await this.service.remove(id);
 	}

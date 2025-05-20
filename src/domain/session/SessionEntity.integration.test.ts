@@ -1,13 +1,13 @@
-import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
-import { SessionEntity } from './SessionEntity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockSessionEntity } from '../../__tests__/mocks/entity/MockSessionEntity';
-import { copyEntity } from '../../__tests__/mocks/entity/copyEntity';
-import { createMockAppModule } from '../../__tests__/mocks/module/createMockAppModule';
-import { SessionModule } from '../../http_api/modules/session/SessionModule';
+import { randomUUID } from "crypto";
+import { Repository } from "typeorm";
+import { SessionEntity } from "./SessionEntity";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { MockSessionEntity } from "../../__tests__/mocks/entity/MockSessionEntity";
+import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
+import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
+import { SessionModule } from "../../http_api/modules/session/SessionModule";
 
-describe('SessionEntity Integration', () => {
+describe("SessionEntity Integration", () => {
 	let entity: SessionEntity;
 	let repository: Repository<SessionEntity>;
 
@@ -26,8 +26,8 @@ describe('SessionEntity Integration', () => {
 
 	// --------------------------------------------------
 
-	describe('Happy flow', () => {
-		it('Can be inserted into the database', async () => {
+	describe("Happy flow", () => {
+		it("Can be inserted into the database", async () => {
 			const saved = await repository.save(entity);
 
 			expect(saved.id).toEqual(entity.id);
@@ -41,7 +41,7 @@ describe('SessionEntity Integration', () => {
 
 		// --------------------------------------------------
 
-		it('Can be found in the database', async () => {
+		it("Can be found in the database", async () => {
 			const found = await repository.save(entity).then(() => {
 				return repository.findOne({ where: { id: entity.id } });
 			});
@@ -58,44 +58,44 @@ describe('SessionEntity Integration', () => {
 
 	// --------------------------------------------------
 
-	describe('Unhappy flow', () => {
-		it('User UUID cannot be null', async () => {
+	describe("Unhappy flow", () => {
+		it("User UUID cannot be null", async () => {
 			entity.userUuid = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});
 
 		// --------------------------------------------------
 
-		it('User UUID must be unique', async () => {
+		it("User UUID must be unique", async () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 			copy.uuid = randomUUID();
-			copy.token = 'foobar';
+			copy.token = "foobar";
 
-			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: session_entity.userUuid');
+			await expect(repository.save(copy)).rejects.toThrow("UNIQUE constraint failed: session_entity.userUuid");
 		});
 
 		// --------------------------------------------------
 
-		it('Token cannot be null', async () => {
+		it("Token cannot be null", async () => {
 			entity.token = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});
 
 		// --------------------------------------------------
 
-		it('Token must be unique', async () => {
+		it("Token must be unique", async () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 			copy.uuid = randomUUID();
 			copy.userUuid = randomUUID();
 
-			await expect(repository.save(copy)).rejects.toThrow('UNIQUE constraint failed: session_entity.token');
+			await expect(repository.save(copy)).rejects.toThrow("UNIQUE constraint failed: session_entity.token");
 		});
 
 		// --------------------------------------------------
 
-		it('Refreshes cannot be null', async () => {
+		it("Refreshes cannot be null", async () => {
 			entity.refreshes = null;
 			await expect(repository.save(entity)).rejects.toThrow();
 		});

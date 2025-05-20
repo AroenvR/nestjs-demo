@@ -1,5 +1,5 @@
-import { randomUUID, UUID } from 'crypto';
-import { Response } from 'express';
+import { randomUUID, UUID } from "crypto";
+import { Response } from "express";
 import {
 	BadRequestException,
 	Body,
@@ -16,24 +16,24 @@ import {
 	Res,
 	UnauthorizedException,
 	UseGuards,
-} from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
-import { isTruthy } from 'ts-istruthy';
-import { CreateSessionDto } from '../../dtos/session/CreateSessionDto';
-import { SessionResponseDto } from '../../dtos/session/SessionResponseDto';
-import { SessionService } from '../../../application/services/session/SessionService';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { DefaultErrorDecorators } from '../../../http_api/decorators/DefaultErrorDecorators';
-import { UseErrorFilters } from '../../../http_api/decorators/UseErrorFilters';
-import { ILogger } from '../../../infrastructure/logging/ILogger';
-import { OptionalJwtAuthGuard } from '../../../http_api/guards/OptionalJwtAuthGuard';
-import { TJwtCookie } from '../../../http_api/types/TJwtCookie';
-import { ICookieConfig, IServerConfig } from '../../../infrastructure/configuration/IServerConfig';
-import { JwtService } from '@nestjs/jwt';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
+} from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
+import { isTruthy } from "ts-istruthy";
+import { CreateSessionDto } from "../../dtos/session/CreateSessionDto";
+import { SessionResponseDto } from "../../dtos/session/SessionResponseDto";
+import { SessionService } from "../../../application/services/session/SessionService";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { DefaultErrorDecorators } from "../../../http_api/decorators/DefaultErrorDecorators";
+import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
+import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { OptionalJwtAuthGuard } from "../../../http_api/guards/OptionalJwtAuthGuard";
+import { TJwtCookie } from "../../../http_api/types/TJwtCookie";
+import { ICookieConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import { JwtService } from "@nestjs/jwt";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
-const ENDPOINT = 'session';
+const ENDPOINT = "session";
 
 /**
  * A controller class that handles session-related operations.
@@ -61,7 +61,7 @@ export class SessionController {
 	 * @param response The HTTP response object.
 	 * @returns A {@link SessionResponseDto} along with an HTTP-Only JWT cookie.
 	 */
-	@Post('login')
+	@Post("login")
 	@HttpCode(HttpStatus.CREATED)
 	@ApiOperation({ summary: `Create a new session` })
 	@ApiResponse({ status: HttpStatus.CREATED, description: `The session was successfully created.`, type: SessionResponseDto })
@@ -70,14 +70,14 @@ export class SessionController {
 		this.logger.log(`Logging a user in.`);
 		if (!isTruthy(createDto)) throw new BadRequestException(`${this.constructor.name}: Create payload is empty.`);
 
-		const config = this.configService.get<IServerConfig['security']>('security').cookie;
+		const config = this.configService.get<IServerConfig["security"]>("security").cookie;
 
 		const dto = await this.sessionService.create(createDto);
 		const token = await this.createAndSignJwt(dto, config);
 
-		response.cookie('jwt', token, {
+		response.cookie("jwt", token, {
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: "strict",
 			secure: config.secure,
 			maxAge: config.expiry,
 		});
@@ -92,27 +92,27 @@ export class SessionController {
 	 * @param response The HTTP response object.
 	 * @returns A {@link SessionResponseDto} with the updated session information.
 	 */
-	@Patch('refresh/:uuid')
+	@Patch("refresh/:uuid")
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: `Update an existing session` })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Request handled successfully.', type: SessionResponseDto })
+	@ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: SessionResponseDto })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND })
 	@DefaultErrorDecorators()
-	public async update(@Param('uuid', ParseUUIDPipe) uuid: UUID, @Request() request, @Res({ passthrough: true }) response: Response) {
+	public async update(@Param("uuid", ParseUUIDPipe) uuid: UUID, @Request() request, @Res({ passthrough: true }) response: Response) {
 		this.logger.info(`Updating session and JWT for user uuid ${uuid}`);
 
-		if (!isTruthy(request.user)) throw new UnauthorizedException('Missing JWT');
-		if (!isTruthy(uuid)) throw new HttpException('UUID parameter is empty', HttpStatus.BAD_REQUEST);
+		if (!isTruthy(request.user)) throw new UnauthorizedException("Missing JWT");
+		if (!isTruthy(uuid)) throw new HttpException("UUID parameter is empty", HttpStatus.BAD_REQUEST);
 
-		const config = this.configService.get<IServerConfig['security']>('security').cookie;
+		const config = this.configService.get<IServerConfig["security"]>("security").cookie;
 
 		try {
 			const dto = await this.sessionService.update(uuid);
 			const token = await this.createAndSignJwt(dto, config);
 
-			response.cookie('jwt', token, {
+			response.cookie("jwt", token, {
 				httpOnly: true,
-				sameSite: 'strict',
+				sameSite: "strict",
 				secure: config.secure,
 				maxAge: config.expiry,
 			});
@@ -123,7 +123,7 @@ export class SessionController {
 
 			if (err instanceof UnauthorizedException) {
 				await this.sessionService.remove(uuid);
-				response.clearCookie('jwt');
+				response.clearCookie("jwt");
 			}
 
 			throw err;
@@ -136,15 +136,15 @@ export class SessionController {
 	 * @param response The HTTP response object.
 	 * @returns A 204 No Content response.
 	 */
-	@Delete('logout')
+	@Delete("logout")
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: `Delete the user's session` })
-	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Request handled successfully.' })
+	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: "Request handled successfully." })
 	@DefaultErrorDecorators()
 	public async logout(@Request() request, @Res({ passthrough: true }) response: Response) {
 		this.logger.log(`Logging a user out.`);
 
-		response.clearCookie('jwt');
+		response.clearCookie("jwt");
 
 		if (!isTruthy(request.user)) {
 			this.logger.critical(`Missing JWT.`);

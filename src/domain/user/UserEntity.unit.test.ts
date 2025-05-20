@@ -1,8 +1,8 @@
-import { MockUpdateUserDto } from '../../__tests__/mocks/dto/MockUserDto';
-import { MockUserEntity } from '../../__tests__/mocks/entity/MockUserEntity';
-import { UserEntity } from './UserEntity';
+import { MockUpdateUserDto } from "../../__tests__/mocks/dto/MockUserDto";
+import { MockUserEntity } from "../../__tests__/mocks/entity/MockUserEntity";
+import { UserEntity } from "./UserEntity";
 
-describe('UserEntity and its DTOs', () => {
+describe("UserEntity and its DTOs", () => {
 	let data: UserEntity;
 
 	beforeEach(() => {
@@ -11,7 +11,7 @@ describe('UserEntity and its DTOs', () => {
 
 	// --------------------------------------------------
 
-	it('Can create itself from a partial object', () => {
+	it("Can create itself from a partial object", () => {
 		delete data.id;
 		delete data.uuid;
 		delete data.createdAt;
@@ -29,7 +29,7 @@ describe('UserEntity and its DTOs', () => {
 
 	// --------------------------------------------------
 
-	it('Can create itself from a complete object', () => {
+	it("Can create itself from a complete object", () => {
 		const entity = UserEntity.create(data);
 
 		expect(entity.id).toEqual(data.id);
@@ -42,7 +42,7 @@ describe('UserEntity and its DTOs', () => {
 
 	// --------------------------------------------------
 
-	it('Can be updated', () => {
+	it("Can be updated", () => {
 		const updateData = MockUpdateUserDto.get();
 
 		const entity = UserEntity.create(data);

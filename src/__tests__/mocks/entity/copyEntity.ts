@@ -1,5 +1,5 @@
-import { isTruthy } from 'ts-istruthy';
-import { AbstractEntity } from '../../../domain/AbstractEntity';
+import { isTruthy } from "ts-istruthy";
+import { AbstractEntity } from "../../../domain/AbstractEntity";
 
 /**
  * Create a copy of an Entity.
@@ -11,7 +11,7 @@ export const copyEntity = <T extends AbstractEntity>(original: T, keysToSkip?: s
 	const copy = { id: null };
 
 	for (const [key, val] of Object.entries(original)) {
-		if (key === 'id') continue;
+		if (key === "id") continue;
 		if (isTruthy(keysToSkip) && keysToSkip.includes(key)) continue;
 
 		copy[key] = val;

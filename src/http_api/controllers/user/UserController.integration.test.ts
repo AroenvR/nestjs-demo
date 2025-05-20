@@ -1,19 +1,19 @@
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserController } from './UserController';
-import { CreateUserDto } from '../../dtos/user/CreateUserDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { UserResponseDto } from '../../dtos/user/UserResponseDto';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
-import { GuardedController } from '../GuardedController';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { UserModule } from '../../modules/user/UserModule';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserController } from "./UserController";
+import { CreateUserDto } from "../../dtos/user/CreateUserDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { UserResponseDto } from "../../dtos/user/UserResponseDto";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
+import { GuardedController } from "../GuardedController";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { UserModule } from "../../modules/user/UserModule";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 
-describe('UserController Integration', () => {
-	const TEST_NAME = 'UserController_Integration';
+describe("UserController Integration", () => {
+	const TEST_NAME = "UserController_Integration";
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	let className: string;
@@ -47,14 +47,14 @@ describe('UserController Integration', () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(controller).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('CREATE', () => {
-		it('Can create an entity', async () => {
+	describe("CREATE", () => {
+		it("Can create an entity", async () => {
 			const created = (await controller.create(createDto)) as UserResponseDto;
 
 			expect(created.username).toEqual(createDto.username);
@@ -65,38 +65,38 @@ describe('UserController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('should fail with empty input', async () => {
+		it("should fail with empty input", async () => {
 			await expect(controller.create(null)).rejects.toThrow(`${className}: Create payload is empty.`);
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('FIND ALL', () => {
-		it('Finds all entities', async () => {
+	describe("FIND ALL", () => {
+		it("Finds all entities", async () => {
 			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.create(entity)]);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding all entities`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it('Returns empty array when no entities are found', async () => {
+		it("Returns empty array when no entities are found", async () => {
 			await repository.clear();
 			await expect(controller.findAll()).resolves.toEqual([]);
 		});
 
 		// --------------------------------------------------
 
-		it('should handle errors gracefully', async () => {
-			jest.spyOn(controller['service'], 'findAll').mockRejectedValue(new Error('Database error'));
-			await expect(controller.findAll()).rejects.toThrow('Database error');
+		it("should handle errors gracefully", async () => {
+			jest.spyOn(controller["service"], "findAll").mockRejectedValue(new Error("Database error"));
+			await expect(controller.findAll()).rejects.toThrow("Database error");
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('FIND ONE', () => {
-		it('Finds an entity by id', async () => {
+	describe("FIND ONE", () => {
+		it("Finds an entity by id", async () => {
 			const response = UserResponseDto.create(entity);
 
 			await expect(controller.findOne(entity.id)).resolves.toEqual(response);
@@ -105,7 +105,7 @@ describe('UserController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('Fails to find an entity with a non-existent id', async () => {
+		it("Fails to find an entity with a non-existent id", async () => {
 			const nonExistentId = 999;
 			await expect(controller.findOne(nonExistentId)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id ${nonExistentId}`)).resolves.toBe(true);
@@ -113,16 +113,16 @@ describe('UserController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('should handle errors gracefully', async () => {
-			jest.spyOn(controller['service'], 'findOne').mockRejectedValue(new Error('Database error'));
-			await expect(controller.findOne(1)).rejects.toThrow('Database error');
+		it("should handle errors gracefully", async () => {
+			jest.spyOn(controller["service"], "findOne").mockRejectedValue(new Error("Database error"));
+			await expect(controller.findOne(1)).rejects.toThrow("Database error");
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('UPDATE', () => {
-		it('Updates an entity', async () => {
+	describe("UPDATE", () => {
+		it("Updates an entity", async () => {
 			const response = UserResponseDto.create(entity.update(updateDto));
 
 			await expect(controller.update(entity.id, updateDto)).resolves.toEqual(response);
@@ -131,7 +131,7 @@ describe('UserController Integration', () => {
 
 		// --------------------------------------------------
 
-		it('Fails to update a non-existent entity', async () => {
+		it("Fails to update a non-existent entity", async () => {
 			const nonExistentId = 999;
 
 			await expect(controller.update(nonExistentId, updateDto)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
@@ -141,15 +141,15 @@ describe('UserController Integration', () => {
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE', () => {
-		it('Deletes an entity', async () => {
+	describe("DELETE", () => {
+		it("Deletes an entity", async () => {
 			await expect(controller.remove(entity.id)).resolves.toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it('Fails to delete an non-existent entity', async () => {
+		it("Fails to delete an non-existent entity", async () => {
 			const nonExistentId = 999;
 
 			await expect(controller.remove(nonExistentId)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);

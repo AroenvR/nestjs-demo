@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { Controller, Get, HttpException, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { HttpExceptionFilter } from './HttpExceptionFilter';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
+import request from "supertest";
+import { Controller, Get, HttpException, HttpStatus, INestApplication, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { HttpExceptionFilter } from "./HttpExceptionFilter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 
-const error = new HttpException('HTTP exception test', HttpStatus.BAD_REQUEST);
+const error = new HttpException("HTTP exception test", HttpStatus.BAD_REQUEST);
 
-@Controller('test')
+@Controller("test")
 @UseFilters(HttpExceptionFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('HttpExceptionFilter', () => {
+describe("HttpExceptionFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('HttpExceptionFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});

@@ -1,9 +1,9 @@
-import Joi from 'joi';
-import { UUID } from 'crypto';
-import { Entity, Column } from 'typeorm';
-import { AbstractEntity } from '../AbstractEntity';
-import { sessionConstants } from '../../common/constants/sessionConstants';
-import { UnauthorizedException } from '@nestjs/common';
+import Joi from "joi";
+import { UUID } from "crypto";
+import { Entity, Column } from "typeorm";
+import { AbstractEntity } from "../AbstractEntity";
+import { sessionConstants } from "../../common/constants/sessionConstants";
+import { UnauthorizedException } from "@nestjs/common";
 
 /**
  * Represents a Session entity in the database.
@@ -76,7 +76,7 @@ export class SessionEntity extends AbstractEntity {
 
 	protected get childSchema() {
 		return Joi.object({
-			userUuid: Joi.string().uuid({ version: 'uuidv4' }).required(),
+			userUuid: Joi.string().uuid({ version: "uuidv4" }).required(),
 			token: Joi.string().min(sessionConstants.minTokenLength).required(),
 			refreshes: Joi.number().integer().min(0).max(sessionConstants.maxRefreshes).default(0).required(),
 		});

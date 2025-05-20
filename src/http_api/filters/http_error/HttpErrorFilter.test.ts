@@ -1,14 +1,14 @@
-import request from 'supertest';
-import { Controller, Get, HttpStatus, INestApplication, UseFilters } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
-import { mockILogger } from '../../../__tests__/mocks/mockLogAdapter';
-import { HttpErrorFilter } from './HttpErrorFilter';
+import request from "supertest";
+import { Controller, Get, HttpStatus, INestApplication, UseFilters } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
+import { HttpErrorFilter } from "./HttpErrorFilter";
 
-const error = new Error('HTTP error test');
+const error = new Error("HTTP error test");
 
-@Controller('test')
+@Controller("test")
 @UseFilters(HttpErrorFilter)
 class TestController {
 	@Get()
@@ -17,7 +17,7 @@ class TestController {
 	}
 }
 
-describe('HttpErrorFilter', () => {
+describe("HttpErrorFilter", () => {
 	let app: INestApplication;
 
 	beforeAll(async () => {
@@ -41,15 +41,15 @@ describe('HttpErrorFilter', () => {
 
 	// --------------------------------------------------
 
-	it('Should handle its own errors', async () => {
+	it("Should handle its own errors", async () => {
 		await request(app.getHttpServer())
-			.get('/test')
+			.get("/test")
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
-					path: '/test',
+					path: "/test",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});
@@ -61,16 +61,16 @@ describe('HttpErrorFilter', () => {
 
 	// --------------------------------------------------
 
-	it.skip('Handles requests to inexisting routes', async () => {
+	it.skip("Handles requests to inexisting routes", async () => {
 		// This test SHOUlD pass.. Not sure why it doesn't
 		await request(app.getHttpServer())
-			.get('/inexisting')
+			.get("/inexisting")
 			.expect(HttpStatus.NOT_FOUND)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.NOT_FOUND,
 					timestamp: expect.any(Number),
-					path: '/inexisting',
+					path: "/inexisting",
 					message: HttpExceptionMessages.NOT_FOUND,
 				});
 			});

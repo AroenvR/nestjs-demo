@@ -1,12 +1,12 @@
-import { EntityManager, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { CreateUserDto } from '../../../http_api/dtos/user/CreateUserDto';
-import { UserResponseDto } from '../../../http_api/dtos/user/UserResponseDto';
-import { UpdateUserDto } from '../../../http_api/dtos/user/UpdateUserDto';
-import { AbstractService } from '../AbstractService';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { EntityManager, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { NotFoundException } from "@nestjs/common";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
+import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
+import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
+import { AbstractService } from "../AbstractService";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
@@ -149,7 +149,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		this.logger.info(`Creating seed data.`);
 		const seedData: UserEntity[] = [];
 
-		const admin = UserEntity.create({ username: 'admin', password: 'administrator' });
+		const admin = UserEntity.create({ username: "admin", password: "administrator" });
 		seedData.push(admin);
 
 		return seedData;

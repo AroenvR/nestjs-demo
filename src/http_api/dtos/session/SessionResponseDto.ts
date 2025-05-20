@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { SessionEntity } from '../../../domain/session/SessionEntity'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ResponseDto } from '../ResponseDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
+import { ApiProperty } from "@nestjs/swagger";
+import { SessionEntity } from "../../../domain/session/SessionEntity"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ResponseDto } from "../ResponseDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
 
 /**
  * This class is responsible for returning a {@link SessionEntity} to the client.

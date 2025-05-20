@@ -1,5 +1,5 @@
-import { DatabaseDrivers, TDatabaseConfig } from '../TDatabaseConfig';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DatabaseDrivers, TDatabaseConfig } from "../TDatabaseConfig";
+import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 /**
  * The database options strategy interface.

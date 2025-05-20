@@ -1,14 +1,14 @@
-import { Request } from 'express';
-import * as cookie from 'cookie';
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
-import { UnauthorizedException } from '@nestjs/common';
-import { TJwtCookie } from '../types/TJwtCookie';
+import { Request } from "express";
+import * as cookie from "cookie";
+import { PassportStrategy } from "@nestjs/passport";
+import { Strategy, ExtractJwt } from "passport-jwt";
+import { UnauthorizedException } from "@nestjs/common";
+import { TJwtCookie } from "../types/TJwtCookie";
 
 /**
  * JWT strategy for authenticating users based on HTTP-Only cookies containing a JWT.
  */
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
 	constructor() {
 		if (!process.env.JASON_WEB_TOKEN_SECRET) throw new Error(`JWT secret is not defined`);
 
@@ -45,7 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		if (!request.headers || !request.headers.cookie) throw new UnauthorizedException(`No cookies found in the request's headers.`);
 
 		const cookies = cookie.parse(request.headers.cookie);
-		const jwt = cookies['jwt'];
+		const jwt = cookies["jwt"];
 
 		if (!jwt) throw new UnauthorizedException(`No JWT cookie found in request headers.`);
 

@@ -1,24 +1,24 @@
-import request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserModule } from './UserModule';
-import { CreateUserDto } from '../../dtos/user/CreateUserDto';
-import { UserEntity } from '../../../domain/user/UserEntity';
-import { wasLogged } from '../../../__tests__/helpers/wasLogged';
-import { expiredJwt, mockJwt } from '../../../__tests__/mocks/mockJwt';
-import { createMockAppModule } from '../../../__tests__/mocks/module/createMockAppModule';
-import { MockCreateUserDto, MockUpdateUserDto } from '../../../__tests__/mocks/dto/MockUserDto';
-import { MockUserEntity } from '../../../__tests__/mocks/entity/MockUserEntity';
-import { copyEntity } from '../../../__tests__/mocks/entity/copyEntity';
-import { UserResponseDto } from '../../dtos/user/UserResponseDto';
-import { UpdateUserDto } from '../../dtos/user/UpdateUserDto';
+import request from "supertest";
+import { HttpStatus, INestApplication } from "@nestjs/common";
+import { Repository } from "typeorm";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { UserModule } from "./UserModule";
+import { CreateUserDto } from "../../dtos/user/CreateUserDto";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { expiredJwt, mockJwt } from "../../../__tests__/mocks/mockJwt";
+import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
+import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
+import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { copyEntity } from "../../../__tests__/mocks/entity/copyEntity";
+import { UserResponseDto } from "../../dtos/user/UserResponseDto";
+import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
 
-const TEST_NAME = 'UserModule';
+const TEST_NAME = "UserModule";
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
-	const ENDPOINT = '/v1/user';
+	const ENDPOINT = "/v1/user";
 
 	let app: INestApplication;
 	let repository: Repository<UserEntity>;
@@ -46,18 +46,18 @@ describe(TEST_NAME, () => {
 
 	// --------------------------------------------------
 
-	it('Should be defined', () => {
+	it("Should be defined", () => {
 		expect(app).toBeDefined();
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('POST /user', () => {
-		it('Can create an entity', async () => {
+	describe("POST /user", () => {
+		it("Can create an entity", async () => {
 			const response = await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CREATED);
 
 			expect(response.body.id).toBeTruthy();
@@ -85,54 +85,54 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a JWT', async () => {
+		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).post(ENDPOINT).send(createDto).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a payload', async () => {
+		it("Should return an error when missing a payload", async () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send({})
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when inserting a duplicate entity', async () => {
+		it("Should return an error when inserting a duplicate entity", async () => {
 			const copy = copyEntity(entity);
 
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(copy)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CONFLICT);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an expired JWT', async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('GET /user', () => {
-		it('Finds all entities', async () => {
+	describe("GET /user", () => {
+		it("Finds all entities", async () => {
 			const response = await request(app.getHttpServer())
 				.get(ENDPOINT)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
 			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
-			if (!found) fail('Did not find the entity we expected.');
+			if (!found) fail("Did not find the entity we expected.");
 
 			expect(found.id).toEqual(entity.id);
 			expect(found.uuid).toEqual(entity.uuid);
@@ -147,27 +147,27 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a JWT', async () => {
+		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).get(ENDPOINT).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an expired JWT', async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.get(ENDPOINT)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('GET /user/:id', () => {
-		it('Can find an entity by id', async () => {
+	describe("GET /user/:id", () => {
+		it("Can find an entity by id", async () => {
 			const response = await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${entity.id}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
 			expect(response.body.id).toEqual(entity.id);
@@ -183,46 +183,46 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when requesting a non-existent id', async () => {
+		it("Should return an error when requesting a non-existent id", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/9999`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when requesting with an invalid id format', async () => {
+		it("Should return an error when requesting with an invalid id format", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/abc`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a JWT', async () => {
+		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).get(`${ENDPOINT}/${entity.id}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an expired JWT', async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${entity.id}`)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('PATCH /user/:id', () => {
-		it('Can update an entity', async () => {
+	describe("PATCH /user/:id", () => {
+		it("Can update an entity", async () => {
 			const response = await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.id}`)
 				.send(updateDto)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
 			expect(response.body.id).toEqual(entity.id);
@@ -248,48 +248,48 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when updating a non-existent entity', async () => {
+		it("Should return an error when updating a non-existent entity", async () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/9999`)
 				.send(updateDto)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a JWT', async () => {
+		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).patch(`${ENDPOINT}/${entity.id}`).send(updateDto).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an expired JWT', async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.id}`)
 				.send(updateDto)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an invalid data format', async () => {
+		it("Should return an error when using an invalid data format", async () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.id}`)
 				.send({ username: 12345 })
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
 
 	// -------------------------------------------------- \\
 
-	describe('DELETE /user/:id', () => {
-		it('Should successfully delete an entity', async () => {
+	describe("DELETE /user/:id", () => {
+		it("Should successfully delete an entity", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/${entity.id}`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NO_CONTENT);
 
 			const deletedEntity = await repository.findOne({ where: { id: entity.id } });
@@ -301,34 +301,34 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it('Should return an error when trying to delete a non-existent entity', async () => {
+		it("Should return an error when trying to delete a non-existent entity", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/9999`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when missing a JWT', async () => {
+		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).delete(`${ENDPOINT}/${entity.id}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an expired JWT', async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/${entity.id}`)
-				.set('Cookie', [`jwt=${expiredJwt}`])
+				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
-		it('Should return an error when using an invalid id format', async () => {
+		it("Should return an error when using an invalid id format", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/abc`)
-				.set('Cookie', [`jwt=${mockJwt}`])
+				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});

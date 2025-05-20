@@ -1,9 +1,9 @@
-import Joi from 'joi';
-import { Column, Entity } from 'typeorm';
-import { AbstractEntity } from '../AbstractEntity';
-import { userConstants } from '../../common/constants/userConstants';
-import { CreateUserDto } from '../../http_api/dtos/user/CreateUserDto';
-import { UpdateUserDto } from '../../http_api/dtos/user/UpdateUserDto';
+import Joi from "joi";
+import { Column, Entity } from "typeorm";
+import { AbstractEntity } from "../AbstractEntity";
+import { userConstants } from "../../common/constants/userConstants";
+import { CreateUserDto } from "../../http_api/dtos/user/CreateUserDto";
+import { UpdateUserDto } from "../../http_api/dtos/user/UpdateUserDto";
 
 /**
  * Represents a user entity in the database.

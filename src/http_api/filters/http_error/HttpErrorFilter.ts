@@ -1,7 +1,7 @@
-import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { AbstractHttpFilter } from '../AbstractHttpFilter';
-import { HttpExceptionMessages } from '../../../common/enums/HttpExceptionMessages';
-import { WinstonAdapter } from '../../../infrastructure/logging/adapters/WinstonAdapter';
+import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
+import { AbstractHttpFilter } from "../AbstractHttpFilter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
 @Catch(Error)
 export class HttpErrorFilter extends AbstractHttpFilter {
@@ -14,7 +14,7 @@ export class HttpErrorFilter extends AbstractHttpFilter {
 
 	catch(exception: Error, host: ArgumentsHost) {
 		// Non-existing routes throw HttpErrors with NotFoundExceptions inside.
-		if (exception.name === 'NotFoundException') {
+		if (exception.name === "NotFoundException") {
 			this.status = HttpStatus.NOT_FOUND;
 			this.message = HttpExceptionMessages.NOT_FOUND;
 		}
