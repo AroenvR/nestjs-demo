@@ -3,6 +3,12 @@ import { OnModuleInit, OnModuleDestroy, NotImplementedException, Injectable } fr
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { AbstractExternalService } from "../services/AbstractExternalService";
 
+/*
+	TODO:
+	- Add support for HTTP-Only JWT cookies / OIDC authentication 
+	- Stop trying to reconnect after 5 attempts
+*/
+
 // EXAMPLE IMPLEMENTATION:
 // export class TestConsumer extends AbstractExternalEventConsumer {
 // 	constructor(

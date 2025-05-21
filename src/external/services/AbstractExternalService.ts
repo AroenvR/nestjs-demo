@@ -1,6 +1,12 @@
 import { Injectable, NotImplementedException } from "@nestjs/common";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
+/*
+	TODO:
+	- Add support for HTTP-Only JWT cookies / OIDC authentication
+	- Add get / post / patch / delete methods for the external service
+*/
+
 // EXAMPLE IMPLEMENTATION
 // export class TestService extends AbstractExternalService {
 // 	constructor(
@@ -32,7 +38,7 @@ export class AbstractExternalService {
 	/**
 	 * Handles the event data received from the external service.
 	 * This method should be implemented by subclasses to handle specific event data.
-	 * @param _ The event data to handle.
+	 * @param data The event data to handle.
 	 */
 	public async handleEvent(_: unknown) {
 		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
