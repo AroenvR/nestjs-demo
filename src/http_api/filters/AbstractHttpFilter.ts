@@ -2,8 +2,7 @@ import { ArgumentsHost, ExceptionFilter, HttpStatus } from "@nestjs/common";
 import { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { Request, Response } from "express";
 import { GuardedController } from "../controllers/GuardedController"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ILogger } from "../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
@@ -18,7 +17,7 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
 	protected message = "internal_server_error";
 
-	constructor(private readonly logAdapter: WinstonAdapter) {
+	constructor(private readonly logAdapter: IPrefixedLogger) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
 	}
 

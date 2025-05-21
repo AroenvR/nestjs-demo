@@ -8,8 +8,7 @@ import { CreateDto } from "../dtos/CreateDto";
 import { UpdateDto } from "../dtos/UpdateDto";
 import { ResponseDto } from "../dtos/ResponseDto";
 import { ISseMessage } from "../../application/events/ISseMessage";
-import { ILogger } from "../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { UseErrorFilters } from "../decorators/UseErrorFilters";
 
 /**
@@ -27,7 +26,7 @@ export class GuardedController {
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: WinstonAdapter,
+		protected readonly logAdapter: IPrefixedLogger,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.constructor.name);

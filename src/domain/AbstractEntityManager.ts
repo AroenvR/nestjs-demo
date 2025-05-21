@@ -1,6 +1,5 @@
 import { Injectable, NotImplementedException } from "@nestjs/common";
-import { WinstonAdapter } from "../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../infrastructure/logging/ILogger";
 import { AbstractEntity } from "./AbstractEntity";
 
 /**
@@ -13,7 +12,7 @@ export class AbstractEntityManager<T extends AbstractEntity> {
 	protected readonly name: string;
 	protected logger: ILogger;
 
-	constructor(protected readonly logAdapter: WinstonAdapter) {
+	constructor(protected readonly logAdapter: IPrefixedLogger) {
 		this.name = this.constructor.name;
 		this.logger = logAdapter.getPrefixedLogger(this.name);
 	}
