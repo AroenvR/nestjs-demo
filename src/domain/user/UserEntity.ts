@@ -4,13 +4,14 @@ import { AbstractEntity } from "../AbstractEntity";
 import { userConstants } from "../../common/constants/userConstants";
 import { CreateUserDto } from "../../http_api/dtos/user/CreateUserDto";
 import { UpdateUserDto } from "../../http_api/dtos/user/UpdateUserDto";
+import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
 /**
  * Represents a user entity in the database.
  * @Column username TEXT NOT NULL UNIQUE
  * @Column password TEXT NOT NULL
  */
-@Entity()
+@Entity(ApplicationEntities.USER)
 export class UserEntity extends AbstractEntity {
 	@Column({ unique: true, nullable: false })
 	username: string;

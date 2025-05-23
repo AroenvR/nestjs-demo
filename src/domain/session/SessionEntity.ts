@@ -4,6 +4,7 @@ import { Entity, Column } from "typeorm";
 import { AbstractEntity } from "../AbstractEntity";
 import { sessionConstants } from "../../common/constants/sessionConstants";
 import { UnauthorizedException } from "@nestjs/common";
+import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
 /**
  * Represents a Session entity in the database.
@@ -11,7 +12,7 @@ import { UnauthorizedException } from "@nestjs/common";
  * @Column token TEXT NOT NULL UNIQUE
  * @Column refreshes INTEGER NOT NULL DEFAULT 0
  */
-@Entity()
+@Entity(ApplicationEntities.SESSION)
 export class SessionEntity extends AbstractEntity {
 	@Column({ nullable: false, unique: true })
 	userUuid: UUID;
