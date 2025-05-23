@@ -7,7 +7,7 @@ import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
-import { MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
+import { MOCK_BAD_UUID, MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
 import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
 import { AbstractService } from "../AbstractService";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
@@ -67,7 +67,7 @@ describe("UserService Unit", () => {
 	it("Finds all entities", async () => {
 		const entities = await service.findAll();
 
-		const found = entities.find((data) => data.id === mockedResponse.id);
+		const found = entities.find((data) => data.uuid === mockedResponse.uuid);
 		if (!found) fail("Expected entity was not found.");
 
 		expect(found).toBeInstanceOf(UserResponseDto);
@@ -85,7 +85,7 @@ describe("UserService Unit", () => {
 	// --------------------------------------------------
 
 	it("Finds an entity by id", async () => {
-		const data = await service.findOne(mockedResponse.id);
+		const data = await service.findOne(mockedResponse.uuid);
 
 		expect(data).toEqual(mockedResponse);
 		expect(data).toBeInstanceOf(UserResponseDto);
@@ -97,16 +97,14 @@ describe("UserService Unit", () => {
 		expect(data.username).toEqual(mockedResponse.username);
 		expect(data.password).toEqual(mockedResponse.password);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${mockedResponse.id}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by uuid ${mockedResponse.uuid}`);
 	});
 
 	// --------------------------------------------------
 
-	it("Throws when unable to find an entity by id", async () => {
-		const id = 69;
-
-		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
-		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${id}`);
+	it("Throws when unable to find an entity by UUid", async () => {
+		await expect(service.findOne(MOCK_BAD_UUID)).rejects.toThrow(`Entity by uuid ${MOCK_BAD_UUID} not found`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by uuid ${MOCK_BAD_UUID}`);
 	});
 
 	// --------------------------------------------------
@@ -114,7 +112,7 @@ describe("UserService Unit", () => {
 	it("Can update an entity", async () => {
 		const dto = MockUpdateUserDto.get();
 
-		const updated = await service.update(mockedResponse.id, dto);
+		const updated = await service.update(mockedResponse.uuid, dto);
 		expect(updated).not.toEqual(mockedResponse);
 
 		expect(updated).toBeInstanceOf(UserResponseDto);
@@ -124,15 +122,15 @@ describe("UserService Unit", () => {
 		expect(updated.username).toEqual(dto.username);
 		expect(updated.password).toEqual(dto.password);
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${mockedResponse.id}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by uuid ${mockedResponse.uuid}`);
 	});
 
 	// --------------------------------------------------
 
 	it("Can delete an entity", async () => {
-		await expect(service.remove(mockedResponse.id)).resolves.not.toThrow();
+		await expect(service.remove(mockedResponse.uuid)).resolves.not.toThrow();
 
-		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${mockedResponse.id}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by uuid ${mockedResponse.uuid}`);
 	});
 
 	// --------------------------------------------------
@@ -155,6 +153,6 @@ describe("UserService Unit", () => {
 		await service.emit(mockedResponse);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(mockedResponse) });
-		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by id: ${mockedResponse.id}`);
+		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by uuid: ${mockedResponse.uuid}`);
 	});
 });

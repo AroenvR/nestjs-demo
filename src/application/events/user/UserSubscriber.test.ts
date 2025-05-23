@@ -45,7 +45,7 @@ describe("UserSubscriber", () => {
 
 		// Assert logging and service emit
 		const logger = logAdapter.getPrefixedLogger(UserSubscriber.name);
-		expect(logger.debug).toHaveBeenCalledWith(`Entity by id ${entity.id} was inserted`);
+		expect(logger.debug).toHaveBeenCalledWith(`Entity by uuid ${entity.uuid} was inserted`);
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 
@@ -59,7 +59,7 @@ describe("UserSubscriber", () => {
 
 		// Assert logging and service emit
 		const logger = logAdapter.getPrefixedLogger(UserSubscriber.name);
-		expect(logger.debug).toHaveBeenCalledWith(`Entity by id ${entity.id} was updated`);
+		expect(logger.debug).toHaveBeenCalledWith(`Entity by uuid ${entity.uuid} was updated`);
 		expect(userService.emit).toHaveBeenCalledWith(entity);
 	});
 

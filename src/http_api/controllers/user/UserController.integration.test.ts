@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserController } from "./UserController";
@@ -96,26 +97,26 @@ describe("UserController Integration", () => {
 	// -------------------------------------------------- \\
 
 	describe("FIND ONE", () => {
-		it("Finds an entity by id", async () => {
+		it("Finds an entity by uuid", async () => {
 			const response = UserResponseDto.create(entity);
 
-			await expect(controller.findOne(entity.id)).resolves.toEqual(response);
-			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(controller.findOne(entity.uuid)).resolves.toEqual(response);
+			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("Fails to find an entity with a non-existent id", async () => {
-			const nonExistentId = 999;
-			await expect(controller.findOne(nonExistentId)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
-			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by id ${nonExistentId}`)).resolves.toBe(true);
+			const nonExistentId = randomUUID();
+			await expect(controller.findOne(nonExistentId)).rejects.toThrow(`Entity by uuid ${nonExistentId} not found`);
+			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by uuid ${nonExistentId}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("should handle errors gracefully", async () => {
 			jest.spyOn(controller["service"], "findOne").mockRejectedValue(new Error("Database error"));
-			await expect(controller.findOne(1)).rejects.toThrow("Database error");
+			await expect(controller.findOne(randomUUID())).rejects.toThrow("Database error");
 		});
 	});
 
@@ -125,17 +126,17 @@ describe("UserController Integration", () => {
 		it("Updates an entity", async () => {
 			const response = UserResponseDto.create(entity.update(updateDto));
 
-			await expect(controller.update(entity.id, updateDto)).resolves.toEqual(response);
-			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(controller.update(entity.uuid, updateDto)).resolves.toEqual(response);
+			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("Fails to update a non-existent entity", async () => {
-			const nonExistentId = 999;
+			const nonExistentId = randomUUID();
 
-			await expect(controller.update(nonExistentId, updateDto)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
-			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by id ${nonExistentId}`)).resolves.toBe(true);
+			await expect(controller.update(nonExistentId, updateDto)).rejects.toThrow(`Entity by uuid ${nonExistentId} not found`);
+			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by uuid ${nonExistentId}`)).resolves.toBe(true);
 		});
 	});
 
@@ -143,17 +144,17 @@ describe("UserController Integration", () => {
 
 	describe("DELETE", () => {
 		it("Deletes an entity", async () => {
-			await expect(controller.remove(entity.id)).resolves.toBeUndefined();
-			await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(controller.remove(entity.uuid)).resolves.toBeUndefined();
+			await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("Fails to delete an non-existent entity", async () => {
-			const nonExistentId = 999;
+			const nonExistentId = randomUUID();
 
-			await expect(controller.remove(nonExistentId)).rejects.toThrow(`Entity by id ${nonExistentId} not found`);
-			await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by id ${nonExistentId}`)).resolves.toBe(true);
+			await expect(controller.remove(nonExistentId)).rejects.toThrow(`Entity by uuid ${nonExistentId} not found`);
+			await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by uuid ${nonExistentId}`)).resolves.toBe(true);
 		});
 	});
 });

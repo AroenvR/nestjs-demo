@@ -1,4 +1,5 @@
-import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseIntPipe, UseGuards } from "@nestjs/common";
+import { UUID } from "crypto";
+import { BadRequestException, Body, HttpException, HttpStatus, Param, ParseUUIDPipe, UseGuards } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { ApiSecurity } from "@nestjs/swagger";
 import { isTruthy } from "ts-istruthy";
@@ -67,37 +68,37 @@ export class GuardedController {
 
 	/**
 	 * Retrieves a single entity from the service by its id.
-	 * @param id The id of the entity to find.
+	 * @param uuid The id of the entity to find.
 	 * @returns A {@link ResponseDto} payload.
 	 * @devnote Remember to decorate with the {@link GetByIdEndpoint} decorator.
 	 */
-	public async findOne(@Param("id", ParseIntPipe) id: number): Promise<ResponseDto> {
-		this.logger.info(`Finding entity by id ${id}`);
-		return this.service.findOne(id);
+	public async findOne(@Param("uuid", ParseUUIDPipe) uuid: UUID): Promise<ResponseDto> {
+		this.logger.info(`Finding entity by uuid ${uuid}`);
+		return this.service.findOne(uuid);
 	}
 
 	/**
 	 * Updates an entity by its id.
-	 * @param id The id of the entity to update.
+	 * @param uuid The id of the entity to update.
 	 * @param updateDto An {@link UpdateDto} object that represents the entity to be updated.
 	 * @returns A {@link ResponseDto} payload.
 	 * @devnote Remember to decorate with the {@link PatchEndpoint} decorator.
 	 */
-	public async update(@Param("id", ParseIntPipe) id: number, @Body() updateDto: UpdateDto): Promise<ResponseDto> {
-		if (!isTruthy(id)) throw new HttpException("ID is empty", HttpStatus.BAD_REQUEST);
+	public async update(@Param("uuid", ParseUUIDPipe) uuid: UUID, @Body() updateDto: UpdateDto): Promise<ResponseDto> {
+		if (!isTruthy(uuid)) throw new HttpException("UUID is empty", HttpStatus.BAD_REQUEST);
 		if (!isTruthy(updateDto)) throw new BadRequestException(`${this.constructor.name}: Update payload is empty.`);
 
-		this.logger.info(`Updating entity by id ${id}`);
-		return this.service.update(id, updateDto);
+		this.logger.info(`Updating entity by uuid ${uuid}`);
+		return this.service.update(uuid, updateDto);
 	}
 
 	/**
 	 * Removes an entity by its id.
-	 * @param id The id of the entity to remove.
+	 * @param uuid The id of the entity to remove.
 	 * @devnote Remember to decorate with the {@link DeleteEndpoint} decorator.
 	 */
-	public async remove(@Param("id", ParseIntPipe) id: number): Promise<void> {
-		this.logger.info(`Deleting entity by id ${id}`);
-		await this.service.remove(id);
+	public async remove(@Param("uuid", ParseUUIDPipe) uuid: UUID): Promise<void> {
+		this.logger.info(`Deleting entity by uuid ${uuid}`);
+		await this.service.remove(uuid);
 	}
 }

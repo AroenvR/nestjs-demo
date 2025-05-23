@@ -1,8 +1,9 @@
+import { UUID } from "crypto";
 import { Controller } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { DeleteEndpoint } from "../../decorators/DeleteEndpoint";
 import { PatchEndpoint } from "../../decorators/PatchEndpoint";
-import { GetByIdEndpoint } from "../../decorators/GetByIdEndpoint";
+import { GetByUuidEndpoint } from "../../decorators/GetByIdEndpoint";
 import { SseEndpoint } from "../../decorators/SseEndpoint";
 import { GetEndpoint } from "../../decorators/GetEndpoint";
 import { PostEndpoint } from "../../decorators/PostEndpoint";
@@ -41,18 +42,18 @@ export class UserController extends GuardedController {
 		return super.events();
 	}
 
-	@GetByIdEndpoint(ENDPOINT, UserResponseDto)
-	public async findOne(id: number) {
-		return super.findOne(id);
+	@GetByUuidEndpoint(ENDPOINT, UserResponseDto)
+	public async findOne(uuid: UUID) {
+		return super.findOne(uuid);
 	}
 
 	@PatchEndpoint(ENDPOINT, UserResponseDto)
-	public async update(id: number, updateDto: UpdateUserDto) {
-		return super.update(id, updateDto);
+	public async update(uuid: UUID, updateDto: UpdateUserDto) {
+		return super.update(uuid, updateDto);
 	}
 
 	@DeleteEndpoint(ENDPOINT)
-	public async remove(id: number) {
-		return super.remove(id);
+	public async remove(uuid: UUID) {
+		return super.remove(uuid);
 	}
 }

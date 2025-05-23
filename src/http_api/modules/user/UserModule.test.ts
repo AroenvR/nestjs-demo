@@ -13,6 +13,7 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { copyEntity } from "../../../__tests__/mocks/entity/copyEntity";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
+import { randomUUID } from "crypto";
 
 const TEST_NAME = "UserModule";
 describe(TEST_NAME, () => {
@@ -79,8 +80,8 @@ describe(TEST_NAME, () => {
 			await expect(wasLogged(TEST_NAME, `UserController: Creating a new entity`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Creating a new entity`)).resolves.toBe(true);
 
-			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${response.body.id} was inserted`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${response.body.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by uuid ${response.body.uuid} was inserted`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by uuid: ${response.body.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -132,7 +133,7 @@ describe(TEST_NAME, () => {
 				.expect(HttpStatus.OK);
 
 			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
-			if (!found) fail("Did not find the entity we expected.");
+			if (!found) throw new Error("Did not find the entity we expected.");
 
 			expect(found.id).toEqual(entity.id);
 			expect(found.uuid).toEqual(entity.uuid);
@@ -163,10 +164,10 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("GET /user/:id", () => {
-		it("Can find an entity by id", async () => {
+	describe("GET /user/:uuid", () => {
+		it("Can find an entity by uuid", async () => {
 			const response = await request(app.getHttpServer())
-				.get(`${ENDPOINT}/${entity.id}`)
+				.get(`${ENDPOINT}/${entity.uuid}`)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
 
@@ -177,22 +178,22 @@ describe(TEST_NAME, () => {
 			expect(response.body.username).toEqual(entity.username);
 			expect(response.body.password).toEqual(entity.password);
 
-			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by id ${entity.id}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
-		it("Should return an error when requesting a non-existent id", async () => {
+		it("Should return an error when requesting a non-existent uuid", async () => {
 			await request(app.getHttpServer())
-				.get(`${ENDPOINT}/9999`)
+				.get(`${ENDPOINT}/${randomUUID()}`)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
 		// --------------------------------------------------
 
-		it("Should return an error when requesting with an invalid id format", async () => {
+		it("Should return an error when requesting with an invalid uuid format", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/abc`)
 				.set("Cookie", [`jwt=${mockJwt}`])
@@ -202,14 +203,14 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Should return an error when missing a JWT", async () => {
-			await request(app.getHttpServer()).get(`${ENDPOINT}/${entity.id}`).expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).get(`${ENDPOINT}/${entity.uuid}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
 		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
-				.get(`${ENDPOINT}/${entity.id}`)
+				.get(`${ENDPOINT}/${entity.uuid}`)
 				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
@@ -217,10 +218,10 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("PATCH /user/:id", () => {
+	describe("PATCH /user/:uuid", () => {
 		it("Can update an entity", async () => {
 			const response = await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${entity.id}`)
+				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send(updateDto)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
@@ -239,18 +240,18 @@ describe(TEST_NAME, () => {
 			expect(updatedEntity.username).toEqual(updateDto.username);
 			expect(updatedEntity.password).toEqual(updateDto.password);
 
-			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by id ${entity.id}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserController: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 
-			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by id ${entity.id} was updated`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by id: ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserSubscriber: Entity by uuid ${entity.uuid} was updated`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Emitting entity by uuid: ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("Should return an error when updating a non-existent entity", async () => {
 			await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/9999`)
+				.patch(`${ENDPOINT}/${randomUUID()}`)
 				.send(updateDto)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
@@ -259,14 +260,14 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Should return an error when missing a JWT", async () => {
-			await request(app.getHttpServer()).patch(`${ENDPOINT}/${entity.id}`).send(updateDto).expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).patch(`${ENDPOINT}/${entity.uuid}`).send(updateDto).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
 		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${entity.id}`)
+				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send(updateDto)
 				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
@@ -276,7 +277,7 @@ describe(TEST_NAME, () => {
 
 		it("Should return an error when using an invalid data format", async () => {
 			await request(app.getHttpServer())
-				.patch(`${ENDPOINT}/${entity.id}`)
+				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send({ username: 12345 })
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.BAD_REQUEST);
@@ -285,25 +286,25 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("DELETE /user/:id", () => {
+	describe("DELETE /user/:uuid", () => {
 		it("Should successfully delete an entity", async () => {
 			await request(app.getHttpServer())
-				.delete(`${ENDPOINT}/${entity.id}`)
+				.delete(`${ENDPOINT}/${entity.uuid}`)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NO_CONTENT);
 
 			const deletedEntity = await repository.findOne({ where: { id: entity.id } });
 			expect(deletedEntity).toBeNull();
 
-			await expect(wasLogged(TEST_NAME, `UserController: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `UserService: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserController: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `UserService: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
 
 		it("Should return an error when trying to delete a non-existent entity", async () => {
 			await request(app.getHttpServer())
-				.delete(`${ENDPOINT}/9999`)
+				.delete(`${ENDPOINT}/${randomUUID()}`)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.NOT_FOUND);
 		});
@@ -311,14 +312,14 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Should return an error when missing a JWT", async () => {
-			await request(app.getHttpServer()).delete(`${ENDPOINT}/${entity.id}`).expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).delete(`${ENDPOINT}/${entity.uuid}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 
 		// --------------------------------------------------
 
 		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
-				.delete(`${ENDPOINT}/${entity.id}`)
+				.delete(`${ENDPOINT}/${entity.uuid}`)
 				.set("Cookie", [`jwt=${expiredJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});

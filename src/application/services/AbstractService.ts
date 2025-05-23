@@ -1,10 +1,11 @@
+import { UUID } from "crypto";
 import { EntityManager, Repository } from "typeorm";
 import { Injectable, NotImplementedException, OnModuleInit } from "@nestjs/common";
+import { Observable, Subject } from "rxjs";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { CreateDto } from "../../http_api/dtos/CreateDto";
 import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 import { UpdateDto } from "../../http_api/dtos/UpdateDto";
-import { Observable, Subject } from "rxjs";
 import { ISseMessage } from "../events/ISseMessage";
 import { ILogger } from "../../infrastructure/logging/ILogger";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
@@ -15,15 +16,17 @@ import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAda
  */
 @Injectable()
 export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDTO extends ResponseDto> implements OnModuleInit {
-	protected logger: ILogger;
+	protected readonly name: string;
 	protected readonly events = new Subject<ISseMessage<RDTO>>();
+	protected logger: ILogger;
 
 	constructor(
 		protected readonly repository: Repository<AbstractEntity>,
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: WinstonAdapter,
 	) {
-		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
+		this.name = this.constructor.name;
+		this.logger = logAdapter.getPrefixedLogger(this.name);
 	}
 
 	/**
@@ -32,7 +35,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @returns A Promise that resolves to a ResponseDto object.
 	 */
 	public async create(_: CDTO): Promise<RDTO> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -40,7 +43,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @returns A Promise that resolves to an array of ResponseDto objects.
 	 */
 	public async findAll(): Promise<RDTO[]> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -48,8 +51,8 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @param id The id of the entity to find.
 	 * @returns A Promise that resolves to a ResponseDto object.
 	 */
-	public async findOne(_: number): Promise<RDTO> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+	public async findOne(_: UUID): Promise<RDTO> {
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -58,16 +61,16 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @param dto An UpdateDto object that represents the entity to be updated.
 	 * @returns A Promise that resolves to a ResponseDto object.
 	 */
-	public async update(_: number, __: UDTO): Promise<RDTO> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+	public async update(_: UUID, __: UDTO): Promise<RDTO> {
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
 	 * Removes an entity by its id.
 	 * @param id The id of the entity to remove.
 	 */
-	public async remove(_: number): Promise<void> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+	public async remove(_: UUID): Promise<void> {
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -75,7 +78,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @returns An Observable that emits ISseMessage objects containing ResponseDto's.
 	 */
 	public async observe(): Promise<Observable<ISseMessage<RDTO>>> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
@@ -84,7 +87,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	 * @param entity The entity's data emit.
 	 */
 	public async emit(_: AbstractEntity): Promise<void> {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract method not implemented`);
+		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
 	}
 
 	/**
