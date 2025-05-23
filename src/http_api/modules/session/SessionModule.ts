@@ -3,7 +3,7 @@ import { TypeOrmEntityModule } from "../../../infrastructure/database/TypeOrmEnt
 import { SessionService } from "../../../application/services/session/SessionService";
 import { SessionController } from "../../../http_api/controllers/session/SessionController";
 
-/* Remember to add the module to the imports array in src/AppModule.ts */
+/* Remember to this the module to the imports array in src/AppModule.ts */
 
 @Module({
 	imports: [TypeOrmEntityModule],

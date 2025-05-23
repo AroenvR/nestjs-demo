@@ -1,13 +1,8 @@
-import { EventSource } from "eventsource";
-import { OnModuleInit, OnModuleDestroy, NotImplementedException, Injectable } from "@nestjs/common";
+import { createEventSource, EventSourceMessage } from "eventsource-client";
+import { OnModuleInit, OnModuleDestroy, Injectable } from "@nestjs/common";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { AbstractExternalService } from "../services/AbstractExternalService";
-
-/*
-	TODO:
-	- Add support for HTTP-Only JWT cookies / OIDC authentication 
-	- Stop trying to reconnect after 5 attempts
-*/
+import { randomUUID } from "crypto";
 
 // EXAMPLE IMPLEMENTATION:
 // export class TestConsumer extends AbstractExternalEventConsumer {
@@ -18,26 +13,19 @@ import { AbstractExternalService } from "../services/AbstractExternalService";
 // 	) {
 // 		super(logAdapter, service);
 // 	}
-
-// 	/* Getters & Setters */
-
-// 	protected get apiUrl(): string {
-// 		return "http://localhost:3001/v1/user/events";
-// 	}
 // }
 
 /**
- * AbstractExternalEventConsumer is an abstract class that provides a template for consuming events from an external API.
- * It handles the connection to the external event source, message parsing, and error handling.
- * This class is meant to be extended by other event consumer classes.
- * It uses the EventSource API to establish a connection to the external event source and listen for incoming events.
- * The class also implements the OnModuleInit and OnModuleDestroy interfaces to manage the lifecycle of the connection.
+ * Provides a template for consuming Server-Sent Events (SSE) from an external API
+ * It handles authenticated connections, message parsing, error handling, and a custom retry mechanism.
+ * Intended to be extended by concrete event consumer implementations.
  */
 @Injectable()
-export class AbstractExternalEventConsumer implements OnModuleInit, OnModuleDestroy {
+export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnModuleDestroy {
+	private sseClient: ReturnType<typeof createEventSource> | null = null;
+	private bearerToken: string | null = null;
 	protected readonly name: string;
 	protected logger: ILogger;
-	protected eventSource: EventSource | null = null;
 	protected eventTypes: string[] = ["message"];
 
 	constructor(
@@ -49,87 +37,140 @@ export class AbstractExternalEventConsumer implements OnModuleInit, OnModuleDest
 	}
 
 	/**
-	 * Gets executed as soon as the module is initialized.
+	 * Lifecycle hook called once the module has been initialized.
+	 * Attempts to log in and then establish the event source connection.
 	 */
-	onModuleInit() {
-		this.connectToEventSource(this.apiUrl);
-	}
-
-	/**
-	 * Gets executed as soon as the module is destroyed.
-	 */
-	onModuleDestroy() {
-		this.disconnect();
-	}
-
-	/**
-	 * Connects to the external event source using the provided URL.
-	 * @param url The URL of the external event source.
-	 */
-	protected connectToEventSource(url: string) {
-		this.logger.info(`Connecting to external event source: ${url}`);
+	public async onModuleInit(): Promise<void> {
+		this.logger.log(`Initializing event consuming.`);
 
 		try {
-			this.eventSource = new EventSource(url);
-
-			// Setup open event listener
-			this.eventSource.addEventListener("open", () => {
-				this.logger.info("Connection to external event source established");
-			});
-
-			// Setup event listeners for all event types
-			this.eventTypes.forEach((eventType) => {
-				this.eventSource.addEventListener(eventType, (event) => {
-					try {
-						const data = JSON.parse(event.data);
-						this.logger.verbose(`Received '${eventType}' event from external API: ${JSON.stringify(data)}`);
-
-						this.service.handleEvent(data);
-					} catch (error) {
-						this.logger.error(`Error processing external '${eventType}' event: ${error.message}`, error);
-					}
-				});
-			});
-
-			// Setup error event listener
-			this.eventSource.addEventListener("error", (error) => {
-				this.logger.error("Error with external event source connection", error);
-				this.reconnect();
-			});
-		} catch (error) {
-			this.logger.error(`Failed to connect to external event source: ${error.message}`, error);
-			this.reconnect();
-		}
-	}
-
-	/**
-	 * Reconnect to the external event source after a delay
-	 * @devnote This method is called when the connection to the external event source fails.
-	 */
-	private reconnect() {
-		this.disconnect();
-
-		// Attempt to reconnect after 2.5 seconds
-		setTimeout(() => {
-			this.logger.info("Attempting to reconnect to external event source...");
+			this.bearerToken = await this.service.login();
 			this.connectToEventSource(this.apiUrl);
-		}, 2500);
-	}
-
-	/**
-	 * Disconnect from the external event source.
-	 */
-	private disconnect() {
-		if (this.eventSource) {
-			this.logger.info("Disconnecting from external event source");
-			this.eventSource.close();
-			this.eventSource = null;
+		} catch (error) {
+			this.logger.error(`Failed to log in to external service. Event source connection will not be established.`, error);
 		}
 	}
 
-	/* Getters & Setters */
+	/**
+	 * Lifecycle hook called when the module is being destroyed.
+	 * Disconnects from the event source.
+	 */
+	public onModuleDestroy(): void {
+		this.logger.log(`Destroying event consuming.`);
+		this.disconnect();
+	}
 
+	/**
+	 * Core method to orchestrate establishing and managing the SSE connection.
+	 * It ensures cleanup of previous clients, initializes a new client,
+	 * processes the event stream, and handles outcomes like unexpected stream termination or errors.
+	 * @param url The URL of the SSE endpoint.
+	 */
+	private async connectToEventSource(url: string): Promise<void> {
+		this.logger.info(`Attempting to connect to external event source: ${url}`);
+
+		try {
+			this.sseClient = createEventSource({
+				url,
+				headers: this.getHeaders(),
+				fetch: fetch,
+			});
+
+			await this.processMessageStream();
+		} catch (error) {
+			this.logger.critical(`Error caught during stream setup / processing: ${error.message}`);
+			this.disconnect();
+		}
+	}
+
+	/**
+	 * Consumes events from the active SSE client using an async iterator.
+	 * Handles individual message processing and first message received logic.
+	 * This method will complete when the stream ends or is broken by an error or manual disconnect.
+	 * @throws Will re-throw errors encountered during stream iteration to be handled by the caller.
+	 */
+	private async processMessageStream(): Promise<void> {
+		this.logger.info(`Starting message stream processing.`);
+
+		if (!this.sseClient) {
+			throw new Error(`${this.name}: SSE client not initialized for message stream processing.`);
+		}
+
+		for await (const message of this.sseClient) {
+			this.logger.correlationManager.runWithCorrelationId(randomUUID(), () => {
+				this.handleMessage(message); // Delegate to existing handleMessage
+			});
+		}
+	}
+
+	/**
+	 * Handles incoming messages from the event source. It filters events based on `this.eventTypes`,
+	 * validates that the message data is a non-empty string, parses the JSON data,
+	 * and then delegates the parsed data to the injected service.
+	 * @param msg The message object received from the external API.
+	 */
+	private handleMessage(msg: EventSourceMessage): void {
+		const eventType = msg.event || "message";
+		const eventId = msg.id || "N/A";
+
+		if (!this.eventTypes.includes(eventType)) {
+			this.logger.warn(`Received an unimplemented event of type ${eventType} with ID ${eventId}. Skipping.`);
+			return;
+		}
+
+		if (typeof msg.data !== "string" || msg.data.trim() === "") {
+			this.logger.error(`Received an invalid event of type ${eventType} with ID ${eventId}. Empty or non-string data. Skipping.`);
+			return;
+		}
+
+		try {
+			this.logger.debug(`Received an event of type ${eventType} with ID ${eventId}.`);
+
+			const parsedData = JSON.parse(msg.data);
+			this.service.handleEvent(parsedData);
+		} catch (error) {
+			this.logger.error(`Error parsing JSON for event of of type ${eventType} with ID ${eventId}: ${error.message}.`, error);
+			this.logger.verbose(`Raw data for failed JSON parse:`, msg.data);
+		}
+	}
+
+	/**
+	 * Constructs the headers for the SSE request.
+	 * @returns The request headers.
+	 */
+	private getHeaders(): Record<string, string> {
+		const headers: Record<string, string> = {
+			Accept: "text/event-stream",
+			"Cache-Control": "no-cache",
+		};
+
+		if (this.bearerToken) {
+			headers["Authorization"] = `Bearer ${this.bearerToken}`;
+		}
+
+		return headers;
+	}
+
+	/**
+	 * Public method to manually disconnect from the event source.
+	 */
+	public disconnect(): void {
+		this.logger.info(`Disconnecting from event source & closing SSE client.`);
+
+		if (!this.sseClient) {
+			this.logger.info(`No active SSE client to disconnect.`);
+			return;
+		}
+
+		this.sseClient.close();
+		this.sseClient = null;
+	}
+
+	/**
+	 * Abstract getter for the API URL. Must be implemented by subclasses.
+	 * @returns The full URL of the Server-Sent Events endpoint.
+	 */
 	protected get apiUrl(): string {
-		throw new NotImplementedException(`${this.constructor.name}: Abstract getter method not implemented`);
+		return this.service.getApiUrl();
 	}
 }

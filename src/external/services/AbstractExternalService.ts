@@ -1,46 +1,53 @@
-import { Injectable, NotImplementedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ConfigService } from "@nestjs/config";
+import { IServerConfig } from "src/infrastructure/configuration/IServerConfig";
+import { RequestBuilder } from "src/common/utility/request_builder/RequestBuilder";
 
 /*
 	TODO:
-	- Add support for HTTP-Only JWT cookies / OIDC authentication
 	- Add get / post / patch / delete methods for the external service
 */
 
-// EXAMPLE IMPLEMENTATION
-// export class TestService extends AbstractExternalService {
-// 	constructor(
-// 		@Inject(WinstonAdapter)
-// 		protected readonly logAdapter: WinstonAdapter,
-// 	) {
-// 		super(logAdapter);
-// 	}
-
-// 	public async handleEvent(data: unknown) {
-
-// 	}
-// }
-
 /**
- * AbstractExternalService is an abstract class that provides a template for external services.
- * It is meant to be extended by other service classes that handle specific external events.
+ * AbstractExternalService is an abstract class that provides a template for
+ * services handling communication with an external API.
+ * It is meant to be extended by other service classes that handle specific requests.
  */
 @Injectable()
-export class AbstractExternalService {
+export abstract class AbstractExternalService {
 	protected readonly name: string;
 	protected logger: ILogger;
 
-	constructor(protected readonly logAdapter: IPrefixedLogger) {
+	constructor(
+		protected readonly logAdapter: IPrefixedLogger,
+		protected readonly requestBuilder: RequestBuilder,
+		protected readonly configService: ConfigService<IServerConfig>,
+	) {
 		this.name = this.constructor.name;
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
 	}
 
 	/**
+	 * Get the full URL of the external service's API endpoint.
+	 */
+	public abstract getApiUrl(): string;
+
+	/**
+	 * Log in to the external service.
+	 */
+	public abstract login(): Promise<string>;
+
+	/**
 	 * Handles the event data received from the external service.
-	 * This method should be implemented by subclasses to handle specific event data.
 	 * @param data The event data to handle.
 	 */
-	public async handleEvent(_: unknown) {
-		throw new NotImplementedException(`${this.name}: Abstract method not implemented`);
-	}
+	public abstract handleEvent(_: unknown): Promise<void>;
+
+	/* Getters & Setters */
+
+	/**
+	 * Get the configuration object for the external service.
+	 */
+	public abstract get config(): Record<string, unknown>;
 }
