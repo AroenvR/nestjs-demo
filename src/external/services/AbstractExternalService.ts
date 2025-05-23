@@ -4,10 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { IServerConfig } from "src/infrastructure/configuration/IServerConfig";
 import { RequestBuilder } from "src/common/utility/request_builder/RequestBuilder";
 
-/*
-	TODO:
-	- Add get / post / patch / delete methods for the external service
-*/
+// TODO: Implement the RequestBuilder's functionality based on a configuration object.
 
 /**
  * AbstractExternalService is an abstract class that provides a template for

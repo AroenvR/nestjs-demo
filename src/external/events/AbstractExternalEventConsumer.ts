@@ -1,19 +1,10 @@
+import { randomUUID } from "crypto";
 import { createEventSource, EventSourceMessage } from "eventsource-client";
 import { OnModuleInit, OnModuleDestroy, Injectable } from "@nestjs/common";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { AbstractExternalService } from "../services/AbstractExternalService";
-import { randomUUID } from "crypto";
 
-// EXAMPLE IMPLEMENTATION:
-// export class TestConsumer extends AbstractExternalEventConsumer {
-// 	constructor(
-// 		@Inject(WinstonAdapter)
-// 		protected readonly logAdapter: WinstonAdapter,
-// 		protected readonly service: TestService,
-// 	) {
-// 		super(logAdapter, service);
-// 	}
-// }
+// TODO: TESTING!!!
 
 /**
  * Provides a template for consuming Server-Sent Events (SSE) from an external API
