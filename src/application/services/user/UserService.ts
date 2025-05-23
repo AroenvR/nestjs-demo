@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { EntityManager, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { NotFoundException } from "@nestjs/common";
@@ -54,15 +55,15 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	/**
 	 *
 	 */
-	public async findOne(id: number) {
-		this.logger.info(`Finding entity by id ${id}`);
+	public async findOne(uuid: UUID) {
+		this.logger.info(`Finding entity by uuid ${uuid}`);
 
 		const data = await this.repository.findOne({
-			where: { id: id },
+			where: { uuid: uuid },
 			relations: [],
 		});
 
-		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
+		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
 		const entity = UserEntity.create(data); // Validate the data
 
 		return UserResponseDto.create(entity);
@@ -71,15 +72,15 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	/**
 	 *
 	 */
-	public async update(id: number, updateDto: UpdateUserDto) {
-		this.logger.info(`Updating entity by id ${id}`);
+	public async update(uuid: UUID, updateDto: UpdateUserDto) {
+		this.logger.info(`Updating entity by uuid ${uuid}`);
 
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			const data = await this.repository.findOne({
-				where: { id: id },
+				where: { uuid: uuid },
 				relations: [],
 			});
-			if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
+			if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
 
 			const entity = UserEntity.create(data); // Validate the data
 			entity.update(updateDto);
@@ -93,11 +94,11 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	/**
 	 *
 	 */
-	public async remove(id: number) {
-		this.logger.info(`Deleting entity by id ${id}`);
+	public async remove(uuid: UUID) {
+		this.logger.info(`Deleting entity by uuid ${uuid}`);
 
-		const data = await this.repository.findOneBy({ id });
-		if (!data) throw new NotFoundException(`Entity by id ${id} not found`);
+		const data = await this.repository.findOneBy({ uuid: uuid });
+		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
 
 		await this.repository.remove(data);
 	}
@@ -114,7 +115,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	 *
 	 */
 	public async emit(data: UserEntity) {
-		this.logger.info(`Emitting entity by id: ${data.id}`);
+		this.logger.info(`Emitting entity by uuid: ${data.uuid}`);
 
 		try {
 			const entity = UserEntity.create(data); // Validate the data

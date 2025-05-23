@@ -33,7 +33,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	afterInsert(event: InsertEvent<Entity>) {
 		if (!event) return;
 
-		this.logger.debug(`Entity by id ${event.entity.id} was inserted`);
+		this.logger.debug(`Entity by uuid ${event.entity.uuid} was inserted`);
 		this.service.emit(event.entity);
 	}
 
@@ -43,7 +43,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	afterUpdate(event: UpdateEvent<Entity>) {
 		if (!event) return;
 
-		this.logger.debug(`Entity by id ${event.entity.id} was updated`);
+		this.logger.debug(`Entity by uuid ${event.entity.uuid} was updated`);
 		this.service.emit(event.entity as Entity);
 	}
 }

@@ -10,9 +10,9 @@ import { DefaultErrorDecorators } from "./DefaultErrorDecorators";
  */
 export function PatchEndpoint(entityName: string, entityType: Type<unknown>) {
 	return applyDecorators(
-		Patch(":id"),
+		Patch(":uuid"),
 		HttpCode(HttpStatus.OK),
-		ApiOperation({ summary: `Update an existing ${entityName}` }),
+		ApiOperation({ summary: `Update an existing ${entityName} by its uuid` }),
 		ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: entityType }),
 		ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND }),
 		ApiResponse({ status: HttpStatus.CONFLICT, description: HttpExceptionMessages.CONFLICT }),

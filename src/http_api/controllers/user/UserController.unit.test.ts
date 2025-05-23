@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserController } from "./UserController";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
@@ -12,7 +13,7 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 describe("UserController Unit", () => {
 	let controller: GuardedController;
 
-	const ID = 1;
+	const UUID = randomUUID();
 	let mockedResponse: UserResponseDto;
 
 	beforeEach(async () => {
@@ -64,9 +65,9 @@ describe("UserController Unit", () => {
 	// -------------------------------------------------- \\
 
 	describe("FIND ONE", () => {
-		it("Finds an entity by id", async () => {
-			await expect(controller.findOne(ID)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by id ${ID}`);
+		it("Finds an entity by uuid", async () => {
+			await expect(controller.findOne(UUID)).resolves.toEqual(mockedResponse);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by uuid ${UUID}`);
 		});
 	});
 
@@ -76,8 +77,8 @@ describe("UserController Unit", () => {
 		it("Updates an entity", async () => {
 			const dto = MockUpdateUserDto.get();
 
-			await expect(controller.update(ID, dto)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by id ${ID}`);
+			await expect(controller.update(UUID, dto)).resolves.toEqual(mockedResponse);
+			expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by uuid ${UUID}`);
 		});
 	});
 
@@ -85,8 +86,8 @@ describe("UserController Unit", () => {
 
 	describe("DELETE", () => {
 		it("Deletes an entity", async () => {
-			await expect(controller.remove(ID)).resolves.toBeUndefined();
-			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by id ${ID}`);
+			await expect(controller.remove(UUID)).resolves.toBeUndefined();
+			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by uuid ${UUID}`);
 		});
 	});
 });

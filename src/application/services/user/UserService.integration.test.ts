@@ -11,6 +11,7 @@ import { createMockAppModule } from "../../../__tests__/mocks/module/createMockA
 import { UserModule } from "../../../http_api/modules/user/UserModule";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { MOCK_BAD_UUID } from "../../../__tests__/mocks/repository/MockRepository";
 
 describe("UserService Integration", () => {
 	const testName = "UserService_Integration";
@@ -67,7 +68,7 @@ describe("UserService Integration", () => {
 	it("Finds all entities", async () => {
 		const response = await service.findAll();
 
-		const found = response.find((data) => data.id === entity.id);
+		const found = response.find((data) => data.uuid === entity.uuid);
 		expect(found.id).toEqual(entity.id);
 		expect(found.uuid).toEqual(entity.uuid);
 		expect(found.createdAt).toEqual(entity.createdAt);
@@ -81,7 +82,7 @@ describe("UserService Integration", () => {
 	// --------------------------------------------------
 
 	it("Finds an entity by id", async () => {
-		const response = await service.findOne(entity.id);
+		const response = await service.findOne(entity.uuid);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
 		expect(response.id).toEqual(entity.id);
@@ -91,23 +92,21 @@ describe("UserService Integration", () => {
 		expect(response.username).toEqual(entity.username);
 		expect(response.password).toEqual(entity.password);
 
-		await expect(wasLogged(testName, `${className}: Finding entity by id ${entity.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `${className}: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it("Throws when unable to find an entity by id", async () => {
-		const id = 69;
-
-		await expect(service.findOne(id)).rejects.toThrow(`Entity by id ${id} not found`);
-		await expect(wasLogged(testName, `${className}: Finding entity by id ${id}`)).resolves.toBe(true);
+		await expect(service.findOne(MOCK_BAD_UUID)).rejects.toThrow(`Entity by uuid ${MOCK_BAD_UUID} not found`);
+		await expect(wasLogged(testName, `${className}: Finding entity by uuid ${MOCK_BAD_UUID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it("Updates an entity", async () => {
 		const dto = MockUpdateUserDto.get();
-		const response = await service.update(entity.id, dto);
+		const response = await service.update(entity.uuid, dto);
 
 		expect(response).toBeInstanceOf(UserResponseDto);
 		expect(response.id).toEqual(entity.id);
@@ -117,14 +116,14 @@ describe("UserService Integration", () => {
 		expect(response.username).toEqual(dto.username);
 		expect(response.password).toEqual(dto.password);
 
-		await expect(wasLogged(testName, `${className}: Updating entity by id ${entity.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `${className}: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it("Deletes an entity", async () => {
-		await expect(service.remove(entity.id)).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity by id ${entity.id}`)).resolves.toBe(true);
+		await expect(service.remove(entity.uuid)).resolves.toBeUndefined();
+		await expect(wasLogged(testName, `${className}: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -147,6 +146,6 @@ describe("UserService Integration", () => {
 		await service.emit(entity);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(entity) });
-		await expect(wasLogged(testName, `${className}: Emitting entity by id: ${entity.id}`)).resolves.toBe(true);
+		await expect(wasLogged(testName, `${className}: Emitting entity by uuid: ${entity.uuid}`)).resolves.toBe(true);
 	});
 });
