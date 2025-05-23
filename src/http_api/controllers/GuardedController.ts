@@ -41,7 +41,7 @@ export class GuardedController {
 	public async create(@Body() createDto: CreateDto): Promise<ResponseDto> {
 		if (!isTruthy(createDto)) throw new BadRequestException(`${this.constructor.name}: Create payload is empty.`);
 
-		this.logger.info(`Creating a new entity`);
+		this.logger.log(`Creating a new entity`);
 		return this.service.create(createDto);
 	}
 
@@ -51,7 +51,7 @@ export class GuardedController {
 	 * @devnote Remember to decorate with the {@link GetEndpoint} decorator.
 	 */
 	public async findAll(): Promise<ResponseDto[]> {
-		this.logger.info(`Finding all entities`);
+		this.logger.log(`Finding all entities`);
 		return this.service.findAll();
 	}
 
@@ -72,7 +72,7 @@ export class GuardedController {
 	 * @devnote Remember to decorate with the {@link GetByIdEndpoint} decorator.
 	 */
 	public async findOne(@Param("uuid", ParseUUIDPipe) uuid: UUID): Promise<ResponseDto> {
-		this.logger.info(`Finding entity by uuid ${uuid}`);
+		this.logger.log(`Finding entity by uuid ${uuid}`);
 		return this.service.findOne(uuid);
 	}
 
@@ -87,7 +87,7 @@ export class GuardedController {
 		if (!isTruthy(uuid)) throw new HttpException("UUID is empty", HttpStatus.BAD_REQUEST);
 		if (!isTruthy(updateDto)) throw new BadRequestException(`${this.constructor.name}: Update payload is empty.`);
 
-		this.logger.info(`Updating entity by uuid ${uuid}`);
+		this.logger.log(`Updating entity by uuid ${uuid}`);
 		return this.service.update(uuid, updateDto);
 	}
 
@@ -97,7 +97,7 @@ export class GuardedController {
 	 * @devnote Remember to decorate with the {@link DeleteEndpoint} decorator.
 	 */
 	public async remove(@Param("uuid", ParseUUIDPipe) uuid: UUID): Promise<void> {
-		this.logger.info(`Deleting entity by uuid ${uuid}`);
+		this.logger.log(`Deleting entity by uuid ${uuid}`);
 		await this.service.remove(uuid);
 	}
 }
