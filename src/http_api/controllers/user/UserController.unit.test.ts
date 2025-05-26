@@ -5,13 +5,12 @@ import { MockService } from "../../../__tests__/mocks/service/MockService";
 import { UserService } from "../../../application/services/user/UserService";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
-import { GuardedController } from "../GuardedController";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
 describe("UserController Unit", () => {
-	let controller: GuardedController;
+	let controller: UserController;
 
 	const UUID = randomUUID();
 	let mockedResponse: UserResponseDto;
@@ -49,7 +48,7 @@ describe("UserController Unit", () => {
 			const dto = MockCreateUserDto.get();
 
 			await expect(controller.create(dto)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Creating a new entity`);
+			expect(mockILogger.log).toHaveBeenCalledWith(`Creating a new entity`);
 		});
 	});
 
@@ -58,7 +57,7 @@ describe("UserController Unit", () => {
 	describe("FIND ALL", () => {
 		it("Finds all entities", async () => {
 			await expect(controller.findAll()).resolves.toEqual([mockedResponse]);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Finding all entities`);
+			expect(mockILogger.log).toHaveBeenCalledWith(`Finding all entities`);
 		});
 	});
 
@@ -67,7 +66,7 @@ describe("UserController Unit", () => {
 	describe("FIND ONE", () => {
 		it("Finds an entity by uuid", async () => {
 			await expect(controller.findOne(UUID)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Finding entity by uuid ${UUID}`);
+			expect(mockILogger.log).toHaveBeenCalledWith(`Finding entity by uuid ${UUID}`);
 		});
 	});
 
@@ -78,7 +77,7 @@ describe("UserController Unit", () => {
 			const dto = MockUpdateUserDto.get();
 
 			await expect(controller.update(UUID, dto)).resolves.toEqual(mockedResponse);
-			expect(mockILogger.info).toHaveBeenCalledWith(`Updating entity by uuid ${UUID}`);
+			expect(mockILogger.log).toHaveBeenCalledWith(`Updating entity by uuid ${UUID}`);
 		});
 	});
 
@@ -87,7 +86,7 @@ describe("UserController Unit", () => {
 	describe("DELETE", () => {
 		it("Deletes an entity", async () => {
 			await expect(controller.remove(UUID)).resolves.toBeUndefined();
-			expect(mockILogger.info).toHaveBeenCalledWith(`Deleting entity by uuid ${UUID}`);
+			expect(mockILogger.log).toHaveBeenCalledWith(`Deleting entity by uuid ${UUID}`);
 		});
 	});
 });

@@ -3,6 +3,6 @@
  * This enum should be used in a new entity's @Entity decorator.
  */
 export enum ApplicationEntities {
-    USER = "user",
-    SESSION = "session",
+	USER = "user",
+	SESSION = "session",
 }
