@@ -7,8 +7,7 @@ import { CreateDto } from "../../http_api/dtos/CreateDto";
 import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 import { UpdateDto } from "../../http_api/dtos/UpdateDto";
 import { ISseMessage } from "../events/ISseMessage";
-import { ILogger } from "../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
  * An abstract service class that enforces basic CRUD operations.
@@ -23,7 +22,7 @@ export class AbstractService<CDTO extends CreateDto, UDTO extends UpdateDto, RDT
 	constructor(
 		protected readonly repository: Repository<AbstractEntity>,
 		protected readonly entityManager: EntityManager,
-		protected readonly logAdapter: WinstonAdapter,
+		protected readonly logAdapter: IPrefixedLogger,
 	) {
 		this.name = this.constructor.name;
 		this.logger = logAdapter.getPrefixedLogger(this.name);

@@ -4,8 +4,7 @@ import { AbstractService } from "../services/AbstractService";
 import { CreateDto } from "../../http_api/dtos/CreateDto";
 import { UpdateDto } from "../../http_api/dtos/UpdateDto";
 import { ResponseDto } from "../../http_api/dtos/ResponseDto";
-import { ILogger } from "../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
  * An abstract class to Subscribe to, and publish, events from the database's INSERT and UPDATE actions.
@@ -15,7 +14,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	protected logger: ILogger;
 
 	constructor(
-		protected readonly logAdapter: WinstonAdapter,
+		protected readonly logAdapter: IPrefixedLogger,
 		protected readonly dataSource: DataSource,
 		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
 	) {

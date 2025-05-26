@@ -1,5 +1,5 @@
 {
     "driver": "sqlite",
     "database": "dev.db",
-    "synchronize": true
+    "synchronize": false
 }
