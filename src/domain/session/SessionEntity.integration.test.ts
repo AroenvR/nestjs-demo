@@ -72,7 +72,7 @@ describe("SessionEntity Integration", () => {
 			copy.uuid = randomUUID();
 			copy.token = "foobar";
 
-			await expect(repository.save(copy)).rejects.toThrow("UNIQUE constraint failed: session_entity.userUuid");
+			await expect(repository.save(copy)).rejects.toThrow(/UNIQUE constraint failed: session.userUuid/);
 		});
 
 		// --------------------------------------------------
@@ -90,7 +90,7 @@ describe("SessionEntity Integration", () => {
 			copy.uuid = randomUUID();
 			copy.userUuid = randomUUID();
 
-			await expect(repository.save(copy)).rejects.toThrow("UNIQUE constraint failed: session_entity.token");
+			await expect(repository.save(copy)).rejects.toThrow(/UNIQUE constraint failed: session.token/);
 		});
 
 		// --------------------------------------------------
