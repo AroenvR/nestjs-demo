@@ -11,7 +11,7 @@ import { ISseMessage } from "../../../application/events/ISseMessage";
 export class MockService {
 	events: Observable<ISseMessage<ResponseDto>> = of({} as ISseMessage<ResponseDto>); // Mocked Observable emitting ISseMessage<R>
 
-	constructor(protected createResponseDto: () => ResponseDto) { }
+	constructor(protected createResponseDto: () => ResponseDto) {}
 
 	create = jest.fn().mockImplementation((_: CreateDto) => {
 		return Promise.resolve(this.createResponseDto()); // Mocks returning a created entity as ResponseDto
