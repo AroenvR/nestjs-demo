@@ -4,8 +4,6 @@ import { OnModuleInit, OnModuleDestroy, Injectable } from "@nestjs/common";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { AbstractExternalService } from "../services/AbstractExternalService";
 
-// TODO: TESTING!!!
-
 /**
  * Provides a template for consuming Server-Sent Events (SSE) from an external API
  * It handles authenticated connections, message parsing, error handling, and a custom retry mechanism.
@@ -38,7 +36,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 			this.bearerToken = await this.service.login();
 			this.connectToEventSource(this.apiUrl);
 		} catch (error) {
-			this.logger.error(`Failed to log in to external service. Event source connection will not be established.`, error);
+			this.logger.critical(`Failed to log in to external service. Event source connection will not be established.`, error);
 		}
 	}
 
@@ -57,7 +55,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	 * processes the event stream, and handles outcomes like unexpected stream termination or errors.
 	 * @param url The URL of the SSE endpoint.
 	 */
-	private async connectToEventSource(url: string): Promise<void> {
+	public async connectToEventSource(url: string): Promise<void> {
 		this.logger.info(`Attempting to connect to external event source: ${url}`);
 
 		try {
@@ -80,7 +78,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	 * This method will complete when the stream ends or is broken by an error or manual disconnect.
 	 * @throws Will re-throw errors encountered during stream iteration to be handled by the caller.
 	 */
-	private async processMessageStream(): Promise<void> {
+	public async processMessageStream(): Promise<void> {
 		this.logger.info(`Starting message stream processing.`);
 
 		if (!this.sseClient) {
@@ -89,7 +87,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 
 		for await (const message of this.sseClient) {
 			this.logger.correlationManager.runWithCorrelationId(randomUUID(), () => {
-				this.handleMessage(message); // Delegate to existing handleMessage
+				this.handleMessage(message);
 			});
 		}
 	}
@@ -100,7 +98,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	 * and then delegates the parsed data to the injected service.
 	 * @param msg The message object received from the external API.
 	 */
-	private handleMessage(msg: EventSourceMessage): void {
+	public handleMessage(msg: EventSourceMessage): void {
 		const eventType = msg.event || "message";
 		const eventId = msg.id || "N/A";
 
@@ -129,7 +127,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	 * Constructs the headers for the SSE request.
 	 * @returns The request headers.
 	 */
-	private getHeaders(): Record<string, string> {
+	public getHeaders(): Record<string, string> {
 		const headers: Record<string, string> = {
 			Accept: "text/event-stream",
 			"Cache-Control": "no-cache",
@@ -143,13 +141,13 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	}
 
 	/**
-	 * Public method to manually disconnect from the event source.
+	 * Manually disconnect from the event source.
 	 */
 	public disconnect(): void {
 		this.logger.info(`Disconnecting from event source & closing SSE client.`);
 
 		if (!this.sseClient) {
-			this.logger.info(`No active SSE client to disconnect.`);
+			this.logger.warn(`No active SSE client to disconnect.`);
 			return;
 		}
 

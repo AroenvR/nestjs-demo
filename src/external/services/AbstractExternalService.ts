@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { ConfigService } from "@nestjs/config";
-import { IServerConfig } from "src/infrastructure/configuration/IServerConfig";
-import { RequestBuilder } from "src/common/utility/request_builder/RequestBuilder";
-
-// TODO: Implement the RequestBuilder's functionality based on a configuration object.
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
+import { RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 
 /**
  * AbstractExternalService is an abstract class that provides a template for
