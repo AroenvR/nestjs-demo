@@ -92,6 +92,7 @@ export class RequestBuilder implements IRequestBuilder {
 		const response = await fetch(url, payload)
 			.then((response: Response) => {
 				if (response.ok) {
+					if (response.status === 204) return; // No content response
 					if (this.responseType === "json") return response.json();
 					else if (this.responseType === "arrayBuffer") return response.arrayBuffer();
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);
