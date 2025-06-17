@@ -5,7 +5,7 @@ import { LoggerMiddleware } from "./LoggerMiddleware";
 import { mockILogger } from "../../__tests__/mocks/mockLogAdapter";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
-describe("LoggerMiddleware Unit", () => {
+describe("LoggerMiddleware.Unit", () => {
 	let middleware: NestMiddleware;
 
 	beforeEach(async () => {

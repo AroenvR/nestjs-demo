@@ -36,8 +36,6 @@ describe(TEST_NAME, () => {
 		userRepo = app.get(getRepositoryToken(UserEntity));
 		repository = app.get(getRepositoryToken(SessionEntity));
 		jwtService = app.get(JwtService);
-
-		user = await userRepo.save(MockUserEntity.get());
 	});
 
 	beforeEach(async () => {
@@ -47,6 +45,10 @@ describe(TEST_NAME, () => {
 
 	afterEach(async () => {
 		await repository.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------

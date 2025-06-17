@@ -12,10 +12,13 @@ import { createMockAppModule } from "../../../__tests__/mocks/module/createMockA
 import { UserModule } from "../../modules/user/UserModule";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
+import { INestApplication } from "@nestjs/common";
 
-describe("UserController Integration", () => {
-	const TEST_NAME = "UserController_Integration";
+const TEST_NAME = "UserController.Integration";
+describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
+
+	let app: INestApplication;
 
 	let className: string;
 	let controller: GuardedController;
@@ -26,10 +29,10 @@ describe("UserController Integration", () => {
 	let updateDto: UpdateUserDto;
 
 	beforeAll(async () => {
-		const module = await createMockAppModule(UserModule);
+		app = await createMockAppModule(UserModule);
 
-		controller = module.get<UserController>(UserController);
-		repository = module.get(getRepositoryToken(UserEntity));
+		controller = app.get<UserController>(UserController);
+		repository = app.get(getRepositoryToken(UserEntity));
 
 		className = controller.constructor.name;
 	});
@@ -44,6 +47,10 @@ describe("UserController Integration", () => {
 
 	afterEach(async () => {
 		await repository.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------

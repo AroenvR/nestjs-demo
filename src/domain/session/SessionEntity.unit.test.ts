@@ -1,7 +1,7 @@
 import { MockSessionEntity } from "../../__tests__/mocks/entity/MockSessionEntity";
 import { SessionEntity } from "./SessionEntity";
 
-describe("SessionEntity and its DTO's", () => {
+describe("SessionEntity.Unit", () => {
 	let data: SessionEntity;
 
 	beforeEach(() => {

@@ -7,7 +7,7 @@ import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
 import { SessionModule } from "../../http_api/modules/session/SessionModule";
 
-describe("SessionEntity Integration", () => {
+describe("SessionEntity.Integration", () => {
 	let entity: SessionEntity;
 	let repository: Repository<SessionEntity>;
 

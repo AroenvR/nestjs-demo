@@ -8,7 +8,7 @@ import { CreateUserDto } from "./CreateUserDto";
 import { userConstants } from "../../../common/constants/userConstants";
 import { falsyValues } from "../../../__tests__/helpers/falsyValues";
 
-describe("User DTO's", () => {
+describe("UserDTO", () => {
 	let createDto: CreateUserDto;
 	let updateDto: UpdateUserDto;
 

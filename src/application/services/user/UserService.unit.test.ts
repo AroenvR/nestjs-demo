@@ -14,7 +14,7 @@ import { WinstonAdapter } from "../../../infrastructure/logging/adapters/Winston
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe("UserService Unit", () => {
+describe("UserService.Unit", () => {
 	let mockedResponse: UserEntity;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
 

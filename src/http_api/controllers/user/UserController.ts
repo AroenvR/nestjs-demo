@@ -3,7 +3,7 @@ import { Controller } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { DeleteEndpoint } from "../../decorators/DeleteEndpoint";
 import { PatchEndpoint } from "../../decorators/PatchEndpoint";
-import { GetByUuidEndpoint } from "../../decorators/GetByIdEndpoint";
+import { GetByUuidEndpoint } from "../../decorators/GetByUuidEndpoint";
 import { SseEndpoint } from "../../decorators/SseEndpoint";
 import { GetEndpoint } from "../../decorators/GetEndpoint";
 import { PostEndpoint } from "../../decorators/PostEndpoint";

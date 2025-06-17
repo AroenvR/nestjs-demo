@@ -12,9 +12,9 @@ import { UserEntity } from "../../../domain/user/UserEntity";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { randomUUID } from "crypto";
 
-describe("SessionService Integration", () => {
-	const testName = "SessionService_Integration";
-	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
+const TEST_NAME = "SessionService.Integration";
+describe(TEST_NAME, () => {
+	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	let userRepo: Repository<UserEntity>;
 	let repository: Repository<SessionEntity>;
@@ -56,7 +56,7 @@ describe("SessionService Integration", () => {
 		expect(response).toBeInstanceOf(SessionResponseDto);
 		expect(response.username).toEqual(user.username);
 
-		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Creating a new entity`)).resolves.toBe(true);
 
 		const createdSession = await repository.findOne({
 			where: { userUuid: user.uuid },
@@ -73,7 +73,7 @@ describe("SessionService Integration", () => {
 		const exists = await service.exists(user.uuid);
 		expect(exists).toEqual(true);
 
-		await expect(wasLogged(testName, `${className}: Checking for an existing session for user uuid ${user.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Checking for an existing session for user uuid ${user.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -91,8 +91,8 @@ describe("SessionService Integration", () => {
 		expect(refreshedSession).toBeDefined();
 		expect(refreshedSession.token).not.toEqual(originalToken);
 
-		await expect(wasLogged(testName, `${className}: Session already exists for user uuid ${user.uuid}`)).resolves.toBe(true);
-		await expect(wasLogged(testName, `${className}: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Session already exists for user uuid ${user.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -101,7 +101,7 @@ describe("SessionService Integration", () => {
 		const uuid = randomUUID();
 
 		await expect(service.exists(uuid)).rejects.toThrow(`User by uuid ${uuid} not found`);
-		await expect(wasLogged(testName, `${className}: Checking for an existing session for user uuid ${uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Checking for an existing session for user uuid ${uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -116,7 +116,7 @@ describe("SessionService Integration", () => {
 		});
 
 		await expect(service.exists(uuid)).rejects.toThrow(`Session for user uuid ${uuid} not found`);
-		await expect(wasLogged(testName, `${className}: Checking for an existing session for user uuid ${uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Checking for an existing session for user uuid ${uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -130,7 +130,7 @@ describe("SessionService Integration", () => {
 		expect(response).toBeInstanceOf(SessionResponseDto);
 		expect(response.username).toEqual(user.username);
 
-		await expect(wasLogged(testName, `${className}: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Updating entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 
 		const updated = await repository.findOne({ where: { userUuid: user.uuid } });
 		expect(updated.token).not.toEqual(session.token);
@@ -143,6 +143,6 @@ describe("SessionService Integration", () => {
 		const user = await service.create(createDto);
 
 		await expect(service.remove(user.uuid)).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity for user uuid ${user.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Deleting entity for user uuid ${user.uuid}`)).resolves.toBe(true);
 	});
 });

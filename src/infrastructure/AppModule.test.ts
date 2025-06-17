@@ -25,11 +25,11 @@ describe("AppModule", () => {
 	let appModule: AppModule;
 
 	beforeEach(async () => {
-		const moduleRef: TestingModule = await Test.createTestingModule({
+		const nestApp: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
 		}).compile();
 
-		appModule = moduleRef.get<AppModule>(AppModule);
+		appModule = nestApp.get<AppModule>(AppModule);
 	});
 
 	// --------------------------------------------------
@@ -64,6 +64,8 @@ describe("AppModule", () => {
 		await app.init();
 
 		await request(app.getHttpServer()).get("/mock").expect(200);
+
+		await app.close();
 	});
 
 	// --------------------------------------------------
@@ -97,5 +99,7 @@ describe("AppModule", () => {
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});
+
+		await app.close();
 	});
 });

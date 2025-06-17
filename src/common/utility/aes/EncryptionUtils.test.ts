@@ -4,9 +4,9 @@ import { UtilityModule } from "../UtilityModule";
 import { wasLogged } from "../../../__tests__/helpers/wasLogged";
 import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 
-describe("Encryption Utils", () => {
-	const testName = "EncryptionUtils";
-	process.env.TEST_NAME = testName;
+const TEST_NAME = "EncryptionUtils";
+describe(TEST_NAME, () => {
+	process.env.TEST_NAME = TEST_NAME;
 
 	const SECRET_LENGTH = 69;
 	const DATA = "Hello, secret!";
@@ -22,7 +22,7 @@ describe("Encryption Utils", () => {
 
 	it("Should be defined", async () => {
 		expect(encryptionUtil).toBeDefined();
-		await expect(wasLogged(testName, `${testName}: Registered an encryption/decryption strategy for aes-256-gcm`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Registered an encryption/decryption strategy for aes-256-gcm`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -82,8 +82,8 @@ describe("Encryption Utils", () => {
 			expect(aesData.version).toEqual(1);
 			expect(aesData.cipher).not.toEqual(DATA);
 
-			await expect(wasLogged(testName, `${testName}: Encrypting data using ${algorithm}`)).resolves.toBe(true);
-			await expect(wasLogged(testName, `${testName}: Successfully encrypted data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Encrypting data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Successfully encrypted data using ${algorithm}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -95,8 +95,8 @@ describe("Encryption Utils", () => {
 
 			expect(decrypted).toEqual(DATA);
 
-			await expect(wasLogged(testName, `${testName}: Decrypting data using ${algorithm}`)).resolves.toBe(true);
-			await expect(wasLogged(testName, `${testName}: Successfully decrypted data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Decrypting data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Successfully decrypted data using ${algorithm}`)).resolves.toBe(true);
 		});
 	});
 });

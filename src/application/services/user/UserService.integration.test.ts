@@ -12,10 +12,13 @@ import { UserModule } from "../../../http_api/modules/user/UserModule";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { MOCK_BAD_UUID } from "../../../__tests__/mocks/repository/MockRepository";
+import { INestApplication } from "@nestjs/common";
 
-describe("UserService Integration", () => {
-	const testName = "UserService_Integration";
-	process.env.TEST_NAME = testName; // Creates a log file named with this test's name.
+const TEST_NAME = "UserService.Integration";
+describe(TEST_NAME, () => {
+	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
+
+	let app: INestApplication;
 
 	let repository: Repository<unknown>;
 	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>; // Values to change
@@ -25,10 +28,10 @@ describe("UserService Integration", () => {
 	let createDto: CreateUserDto;
 
 	beforeAll(async () => {
-		const module = await createMockAppModule(UserModule);
+		app = await createMockAppModule(UserModule);
 
-		repository = module.get(getRepositoryToken(UserEntity));
-		service = module.get<UserService>(UserService);
+		repository = app.get(getRepositoryToken(UserEntity));
+		service = app.get<UserService>(UserService);
 		className = service.constructor.name;
 	});
 
@@ -41,6 +44,10 @@ describe("UserService Integration", () => {
 
 	afterEach(async () => {
 		await repository.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------
@@ -60,7 +67,7 @@ describe("UserService Integration", () => {
 		expect(response.username).toEqual(createDto.username);
 		expect(response.password).toEqual(createDto.password);
 
-		await expect(wasLogged(testName, `${className}: Creating a new entity`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Creating a new entity`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -76,7 +83,7 @@ describe("UserService Integration", () => {
 		expect(found.username).toEqual(entity.username);
 		expect(found.password).toEqual(entity.password);
 
-		await expect(wasLogged(testName, `${className}: Finding all entities`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Finding all entities`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -92,14 +99,14 @@ describe("UserService Integration", () => {
 		expect(response.username).toEqual(entity.username);
 		expect(response.password).toEqual(entity.password);
 
-		await expect(wasLogged(testName, `${className}: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it("Throws when unable to find an entity by id", async () => {
 		await expect(service.findOne(MOCK_BAD_UUID)).rejects.toThrow(`Entity by uuid ${MOCK_BAD_UUID} not found`);
-		await expect(wasLogged(testName, `${className}: Finding entity by uuid ${MOCK_BAD_UUID}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Finding entity by uuid ${MOCK_BAD_UUID}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -116,14 +123,14 @@ describe("UserService Integration", () => {
 		expect(response.username).toEqual(dto.username);
 		expect(response.password).toEqual(dto.password);
 
-		await expect(wasLogged(testName, `${className}: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
 
 	it("Deletes an entity", async () => {
 		await expect(service.remove(entity.uuid)).resolves.toBeUndefined();
-		await expect(wasLogged(testName, `${className}: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Deleting entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -134,7 +141,7 @@ describe("UserService Integration", () => {
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty("subscribe");
 
-		await expect(wasLogged(testName, `${className}: Observing events`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Observing events`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -146,6 +153,6 @@ describe("UserService Integration", () => {
 		await service.emit(entity);
 
 		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(entity) });
-		await expect(wasLogged(testName, `${className}: Emitting entity by uuid: ${entity.uuid}`)).resolves.toBe(true);
+		await expect(wasLogged(TEST_NAME, `${className}: Emitting entity by uuid: ${entity.uuid}`)).resolves.toBe(true);
 	});
 });

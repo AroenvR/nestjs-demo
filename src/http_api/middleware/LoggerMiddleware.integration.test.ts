@@ -8,7 +8,7 @@ import { randomUUID } from "crypto";
 import request from "supertest";
 import express, { Express } from "express";
 
-const TEST_NAME = "LoggerMiddleware_Integration";
+const TEST_NAME = "LoggerMiddleware.Integration";
 
 describe(TEST_NAME, () => {
 	const ENDPOINT = "/test";

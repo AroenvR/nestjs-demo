@@ -26,6 +26,10 @@ async function bootstrap() {
 		Implement a validator utility
 		Implement worker threads
 		Implement a custom session storage
+
+		Fix:
+		- Login scripts (scripts dir)
+		- Bash scripts for /session endpoints (scripts dir)
 	*/
 
 	// !!! IF ANY CHANGES ARE MADE HERE !!!

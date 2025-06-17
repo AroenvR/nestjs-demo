@@ -13,7 +13,7 @@ import { SessionResponseDto } from "../../../http_api/dtos/session/SessionRespon
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe("SessionService Unit", () => {
+describe("SessionService.Unit", () => {
 	let mockedSession: SessionEntity;
 	let mockedUser: UserEntity;
 	let service: SessionService;

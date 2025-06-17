@@ -5,14 +5,17 @@ import { MockUserEntity } from "../../__tests__/mocks/entity/MockUserEntity";
 import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
 import { UserModule } from "../../http_api/modules/user/UserModule";
+import { INestApplication } from "@nestjs/common";
 
-describe("UserEntity Integration", () => {
+describe("UserEntity.Integration", () => {
+	let app: INestApplication;
+
 	let entity: UserEntity;
 	let repository: Repository<UserEntity>;
 
 	beforeAll(async () => {
-		const module = await createMockAppModule(UserModule);
-		repository = module.get(getRepositoryToken(UserEntity));
+		app = await createMockAppModule(UserModule);
+		repository = app.get(getRepositoryToken(UserEntity));
 	});
 
 	beforeEach(() => {
@@ -21,6 +24,10 @@ describe("UserEntity Integration", () => {
 
 	afterEach(async () => {
 		await repository.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------

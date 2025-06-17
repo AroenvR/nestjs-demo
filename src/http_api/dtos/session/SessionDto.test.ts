@@ -6,7 +6,7 @@ import { falsyValues } from "../../../__tests__/helpers/falsyValues";
 import { userConstants } from "../../../common/constants/userConstants";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe("Session DTO's", () => {
+describe("SessionDTO", () => {
 	let createDto: CreateSessionDto;
 
 	beforeEach(() => {

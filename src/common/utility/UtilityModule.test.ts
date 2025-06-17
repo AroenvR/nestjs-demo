@@ -3,7 +3,7 @@ import { UtilityModule } from "./UtilityModule";
 import { EncryptionUtils } from "./aes/EncryptionUtils";
 import { IRequestBuilder, RequestBuilder } from "./request_builder/RequestBuilder";
 
-describe("Utility Module", () => {
+describe("UtilityModule", () => {
 	let encryptionUtil: EncryptionUtils;
 	let requestBuilder: IRequestBuilder;
 

@@ -9,7 +9,7 @@ import { WinstonAdapter } from "../../../infrastructure/logging/adapters/Winston
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
-describe("UserController Unit", () => {
+describe("UserController.Unit", () => {
 	let controller: UserController;
 
 	const UUID = randomUUID();

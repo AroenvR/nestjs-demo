@@ -7,7 +7,7 @@ import { CorrelationManager } from "../correlation/CorrelationManager";
 import { randomUUID } from "crypto";
 
 const TEST_LOG_DIR = path.join(__dirname, "../", "../", "../", "../", "logs");
-const TEST_NAME = "WinstonAdapter_integration";
+const TEST_NAME = "WinstonAdapter.integration";
 const TEST_LOG_FILENAME_TEXT = `${TEST_NAME}_text`;
 const TEST_LOG_FILENAME_JSON = `${TEST_NAME}_json`;
 

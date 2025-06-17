@@ -82,7 +82,7 @@ jest.mock("eventsource-client", () => {
 
 /* -------- ACTUAL TEST STARTS HERE -------- */
 
-describe("Abstract External Event Consumer", () => {
+describe("AbstractExternalEventConsumer", () => {
 	let service: AbstractExternalService;
 	let consumer: AbstractExternalEventConsumer;
 	let logger: ILogger;

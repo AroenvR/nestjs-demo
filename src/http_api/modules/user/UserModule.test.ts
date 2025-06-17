@@ -28,7 +28,7 @@ describe(TEST_NAME, () => {
 	let createDto: CreateUserDto;
 	let updateDto: UpdateUserDto;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		app = await createMockAppModule(UserModule);
 		repository = app.get(getRepositoryToken(UserEntity));
 	});
@@ -43,6 +43,10 @@ describe(TEST_NAME, () => {
 
 	afterEach(async () => {
 		await repository.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------

@@ -10,10 +10,13 @@ import { MockSessionEntity } from "../../../__tests__/mocks/entity/MockSessionEn
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { randomUUID } from "crypto";
+import { INestApplication } from "@nestjs/common";
 
-describe("SessionController Integration", () => {
-	const TEST_NAME = "SessionController_Integration";
+const TEST_NAME = "SessionController.Integration";
+describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
+
+	let app: INestApplication;
 
 	let className: string;
 	let controller: SessionController;
@@ -26,11 +29,11 @@ describe("SessionController Integration", () => {
 	let mockResponse: any;
 
 	beforeAll(async () => {
-		const module = await createMockAppModule(SessionModule);
+		app = await createMockAppModule(SessionModule);
 
-		controller = module.get<SessionController>(SessionController);
-		userRepo = module.get(getRepositoryToken(UserEntity));
-		repository = module.get(getRepositoryToken(SessionEntity));
+		controller = app.get<SessionController>(SessionController);
+		userRepo = app.get(getRepositoryToken(UserEntity));
+		repository = app.get(getRepositoryToken(SessionEntity));
 
 		className = controller.constructor.name;
 	});
@@ -51,6 +54,10 @@ describe("SessionController Integration", () => {
 	afterEach(async () => {
 		await repository.clear();
 		await userRepo.clear();
+	});
+
+	afterAll(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------
