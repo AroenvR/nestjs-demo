@@ -6,4 +6,10 @@ import { UUID } from "crypto";
  * @param username The username of the user.
  * @param createdAt The timestamp when the JWT was created.
  */
-export type TJwtCookie = { uuid: UUID; username: string; uniquefier: string; iat: number; exp: number };
+export type TJwtCookie = {
+	uuid: UUID;
+	username: string;
+	uniquefier: string;
+	iat: number;
+	exp: number;
+};

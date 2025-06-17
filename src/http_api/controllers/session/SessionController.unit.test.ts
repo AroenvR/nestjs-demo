@@ -13,12 +13,14 @@ import { MockCreateSessionDto } from "../../../__tests__/mocks/dto/MockSessionDt
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { MockJwtService } from "../../../__tests__/mocks/service/MockJwtService";
 import { MockConfigService } from "../../../__tests__/mocks/service/MockConfigService";
+import { mockPlainTextJwt } from "../../../__tests__/mocks/mockJwt";
 
 describe("SessionController Unit", () => {
 	let controller: SessionController;
 
+	const MOCK_COOKIE = { user: mockPlainTextJwt };
+
 	let uuid = randomUUID();
-	let mockRequest: any;
 	let mockResponse: any;
 	let mockedResponse: SessionResponseDto;
 
@@ -27,7 +29,6 @@ describe("SessionController Unit", () => {
 		uuid = user.uuid;
 		mockedResponse = SessionResponseDto.create(user);
 
-		mockRequest = { user: { uuid: uuid } };
 		mockResponse = {
 			cookie: jest.fn(),
 			clearCookie: jest.fn(),
@@ -80,7 +81,7 @@ describe("SessionController Unit", () => {
 
 	describe("UPDATE", () => {
 		it("Updates an entity", async () => {
-			await expect(controller.update(uuid, mockRequest, mockResponse)).resolves.toEqual(mockedResponse);
+			await expect(controller.update(uuid, MOCK_COOKIE, mockResponse)).resolves.toEqual(mockedResponse);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Updating session and JWT for user uuid ${uuid}`);
 		});
 	});
@@ -89,7 +90,7 @@ describe("SessionController Unit", () => {
 
 	describe("DELETE", () => {
 		it("Deletes an entity", async () => {
-			await expect(controller.logout(mockRequest, mockResponse)).resolves.toBeUndefined();
+			await expect(controller.logout(MOCK_COOKIE, mockResponse)).resolves.toBeUndefined();
 			expect(mockILogger.log).toHaveBeenCalledWith(`Logging a user out.`);
 			expect(mockILogger.info).toHaveBeenCalledWith(`Logged out user with uuid ${uuid}`);
 		});

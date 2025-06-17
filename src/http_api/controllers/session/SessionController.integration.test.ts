@@ -1,4 +1,6 @@
+import { randomUUID } from "crypto";
 import { Repository } from "typeorm";
+import { INestApplication } from "@nestjs/common";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { SessionController } from "./SessionController";
 import { SessionEntity } from "../../../domain/session/SessionEntity";
@@ -9,12 +11,13 @@ import { SessionModule } from "../../modules/session/SessionModule";
 import { MockSessionEntity } from "../../../__tests__/mocks/entity/MockSessionEntity";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "../../../domain/user/UserEntity";
-import { randomUUID } from "crypto";
-import { INestApplication } from "@nestjs/common";
+import { mockPlainTextJwt } from "../../../__tests__/mocks/mockJwt";
 
 const TEST_NAME = "SessionController.Integration";
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
+
+	const MOCK_COOKIE = { user: mockPlainTextJwt };
 
 	let app: INestApplication;
 
@@ -25,7 +28,6 @@ describe(TEST_NAME, () => {
 
 	let user: UserEntity;
 
-	let mockRequest: any;
 	let mockResponse: any;
 
 	beforeAll(async () => {
@@ -44,7 +46,6 @@ describe(TEST_NAME, () => {
 		const data = MockSessionEntity.get();
 		data.userUuid = user.uuid;
 
-		mockRequest = { user: { uuid: user.uuid } };
 		mockResponse = {
 			cookie: jest.fn(),
 			clearCookie: jest.fn(),
@@ -91,7 +92,7 @@ describe(TEST_NAME, () => {
 			await controller.login(user, mockResponse);
 			const response = SessionResponseDto.create(user);
 
-			await expect(controller.update(user.uuid, mockRequest, mockResponse)).resolves.toEqual(response);
+			await expect(controller.update(user.uuid, MOCK_COOKIE, mockResponse)).resolves.toEqual(response);
 			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for user uuid ${response.uuid}`)).resolves.toBe(true);
 		});
 
@@ -100,7 +101,7 @@ describe(TEST_NAME, () => {
 		it("Fails to update a non-existent entity", async () => {
 			const nonExistentId = randomUUID();
 
-			await expect(controller.update(nonExistentId, mockRequest, mockResponse)).rejects.toThrow(`User by uuid ${nonExistentId} not found`);
+			await expect(controller.update(nonExistentId, MOCK_COOKIE, mockResponse)).rejects.toThrow(`User by uuid ${nonExistentId} not found`);
 			await expect(wasLogged(TEST_NAME, `${className}: Updating session and JWT for user uuid ${nonExistentId}`)).resolves.toBe(true);
 		});
 	});
@@ -109,7 +110,7 @@ describe(TEST_NAME, () => {
 
 	describe("DELETE", () => {
 		it("Deletes an entity", async () => {
-			await expect(controller.logout(mockRequest, mockResponse)).resolves.toBeUndefined();
+			await expect(controller.logout(MOCK_COOKIE, mockResponse)).resolves.toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `${className}: Logging a user out`)).resolves.toBe(true);
 		});
 

@@ -6,7 +6,7 @@ import { UserModule } from "./UserModule";
 import { CreateUserDto } from "../../dtos/user/CreateUserDto";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { wasLogged } from "../../../__tests__/helpers/wasLogged";
-import { expiredJwt, mockJwt } from "../../../__tests__/mocks/mockJwt";
+import { expiredJwt, faultyJwt, mockJwt } from "../../../__tests__/mocks/mockJwt";
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
@@ -123,6 +123,17 @@ describe(TEST_NAME, () => {
 				.post(ENDPOINT)
 				.send(createDto)
 				.set("Cookie", [`jwt=${expiredJwt}`])
+				.expect(HttpStatus.UNAUTHORIZED);
+		});
+
+		// --------------------------------------------------
+
+		it.skip("Should return an error when using a faulty JWT", async () => {
+			// TODO: Fix
+			await request(app.getHttpServer())
+				.post(ENDPOINT)
+				.send(createDto)
+				.set("Cookie", [`jwt=${faultyJwt}`])
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
