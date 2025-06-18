@@ -44,6 +44,9 @@ const defaultConfig: IServerConfig = {
 		database: ":memory:",
 		synchronize: false,
 	},
+	misc: {
+		appStatusInterval: 10000, // Default to 10 seconds
+	},
 };
 
 /**
@@ -87,6 +90,16 @@ export const serverConfig = (): IServerConfig => {
 		config.security = security;
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);
+	}
+
+	// Miscellaneous configuration
+	try {
+		const miscConfigPath = path.resolve(process.env.MISC_CONFIG);
+		const miscConfig = fs.readFileSync(miscConfigPath, "utf8");
+		const misc = JSON.parse(miscConfig);
+		config.misc = misc;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load miscellanous configuration, using fallback configuration: ${error}`);
 	}
 
 	// JSON Schema validate the complete server configuration object

@@ -8,8 +8,9 @@ import { serverConfig } from "./configuration/serverConfig";
 import { UserModule } from "../http_api/modules/user/UserModule";
 import { UtilityModule } from "../common/utility/UtilityModule";
 import { SessionModule } from "../http_api/modules/session/SessionModule";
+import { AppStatusModule } from "../http_api/modules/app_status/AppStatusModule";
 
-const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule];
+const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule, AppStatusModule];
 
 @Module({
 	imports: [

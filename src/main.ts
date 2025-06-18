@@ -86,6 +86,28 @@ async function bootstrap() {
 		},
 	});
 
-	await app.listen(process.env.NEST_PORT || 3069); // Config object?
+	const PORT = process.env.NEST_PORT || 3069;
+	await app.listen(PORT);
+	logger.log("main", `API listening on port ${PORT}`);
+
+	/* 
+		Listen for shutdown signals to gracefully close the application
+	*/
+
+	process.on("SIGINT", async () => {
+		logger.log("main", "Received SIGINT. Shutting down gracefully...");
+		await app.close();
+
+		logger.log("main", "Application has been shut down.");
+		process.exit(0);
+	});
+
+	process.on("SIGTERM", async () => {
+		logger.log("main", "Received SIGTERM. Shutting down gracefully...");
+		await app.close();
+
+		logger.log("main", "Application has been shut down.");
+		process.exit(0);
+	});
 }
 bootstrap();

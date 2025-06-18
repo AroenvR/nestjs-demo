@@ -26,6 +26,14 @@ export type TSecurityConfig = {
 };
 
 /**
+ * The server's miscellaneous configuration interface.
+ * @property appStatusInterval - The interval in milliseconds for checking the application status.
+ */
+export interface IMiscellaneousConfig {
+	appStatusInterval: number;
+}
+
+/**
  * The server's configuration interface.
  * @property security - The server's {@link TSecurityConfig} settings.
  * @property logging - The server's {@link ILoggerConfig} settings.
@@ -35,4 +43,5 @@ export interface IServerConfig {
 	security: TSecurityConfig;
 	logging: ILoggerConfig;
 	database: TDatabaseConfig;
+	misc: IMiscellaneousConfig;
 }

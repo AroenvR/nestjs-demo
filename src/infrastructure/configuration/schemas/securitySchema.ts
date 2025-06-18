@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 /**
- * Joi schema for the server's security configuration.
+ * Joi schema for the server's miscellaneous configuration.
  */
 export const securitySchema = Joi.object({
 	cookie: Joi.object({
