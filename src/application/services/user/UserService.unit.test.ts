@@ -3,20 +3,17 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserService } from "./UserService";
 import { UserEntity } from "../../../domain/user/UserEntity";
-import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
 import { MOCK_BAD_UUID, MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
-import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
-import { AbstractService } from "../AbstractService";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 
 describe("UserService.Unit", () => {
 	let mockedResponse: UserEntity;
-	let service: AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto>;
+	let service: UserService;
 
 	beforeEach(async () => {
 		mockedResponse = MockUserEntity.get();
@@ -39,7 +36,7 @@ describe("UserService.Unit", () => {
 			],
 		}).compile();
 
-		service = module.get<UserService>(UserService);
+		service = module.get(UserService);
 	});
 
 	// --------------------------------------------------
@@ -54,7 +51,7 @@ describe("UserService.Unit", () => {
 		const createDto = MockCreateUserDto.get();
 
 		const created = await service.create(createDto);
-		expect(created).toBeInstanceOf(UserResponseDto);
+		expect(created).toBeInstanceOf(UserEntity);
 
 		expect(created.username).toEqual(createDto.username);
 		expect(created.password).toEqual(createDto.password);
@@ -70,7 +67,7 @@ describe("UserService.Unit", () => {
 		const found = entities.find((data) => data.uuid === mockedResponse.uuid);
 		if (!found) fail("Expected entity was not found.");
 
-		expect(found).toBeInstanceOf(UserResponseDto);
+		expect(found).toBeInstanceOf(UserEntity);
 
 		expect(found.id).toEqual(mockedResponse.id);
 		expect(found.uuid).toEqual(mockedResponse.uuid);
@@ -88,7 +85,7 @@ describe("UserService.Unit", () => {
 		const data = await service.findOne(mockedResponse.uuid);
 
 		expect(data).toEqual(mockedResponse);
-		expect(data).toBeInstanceOf(UserResponseDto);
+		expect(data).toBeInstanceOf(UserEntity);
 
 		expect(data.id).toEqual(mockedResponse.id);
 		expect(data.uuid).toEqual(mockedResponse.uuid);
@@ -115,7 +112,7 @@ describe("UserService.Unit", () => {
 		const updated = await service.update(mockedResponse.uuid, dto);
 		expect(updated).not.toEqual(mockedResponse);
 
-		expect(updated).toBeInstanceOf(UserResponseDto);
+		expect(updated).toBeInstanceOf(UserEntity);
 		expect(updated.uuid).toEqual(mockedResponse.uuid);
 		expect(updated.createdAt).toEqual(mockedResponse.createdAt);
 

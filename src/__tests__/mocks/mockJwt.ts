@@ -3,8 +3,9 @@ import { MockUserEntity } from "./entity/MockUserEntity";
 import { randomUUID } from "crypto";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
 import { TJwtCookie } from "../../http_api/types/TJwtCookie";
+import { securityConstants } from "../../common/constants/securityConstants";
 
-const jwtSecret = process.env.JASON_WEB_TOKEN_SECRET || "jwt_testing_secret";
+const jwtSecret = process.env[securityConstants.jwtEnvVar] || "jwt_testing_secret";
 const tokenExpiry = serverConfig().security.cookie.expiry;
 
 const user = MockUserEntity.get();

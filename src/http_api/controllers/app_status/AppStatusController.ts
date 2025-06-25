@@ -4,11 +4,12 @@ import { AppStatusService } from "../../../application/services/app_status/AppSt
 import { SseEndpoint } from "../../../http_api/decorators/SseEndpoint";
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";
-import { PassportJwtAuthGuard } from "../../../http_api/guards/PassportJwtAuthGuard";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
 import { GetEndpoint } from "../../../http_api/decorators/GetEndpoint";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
+import { CompositeAuthGuard } from "../../guards/CompositeAuthGuard";
+import { securityConstants } from "../../../common/constants/securityConstants";
 
 const ENDPOINT = "app_status";
 
@@ -19,8 +20,9 @@ const ENDPOINT = "app_status";
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
 @UseErrorFilters()
-@UseGuards(PassportJwtAuthGuard)
-@ApiSecurity("jwt")
+@UseGuards(CompositeAuthGuard)
+@ApiSecurity(securityConstants.swaggerAuthGuardBinding)
+@TransformResponseDto(AppStatusResponseDto)
 export class AppStatusController {
 	protected readonly name: string;
 	protected readonly logger: ILogger;
@@ -38,7 +40,6 @@ export class AppStatusController {
 	 * @returns An {@link AppStatusResponseDto} containing the current status of the application.
 	 */
 	@GetEndpoint(ENDPOINT, AppStatusResponseDto)
-	@TransformResponseDto(AppStatusResponseDto)
 	public async getStatus() {
 		this.logger.warn("Client requesting current application status.");
 		return this.service.getCurrentStatus();

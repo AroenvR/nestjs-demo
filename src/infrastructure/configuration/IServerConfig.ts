@@ -9,10 +9,22 @@ import { ILoggerConfig } from "../logging/ILoggerConfig";
  * @property expiry - The expiry time of the cookie in milliseconds.
  */
 export interface ICookieConfig {
+	enabled: boolean;
 	version: number;
 	secure: boolean;
 	expiry: number;
 	// http-only is always true.
+	// sameSite is always "strict",
+}
+
+/**
+ * The server's bearer authentication configuration interface.
+ * @property enabled - A boolean flag indicating whether Bearer authentication is enabled.
+ * @property header - The name of the header used for Bearer authentication.
+ */
+export interface IBearerAuthenticationConfig {
+	enabled: boolean;
+	header: string;
 }
 
 /**
@@ -23,6 +35,7 @@ export interface ICookieConfig {
 export type TSecurityConfig = {
 	cookie: ICookieConfig;
 	cors: CorsOptions;
+	bearer: IBearerAuthenticationConfig;
 };
 
 /**

@@ -1,8 +1,13 @@
 {
     "cookie": {
+        "enabled": true,
         "version": 1,
         "secure": false,
         "expiry": 3600000
+    },
+    "bearer": {
+        "enabled": true,
+        "header": "Authorization"
     },
     "cors": {
         "origin": [

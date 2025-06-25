@@ -1,26 +1,32 @@
 import { randomUUID } from "crypto";
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserController } from "./UserController";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
 import { UserService } from "../../../application/services/user/UserService";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { UserEntity } from "../../../domain/user/UserEntity";
+import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
 
 describe("UserController.Unit", () => {
 	let controller: UserController;
 
 	const UUID = randomUUID();
-	let mockedResponse: UserResponseDto;
+	let mockedResponse: UserEntity;
 
 	beforeEach(async () => {
-		mockedResponse = UserResponseDto.create(MockUserEntity.get());
+		mockedResponse = MockUserEntity.get();
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [UserController],
 			providers: [
+				{
+					provide: ConfigService,
+					useValue: serverConfig(),
+				},
 				{
 					provide: UserService,
 					useValue: new MockService(() => mockedResponse),
@@ -46,8 +52,10 @@ describe("UserController.Unit", () => {
 	describe("CREATE", () => {
 		it("Can create an entity", async () => {
 			const dto = MockCreateUserDto.get();
+			const response = await controller.create(dto);
 
-			await expect(controller.create(dto)).resolves.toEqual(mockedResponse);
+			expect(response).toBeInstanceOf(UserEntity);
+			expect(response).toEqual(mockedResponse);
 			expect(mockILogger.log).toHaveBeenCalledWith(`Creating a new entity`);
 		});
 	});
@@ -56,7 +64,12 @@ describe("UserController.Unit", () => {
 
 	describe("FIND ALL", () => {
 		it("Finds all entities", async () => {
-			await expect(controller.findAll()).resolves.toEqual([mockedResponse]);
+			const response = await controller.findAll();
+
+			expect(response).toBeInstanceOf(Array);
+			response.forEach((entity) => expect(entity).toBeInstanceOf(UserEntity));
+
+			expect(response).toEqual([mockedResponse]);
 			expect(mockILogger.log).toHaveBeenCalledWith(`Finding all entities`);
 		});
 	});
@@ -65,7 +78,10 @@ describe("UserController.Unit", () => {
 
 	describe("FIND ONE", () => {
 		it("Finds an entity by uuid", async () => {
-			await expect(controller.findOne(UUID)).resolves.toEqual(mockedResponse);
+			const response = await controller.findOne(UUID);
+
+			expect(response).toBeInstanceOf(UserEntity);
+			expect(response).toEqual(mockedResponse);
 			expect(mockILogger.log).toHaveBeenCalledWith(`Finding entity by uuid ${UUID}`);
 		});
 	});
@@ -75,8 +91,10 @@ describe("UserController.Unit", () => {
 	describe("UPDATE", () => {
 		it("Updates an entity", async () => {
 			const dto = MockUpdateUserDto.get();
+			const response = await controller.update(UUID, dto);
 
-			await expect(controller.update(UUID, dto)).resolves.toEqual(mockedResponse);
+			expect(response).toBeInstanceOf(UserEntity);
+			expect(response).toEqual(mockedResponse);
 			expect(mockILogger.log).toHaveBeenCalledWith(`Updating entity by uuid ${UUID}`);
 		});
 	});

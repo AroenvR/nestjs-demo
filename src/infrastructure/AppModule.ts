@@ -10,7 +10,7 @@ import { UtilityModule } from "../common/utility/UtilityModule";
 import { SessionModule } from "../http_api/modules/session/SessionModule";
 import { AppStatusModule } from "../http_api/modules/app_status/AppStatusModule";
 
-const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule, AppStatusModule];
+const ENDPOINT_MODULES = [UserModule, SessionModule, AppStatusModule];
 
 @Module({
 	imports: [
@@ -20,6 +20,7 @@ const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule, AppStatusModule
 		}),
 		LoggerModule,
 		DatabaseModule,
+		AuthModule,
 		UtilityModule,
 		...ENDPOINT_MODULES,
 	],

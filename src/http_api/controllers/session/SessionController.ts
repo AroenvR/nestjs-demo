@@ -18,6 +18,7 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { isTruthy } from "ts-istruthy";
 import { CreateSessionDto } from "../../dtos/session/CreateSessionDto";
@@ -27,11 +28,11 @@ import { WinstonAdapter } from "../../../infrastructure/logging/adapters/Winston
 import { DefaultErrorDecorators } from "../../../http_api/decorators/DefaultErrorDecorators";
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
-import { OptionalJwtAuthGuard } from "../../../http_api/guards/OptionalJwtAuthGuard";
-import { TJwtCookie } from "../../../http_api/types/TJwtCookie";
+import { TJwtCookie, TRequest } from "../../../http_api/types/TJwtCookie";
 import { ICookieConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
-import { JwtService } from "@nestjs/jwt";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { PublicRoute } from "../../../http_api/decorators/PublicRoute";
+import { CompositeAuthGuard } from "../../guards/CompositeAuthGuard";
 
 const ENDPOINT = "session";
 
@@ -40,9 +41,9 @@ const ENDPOINT = "session";
  * It provides endpoints for creating, updating, and deleting sessions.
  */
 @Controller(ENDPOINT)
-@UseErrorFilters()
-@UseGuards(OptionalJwtAuthGuard)
 @ApiTags(ENDPOINT)
+@UseErrorFilters()
+@UseGuards(CompositeAuthGuard)
 export class SessionController {
 	protected logger: ILogger;
 
@@ -66,6 +67,7 @@ export class SessionController {
 	@ApiOperation({ summary: `Create a new session` })
 	@ApiResponse({ status: HttpStatus.CREATED, description: `The session was successfully created.`, type: SessionResponseDto })
 	@DefaultErrorDecorators()
+	@PublicRoute()
 	public async login(@Body() createDto: CreateSessionDto, @Res({ passthrough: true }) response: Response) {
 		this.logger.log(`Logging a user in.`);
 		if (!isTruthy(createDto)) throw new BadRequestException(`${this.constructor.name}: Create payload is empty.`);
@@ -98,7 +100,7 @@ export class SessionController {
 	@ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: SessionResponseDto })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND })
 	@DefaultErrorDecorators()
-	public async update(@Param("uuid", ParseUUIDPipe) uuid: UUID, @Request() request, @Res({ passthrough: true }) response: Response) {
+	public async update(@Param("uuid", ParseUUIDPipe) uuid: UUID, @Request() request: TRequest, @Res({ passthrough: true }) response: Response) {
 		this.logger.info(`Updating session and JWT for user uuid ${uuid}`);
 
 		if (!isTruthy(request.user)) throw new UnauthorizedException("Missing JWT");
@@ -141,7 +143,8 @@ export class SessionController {
 	@ApiOperation({ summary: `Delete the user's session` })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: "Request handled successfully." })
 	@DefaultErrorDecorators()
-	public async logout(@Request() request, @Res({ passthrough: true }) response: Response) {
+	@PublicRoute()
+	public async logout(@Request() request: TRequest, @Res({ passthrough: true }) response: Response) {
 		this.logger.log(`Logging a user out.`);
 
 		response.clearCookie("jwt");

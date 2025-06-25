@@ -13,7 +13,7 @@ import { WinstonAdapter } from "../../../infrastructure/logging/adapters/Winston
  * A service class that provides basic CRUD operations for the UserEntity.
  * Extends the {@link AbstractService} class and implements the required CRUD operations.
  */
-export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto> {
+export class UserService extends AbstractService<UserEntity> {
 	constructor(
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
@@ -35,7 +35,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.create(transaction);
+		return UserEntity.create(transaction);
 	}
 
 	/**
@@ -48,8 +48,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			relations: [],
 		});
 
-		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
-		return entities.map((entity) => UserResponseDto.create(entity));
+		return data.map((entity) => UserEntity.create(entity));
 	}
 
 	/**
@@ -64,9 +63,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		});
 
 		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
-		const entity = UserEntity.create(data); // Validate the data
-
-		return UserResponseDto.create(entity);
+		return UserEntity.create(data);
 	}
 
 	/**
@@ -88,7 +85,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.create(transaction);
+		return UserEntity.create(transaction);
 	}
 
 	/**

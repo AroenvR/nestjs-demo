@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { HttpErrorFilter } from "./http_api/filters/http_error/HttpErrorFilter";
 import { WinstonAdapter } from "./infrastructure/logging/adapters/WinstonAdapter";
 import { serverConfig } from "./infrastructure/configuration/serverConfig";
+import { securityConstants } from "./common/constants/securityConstants";
 
 async function bootstrap() {
 	// TODO's:
@@ -67,15 +68,19 @@ async function bootstrap() {
 
 	const swaggerConfig = new DocumentBuilder() // By default located at http://localhost:3000/api
 		.setTitle("NestJS Template API")
-		.setDescription("The NestJS template API Swagger documentation")
+		.setDescription("The NestJS template API's Swagger documentation")
 		.setVersion("1.0")
-		// .addBearerAuth() // TODO
-		// .addCookieAuth('jwt', {
-		//     type: 'http',
-		//     in: 'Header',
-		//     scheme: 'Bearer'
-		// })
+		.addApiKey(
+			{
+				type: "apiKey",
+				name: securityConstants.swaggerHeader,
+				in: "header",
+				description: "API Key for authentication",
+			},
+			securityConstants.swaggerAuthGuardBinding,
+		)
 		.build();
+
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
 	SwaggerModule.setup("api", app, document, {
 		swaggerOptions: {

@@ -4,10 +4,8 @@ import { Repository } from "typeorm";
 import { UserController } from "./UserController";
 import { CreateUserDto } from "../../dtos/user/CreateUserDto";
 import { UserEntity } from "../../../domain/user/UserEntity";
-import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { wasLogged } from "../../../__tests__/helpers/wasLogged";
 import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
-import { GuardedController } from "../GuardedController";
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { UserModule } from "../../modules/user/UserModule";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
@@ -21,8 +19,8 @@ describe(TEST_NAME, () => {
 	let app: INestApplication;
 
 	let className: string;
-	let controller: GuardedController;
-	let repository: Repository<unknown>;
+	let controller: UserController;
+	let repository: Repository<UserEntity>;
 
 	let entity: UserEntity;
 	let createDto: CreateUserDto;
@@ -31,7 +29,7 @@ describe(TEST_NAME, () => {
 	beforeAll(async () => {
 		app = await createMockAppModule(UserModule);
 
-		controller = app.get<UserController>(UserController);
+		controller = app.get(UserController);
 		repository = app.get(getRepositoryToken(UserEntity));
 
 		className = controller.constructor.name;
@@ -63,7 +61,8 @@ describe(TEST_NAME, () => {
 
 	describe("CREATE", () => {
 		it("Can create an entity", async () => {
-			const created = (await controller.create(createDto)) as UserResponseDto;
+			const created = await controller.create(createDto);
+			expect(created).toBeInstanceOf(UserEntity);
 
 			expect(created.username).toEqual(createDto.username);
 			expect(created.password).toEqual(createDto.password);
@@ -82,7 +81,12 @@ describe(TEST_NAME, () => {
 
 	describe("FIND ALL", () => {
 		it("Finds all entities", async () => {
-			await expect(controller.findAll()).resolves.toEqual([UserResponseDto.create(entity)]);
+			const entities = await controller.findAll();
+
+			expect(entities).toBeInstanceOf(Array);
+			entities.forEach((data) => expect(data).toBeInstanceOf(UserEntity));
+
+			expect(entities).toEqual([entity]);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding all entities`)).resolves.toBe(true);
 		});
 
@@ -105,9 +109,10 @@ describe(TEST_NAME, () => {
 
 	describe("FIND ONE", () => {
 		it("Finds an entity by uuid", async () => {
-			const response = UserResponseDto.create(entity);
+			const response = await controller.findOne(entity.uuid);
 
-			await expect(controller.findOne(entity.uuid)).resolves.toEqual(response);
+			expect(response).toBeInstanceOf(UserEntity);
+			expect(response).toEqual(entity);
 			await expect(wasLogged(TEST_NAME, `${className}: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 
@@ -131,9 +136,10 @@ describe(TEST_NAME, () => {
 
 	describe("UPDATE", () => {
 		it("Updates an entity", async () => {
-			const response = UserResponseDto.create(entity.update(updateDto));
+			const response = await controller.update(entity.uuid, updateDto);
 
-			await expect(controller.update(entity.uuid, updateDto)).resolves.toEqual(response);
+			expect(response).toBeInstanceOf(UserEntity);
+			expect(response).toEqual(entity.update(updateDto));
 			await expect(wasLogged(TEST_NAME, `${className}: Updating entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 		});
 

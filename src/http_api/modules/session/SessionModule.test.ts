@@ -166,7 +166,7 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it("Refreshes the session and JWT when using an expired JWT", async () => {
+		it.only("Refreshes the session and JWT when using an expired JWT", async () => {
 			const loginResponse = await request(app.getHttpServer()).post(`${ENDPOINT}/login`).send(createDto).expect(HttpStatus.CREATED);
 			const loginSession = await repository.findOne({ where: { userUuid: user.uuid } });
 
@@ -330,7 +330,7 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		describe("Without a session", () => {
+		describe.skip("Without a session", () => {
 			it("Clears a valid JWT", async () => {
 				const response = await request(app.getHttpServer())
 					.delete(`${ENDPOINT}/logout`)

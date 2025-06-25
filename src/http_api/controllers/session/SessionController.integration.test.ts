@@ -117,6 +117,7 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Handles a logout request when no JWT is provided", async () => {
+			// @ts-expect-error: Passing an empty object to simulate no JWT
 			await expect(controller.logout({}, mockResponse)).resolves.toBeUndefined();
 			await expect(wasLogged(TEST_NAME, `${className}: Logging a user out`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `${className}: Missing JWT`)).resolves.toBe(true);

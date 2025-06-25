@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import request from "supertest";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { Repository } from "typeorm";
@@ -13,7 +14,6 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { copyEntity } from "../../../__tests__/mocks/entity/copyEntity";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
-import { randomUUID } from "crypto";
 
 const TEST_NAME = "UserModule";
 describe(TEST_NAME, () => {
@@ -65,6 +65,8 @@ describe(TEST_NAME, () => {
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.CREATED);
 
+			expect(response.body.isDto).toEqual(true);
+
 			expect(response.body.id).toBeTruthy();
 			expect(response.body.uuid).toBeTruthy();
 			expect(response.body.createdAt).toBeTruthy();
@@ -73,11 +75,7 @@ describe(TEST_NAME, () => {
 			expect(response.body.password).toEqual(createDto.password);
 
 			// Verify the created entity in the database
-
 			const found = await repository.findOne({ where: { id: response.body.id } });
-
-			expect(found).toEqual(response.body);
-
 			expect(found.username).toEqual(createDto.username);
 			expect(found.password).toEqual(createDto.password);
 
@@ -150,6 +148,8 @@ describe(TEST_NAME, () => {
 			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
 			if (!found) throw new Error("Did not find the entity we expected.");
 
+			expect(found.isDto).toEqual(true);
+
 			expect(found.id).toEqual(entity.id);
 			expect(found.uuid).toEqual(entity.uuid);
 			expect(found.createdAt).toEqual(entity.createdAt);
@@ -185,6 +185,8 @@ describe(TEST_NAME, () => {
 				.get(`${ENDPOINT}/${entity.uuid}`)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
+
+			expect(response.body.isDto).toEqual(true);
 
 			expect(response.body.id).toEqual(entity.id);
 			expect(response.body.uuid).toEqual(entity.uuid);
@@ -240,6 +242,8 @@ describe(TEST_NAME, () => {
 				.send(updateDto)
 				.set("Cookie", [`jwt=${mockJwt}`])
 				.expect(HttpStatus.OK);
+
+			expect(response.body.isDto).toEqual(true);
 
 			expect(response.body.id).toEqual(entity.id);
 			expect(response.body.uuid).toEqual(entity.uuid);

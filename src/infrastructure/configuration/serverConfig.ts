@@ -11,6 +11,7 @@ import { DatabaseDrivers } from "../database/TDatabaseConfig";
 const defaultConfig: IServerConfig = {
 	security: {
 		cookie: {
+			enabled: false,
 			version: 1,
 			secure: false,
 			expiry: 3600000,
@@ -21,6 +22,10 @@ const defaultConfig: IServerConfig = {
 			methods: ["GET"],
 			credentials: true,
 			maxAge: 3600, // Cache preflight response for 3600 seconds
+		},
+		bearer: {
+			enabled: false,
+			header: "Authorization",
 		},
 	},
 	logging: {
