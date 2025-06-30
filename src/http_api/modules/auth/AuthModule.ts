@@ -1,10 +1,8 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { PassportJwtStrategy } from "../../guards/strategies/PassportJwtStrategy";
 import { SwaggerApiKeyStrategy } from "../../../http_api/guards/strategies/SwaggerApiKeyStrategy";
 import { securityConstants } from "../../../common/constants/securityConstants";
-import { PassportJwtAuthGuard } from "../../../http_api/guards/PassportJwtAuthGuard";
 import { SwaggerApiKeyAuthGuard } from "../../../http_api/guards/SwaggerApiKeyAuthGuard";
 import { CompositeAuthGuard } from "../../../http_api/guards/CompositeAuthGuard";
 import { AuthController } from "../../../http_api/controllers/auth/AuthController";
@@ -12,8 +10,13 @@ import { AuthService } from "../../../application/services/auth/AuthService";
 import { TokenService } from "../../../application/services/auth/TokenService";
 import { TypeOrmEntityModule } from "../../../infrastructure/database/TypeOrmEntityModule";
 import { UserModule } from "../user/UserModule";
+import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
+import { HttpOnlyCookieStrategy } from "../../../http_api/guards/strategies/HttpOnlyCookieStrategy";
+import { BearerTokenStrategy } from "../../../http_api/guards/strategies/BearerTokenStrategy";
+import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 
-if (!process.env[securityConstants.jwtEnvVar]) throw new Error("JWT secret is not defined");
+if (!process.env[securityConstants.httpOnlyCookieEnvVar]) throw new Error("HTTP-Only Cookie secret is not defined");
+if (!process.env[securityConstants.bearerAccessTokenEnvVar]) throw new Error("Bearer Token secret is not defined");
 if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API key is not defined");
 
 @Module({
@@ -23,16 +26,17 @@ if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API 
 		PassportModule,
 		JwtModule.register({
 			global: true,
-			secret: process.env[securityConstants.jwtEnvVar],
 		}),
 	],
 	controllers: [AuthController],
 	providers: [
 		AuthService,
 		TokenService,
-		PassportJwtStrategy,
+		BearerTokenStrategy,
+		HttpOnlyCookieStrategy,
 		SwaggerApiKeyStrategy,
-		PassportJwtAuthGuard,
+		BearerTokenAuthGuard,
+		HttpOnlyCookieAuthGuard,
 		SwaggerApiKeyAuthGuard,
 		CompositeAuthGuard,
 	],

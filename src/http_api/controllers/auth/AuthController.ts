@@ -13,6 +13,7 @@ import {
 	Request,
 	Res,
 	UnauthorizedException,
+	UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
@@ -30,13 +31,15 @@ import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { securityConstants } from "../../../common/constants/securityConstants";
+import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
+import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
 
 // TODO: Create a Redis middleware with revoked JTI's
 
 const ENDPOINT = "auth";
 
 /**
- * This controller is responsible for handling authentication-related operations.
+ * This controller is responsible for handling authentication-related endpoints.
  */
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
@@ -68,6 +71,7 @@ export class AuthController {
 	@ApiOperation({ summary: `Authenticate a user` })
 	@ApiResponse({ status: HttpStatus.CREATED, description: `The user was successfully authenticated.`, type: String })
 	@DefaultErrorDecorators()
+	// Public route
 	public async login(@Body() data: CreateLoginDto, @Res({ passthrough: true }) response: Response) {
 		this.logger.log(`User attempting to log in.`);
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
@@ -107,7 +111,7 @@ export class AuthController {
 	@ApiResponse({ status: HttpStatus.OK, description: `The authenticated user's information.`, type: UserResponseDto })
 	@DefaultErrorDecorators()
 	@TransformResponseDto(UserResponseDto)
-	// TODO: Add Bearer Token guard
+	@UseGuards(BearerTokenAuthGuard)
 	public async whoAmI(@Request() request: INestJSBearerJwt) {
 		if (!isTruthy(request?.user?.sub)) throw new UnauthorizedException(`${this.name}: Missing JWT information for whoami request.`);
 
@@ -131,7 +135,7 @@ export class AuthController {
 	@ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: String })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND })
 	@DefaultErrorDecorators()
-	// TODO: Add HTTP-Only Cookie guard
+	@UseGuards(HttpOnlyCookieAuthGuard)
 	public async refresh(@Request() request: INestJSCookieJwt, @Res({ passthrough: true }) response: Response) {
 		if (!isTruthy(request?.user)) throw new UnauthorizedException(`${this.name}: Missing JWT information for refresh request.`);
 
@@ -164,7 +168,7 @@ export class AuthController {
 	@ApiOperation({ summary: `Delete the user's tokens` })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: "Request handled successfully." })
 	@DefaultErrorDecorators()
-	// TODO: Add Bearer Token guard
+	@UseGuards(BearerTokenAuthGuard)
 	public async logout(@Request() request: INestJSBearerJwt, @Res({ passthrough: true }) response: Response) {
 		response.clearCookie(securityConstants.refreshCookieString);
 

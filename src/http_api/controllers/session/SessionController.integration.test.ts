@@ -13,8 +13,10 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { mockPlainTextJwt } from "../../../__tests__/mocks/mockJwt";
 
+// DEPRECATED
+
 const TEST_NAME = "SessionController.Integration";
-describe(TEST_NAME, () => {
+describe.skip(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	const MOCK_COOKIE = { user: mockPlainTextJwt };

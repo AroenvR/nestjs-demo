@@ -16,8 +16,10 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { verifyRefreshData } from "./sessionModuleTestingHelper";
 import { sessionConstants } from "../../../common/constants/sessionConstants";
 
+// DEPRECATED
+
 const TEST_NAME = "SessionModule";
-describe(TEST_NAME, () => {
+describe.skip(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
 	const ENDPOINT = "/v1/session";

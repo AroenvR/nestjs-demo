@@ -2,9 +2,9 @@ import { ModuleRef, Reflector } from "@nestjs/core";
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { securityConstants } from "../../common/constants/securityConstants";
-import { PassportJwtAuthGuard } from "./PassportJwtAuthGuard";
 import { SwaggerApiKeyAuthGuard } from "./SwaggerApiKeyAuthGuard";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
+import { BearerTokenAuthGuard } from "./BearerTokenAuthGuard";
 
 /**
  * A guard that chains multiple authentication strategies.
@@ -63,10 +63,12 @@ export class CompositeAuthGuard implements CanActivate {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		if (!config) throw new Error("Security configuration is not defined");
 
-		const enabledGuards = [];
+		const enabledGuards = [
+			// HTTP-Only guard isn't added as only the auth/refresh route is allowed to use it.
+			this.moduleRef.get(BearerTokenAuthGuard, { strict: false }),
+		];
 
-		if (config.cookie.enabled) enabledGuards.push(this.moduleRef.get(PassportJwtAuthGuard, { strict: false }));
-		if (config.bearer.enabled) enabledGuards.push(this.moduleRef.get(SwaggerApiKeyAuthGuard, { strict: false }));
+		if (config.swagger.enabled) enabledGuards.push(this.moduleRef.get(SwaggerApiKeyAuthGuard, { strict: false }));
 
 		return enabledGuards;
 	}

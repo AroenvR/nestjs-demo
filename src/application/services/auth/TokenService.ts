@@ -10,6 +10,7 @@ import { ILogger } from "../../../infrastructure/logging/ILogger";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
+import { securityConstants } from "../../../common/constants/securityConstants";
 
 /**
  * A service class that provides methods for creating/managing access tokens and HTTP-only cookies.
@@ -155,7 +156,16 @@ export class TokenService {
 	 */
 	private async signToken(data: IBearerToken | IHttpOnlyCookie): Promise<string> {
 		this.logger.debug(`Signing JWT: ${data.jti}`);
-		return this.jwtService.signAsync(data);
+
+		if ("sub" in data && data.sub) {
+			return this.jwtService.signAsync(data, {
+				secret: this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar),
+			});
+		}
+
+		return this.jwtService.signAsync(data, {
+			secret: this.configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
+		});
 	}
 
 	// TODO: Periodic cleanup of expired refresh tokens

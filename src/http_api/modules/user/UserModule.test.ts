@@ -7,7 +7,7 @@ import { UserModule } from "./UserModule";
 import { CreateUserDto } from "../../dtos/user/CreateUserDto";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { wasLogged } from "../../../__tests__/helpers/wasLogged";
-import { expiredJwt, faultyJwt, mockJwt } from "../../../__tests__/mocks/mockJwt";
+import { expiredJwt, faultyJwt, mockBearerToken, mockExpiredBearerToken, mockJwt } from "../../../__tests__/mocks/mockJwt";
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
@@ -62,7 +62,7 @@ describe(TEST_NAME, () => {
 			const response = await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.CREATED);
 
 			expect(response.body.isDto).toEqual(true);
@@ -98,7 +98,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send({})
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
@@ -110,7 +110,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(copy)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.CONFLICT);
 		});
 
@@ -120,7 +120,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)
-				.set("Cookie", [`jwt=${expiredJwt}`])
+				.set("Authorization", `Bearer ${mockExpiredBearerToken}`)
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
@@ -140,10 +140,7 @@ describe(TEST_NAME, () => {
 
 	describe("GET /user", () => {
 		it("Finds all entities", async () => {
-			const response = await request(app.getHttpServer())
-				.get(ENDPOINT)
-				.set("Cookie", [`jwt=${mockJwt}`])
-				.expect(HttpStatus.OK);
+			const response = await request(app.getHttpServer()).get(ENDPOINT).set("Authorization", `Bearer ${mockBearerToken}`).expect(HttpStatus.OK);
 
 			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
 			if (!found) throw new Error("Did not find the entity we expected.");
@@ -170,10 +167,7 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Should return an error when using an expired JWT", async () => {
-			await request(app.getHttpServer())
-				.get(ENDPOINT)
-				.set("Cookie", [`jwt=${expiredJwt}`])
-				.expect(HttpStatus.UNAUTHORIZED);
+			await request(app.getHttpServer()).get(ENDPOINT).set("Authorization", `Bearer ${mockExpiredBearerToken}`).expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 
@@ -183,7 +177,7 @@ describe(TEST_NAME, () => {
 		it("Can find an entity by uuid", async () => {
 			const response = await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${entity.uuid}`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.OK);
 
 			expect(response.body.isDto).toEqual(true);
@@ -204,7 +198,7 @@ describe(TEST_NAME, () => {
 		it("Should return an error when requesting a non-existent uuid", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/${randomUUID()}`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
@@ -213,7 +207,7 @@ describe(TEST_NAME, () => {
 		it("Should return an error when requesting with an invalid uuid format", async () => {
 			await request(app.getHttpServer())
 				.get(`${ENDPOINT}/abc`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 
@@ -240,7 +234,7 @@ describe(TEST_NAME, () => {
 			const response = await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send(updateDto)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.OK);
 
 			expect(response.body.isDto).toEqual(true);
@@ -272,7 +266,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${randomUUID()}`)
 				.send(updateDto)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
@@ -288,7 +282,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send(updateDto)
-				.set("Cookie", [`jwt=${expiredJwt}`])
+				.set("Authorization", `Bearer ${mockExpiredBearerToken}`)
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
@@ -298,7 +292,7 @@ describe(TEST_NAME, () => {
 			await request(app.getHttpServer())
 				.patch(`${ENDPOINT}/${entity.uuid}`)
 				.send({ username: 12345 })
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});
@@ -309,7 +303,7 @@ describe(TEST_NAME, () => {
 		it("Should successfully delete an entity", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/${entity.uuid}`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.NO_CONTENT);
 
 			const deletedEntity = await repository.findOne({ where: { id: entity.id } });
@@ -324,7 +318,7 @@ describe(TEST_NAME, () => {
 		it("Should return an error when trying to delete a non-existent entity", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/${randomUUID()}`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.NOT_FOUND);
 		});
 
@@ -339,7 +333,7 @@ describe(TEST_NAME, () => {
 		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/${entity.uuid}`)
-				.set("Cookie", [`jwt=${expiredJwt}`])
+				.set("Authorization", `Bearer ${mockExpiredBearerToken}`)
 				.expect(HttpStatus.UNAUTHORIZED);
 		});
 
@@ -348,7 +342,7 @@ describe(TEST_NAME, () => {
 		it("Should return an error when using an invalid id format", async () => {
 			await request(app.getHttpServer())
 				.delete(`${ENDPOINT}/abc`)
-				.set("Cookie", [`jwt=${mockJwt}`])
+				.set("Authorization", `Bearer ${mockBearerToken}`)
 				.expect(HttpStatus.BAD_REQUEST);
 		});
 	});

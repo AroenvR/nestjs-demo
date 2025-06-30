@@ -4,9 +4,8 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
-import { TJwtCookie } from "../../types/TJwtCookie";
-import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { securityConstants } from "../../../common/constants/securityConstants";
+import { INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";
 
 /**
  * Passport strategy for authenticating users using JWTs stored in HTTP-Only cookies or Bearer tokens.
@@ -14,18 +13,12 @@ import { securityConstants } from "../../../common/constants/securityConstants";
  * If the JWT is valid, it returns the payload; otherwise, it throws an UnauthorizedException.
  */
 @Injectable()
-export class PassportJwtStrategy extends PassportStrategy(Strategy, securityConstants.jwtAuthGuardBinding) {
+export class HttpOnlyCookieStrategy extends PassportStrategy(Strategy, securityConstants.httpOnlyCookieGuardBinding) {
 	constructor(private readonly configService: ConfigService) {
-		const extractors = [];
-
-		const config = configService.get<IServerConfig["security"]>("security");
-		if (config.cookie.enabled) extractors.push(PassportJwtStrategy.extractFromCookie);
-		if (config.bearer.enabled) extractors.push(ExtractJwt.fromAuthHeaderAsBearerToken());
-
 		super({
-			jwtFromRequest: ExtractJwt.fromExtractors(extractors),
+			jwtFromRequest: ExtractJwt.fromExtractors([HttpOnlyCookieStrategy.extractFromCookie]),
 			ignoreExpiration: false,
-			secretOrKey: configService.get<string>(securityConstants.jwtEnvVar),
+			secretOrKey: configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
 		});
 	}
 
@@ -34,7 +27,7 @@ export class PassportJwtStrategy extends PassportStrategy(Strategy, securityCons
 	 * @param payload The JWT payload to validate.
 	 * @returns The validated payload.
 	 */
-	async validate(payload: TJwtCookie): Promise<TJwtCookie> {
+	async validate(payload: INestJSCookieJwt) {
 		if (payload) return payload;
 
 		console.error(`Invalid JWT payload.`);
