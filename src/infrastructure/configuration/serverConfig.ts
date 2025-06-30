@@ -14,18 +14,24 @@ const defaultConfig: IServerConfig = {
 			enabled: false,
 			version: 1,
 			secure: false,
-			expiry: 3600000,
+			expiry: 3600, // 1 hour in seconds
+			maxAge: 57600000, // 16 hours in milliseconds
+		},
+		bearer: {
+			enabled: false,
+			header: "Authorization",
+			encryption: "aes-256-gcm",
+			expiry: 900, // 15 minutes in seconds
+		},
+		swagger: {
+			enabled: false,
 		},
 		cors: {
 			origin: ["http://localhost:3000"],
 			allowedHeaders: ["Content-Type", "Authorization", "User-Agent", "X-Correlation-ID"],
 			methods: ["GET"],
 			credentials: true,
-			maxAge: 3600, // Cache preflight response for 3600 seconds
-		},
-		bearer: {
-			enabled: false,
-			header: "Authorization",
+			maxAge: 600, // Cache preflight response for 10 minutes (in seconds)
 		},
 	},
 	logging: {
@@ -93,6 +99,7 @@ export const serverConfig = (): IServerConfig => {
 		const securityConfig = fs.readFileSync(securityConfigPath, "utf8");
 		const security = JSON.parse(securityConfig);
 		config.security = security;
+		if (!config.security.bearer.enabled && !config.security.cookie.enabled) throw new Error("serverConfig: No authentication scheme is enabled.");
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);
 	}

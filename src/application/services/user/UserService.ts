@@ -29,9 +29,10 @@ export class UserService extends AbstractService<UserEntity> {
 	public async create(createDto: CreateUserDto) {
 		this.logger.info(`Creating a new entity`);
 
-		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const entity = UserEntity.create(createDto);
+		// TODO: Hash the password before saving it
+		const entity = UserEntity.create(createDto);
 
+		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			return entityManager.save(entity);
 		});
 
@@ -72,16 +73,16 @@ export class UserService extends AbstractService<UserEntity> {
 	public async update(uuid: UUID, updateDto: UpdateUserDto) {
 		this.logger.info(`Updating entity by uuid ${uuid}`);
 
+		const data = await this.repository.findOne({
+			where: { uuid: uuid },
+			relations: [],
+		});
+		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
+
+		const entity = UserEntity.create(data); // Validate the data
+		entity.update(updateDto);
+
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const data = await this.repository.findOne({
-				where: { uuid: uuid },
-				relations: [],
-			});
-			if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
-
-			const entity = UserEntity.create(data); // Validate the data
-			entity.update(updateDto);
-
 			return entityManager.save(entity);
 		});
 

@@ -103,7 +103,6 @@ describe("UserDTO", () => {
 			expect(dto.createdAt).toEqual(entity.createdAt);
 
 			expect(dto.username).toEqual(entity.username);
-			expect(dto.password).toEqual(entity.password);
 		});
 	});
 });

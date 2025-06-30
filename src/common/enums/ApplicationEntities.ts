@@ -5,4 +5,5 @@
 export enum ApplicationEntities {
 	USER = "user",
 	SESSION = "session",
+	REFRESH_TOKEN = "refresh_token",
 }

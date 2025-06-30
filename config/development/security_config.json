@@ -3,11 +3,17 @@
         "enabled": true,
         "version": 1,
         "secure": false,
-        "expiry": 3600000
+        "expiry": 3600,
+        "maxAge": 57600000
     },
     "bearer": {
         "enabled": true,
-        "header": "Authorization"
+        "header": "Authorization",
+        "encryption": "aes-256-gcm",
+        "expiry": 900
+    },
+    "swagger": {
+        "enabled": true
     },
     "cors": {
         "origin": [
@@ -17,7 +23,8 @@
             "Content-Type",
             "Authorization",
             "User-Agent",
-            "X-Correlation-ID"
+            "X-Correlation-ID",
+            "X-Swagger-API-Key"
         ],
         "methods": [
             "POST",
@@ -26,6 +33,6 @@
             "DELETE"
         ],
         "credentials": true,
-        "maxAge": 3600
+        "maxAge": 600
     }
 }

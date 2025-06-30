@@ -27,6 +27,15 @@ describe(TEST_NAME, () => {
 
 	// --------------------------------------------------
 
+	it("Can hash a string using SHA-256", () => {
+		const hashed = encryptionUtil.sha256(DATA);
+		expect(hashed).toBeDefined();
+		expect(hashed).not.toEqual(DATA);
+		expect(hashed).toHaveLength(44); // Base64 encoded SHA-256 hash is 44 characters long
+	});
+
+	// --------------------------------------------------
+
 	it("Can generate a random secret of a specified length", () => {
 		const secret = encryptionUtil.createRandomSecret(SECRET_LENGTH);
 		expect(secret).toHaveLength(SECRET_LENGTH);

@@ -72,7 +72,7 @@ describe(TEST_NAME, () => {
 			expect(response.body.createdAt).toBeTruthy();
 
 			expect(response.body.username).toEqual(createDto.username);
-			expect(response.body.password).toEqual(createDto.password);
+			expect(response.body.password).not.toBeDefined();
 
 			// Verify the created entity in the database
 			const found = await repository.findOne({ where: { id: response.body.id } });
@@ -155,7 +155,7 @@ describe(TEST_NAME, () => {
 			expect(found.createdAt).toEqual(entity.createdAt);
 
 			expect(found.username).toEqual(entity.username);
-			expect(found.password).toEqual(entity.password);
+			expect(found.password).not.toBeDefined();
 
 			await expect(wasLogged(TEST_NAME, `UserController: Finding all entities`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Finding all entities`)).resolves.toBe(true);
@@ -193,7 +193,7 @@ describe(TEST_NAME, () => {
 			expect(response.body.createdAt).toEqual(entity.createdAt);
 
 			expect(response.body.username).toEqual(entity.username);
-			expect(response.body.password).toEqual(entity.password);
+			expect(response.body.password).not.toBeDefined();
 
 			await expect(wasLogged(TEST_NAME, `UserController: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
 			await expect(wasLogged(TEST_NAME, `UserService: Finding entity by uuid ${entity.uuid}`)).resolves.toBe(true);
@@ -250,7 +250,7 @@ describe(TEST_NAME, () => {
 			expect(response.body.createdAt).toEqual(entity.createdAt);
 
 			expect(response.body.username).toEqual(updateDto.username);
-			expect(response.body.password).toEqual(updateDto.password);
+			expect(response.body.password).not.toBeDefined();
 
 			const updatedEntity = await repository.findOne({ where: { id: entity.id } });
 			expect(updatedEntity.id).toEqual(entity.id);

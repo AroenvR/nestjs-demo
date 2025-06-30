@@ -8,4 +8,7 @@ export const securityConstants = {
 	swaggerAuthGuardBinding: "swagger-api-auth",
 	swaggerHeader: "X-Swagger-API-Key",
 	IS_PUBLIC_ROUTE: "isPublicRoute",
+	accessTokenKey: "ACCESS_TOKEN_ENCRYPTION_KEY",
+	maxJwtRefreshes: 3,
+	refreshCookieString: "refresh_token",
 };

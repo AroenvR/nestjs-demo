@@ -26,6 +26,12 @@ module.exports = {
             {
                 "argsIgnorePattern": "^_",
             }
-        ]
+        ],
+        '@typescript-eslint/no-empty-object-type': [
+            'error',
+            {
+                allowInterfaces: 'with-single-extends',
+            },
+        ],
     }
 };

@@ -1,6 +1,7 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 import { TDatabaseConfig } from "../database/TDatabaseConfig";
 import { ILoggerConfig } from "../logging/ILoggerConfig";
+import { TSupportedAesAlgorithms } from "../../common/utility/aes/TSupportedAesAlgorithms";
 
 /**
  * The server's cookie configuration interface.
@@ -8,11 +9,12 @@ import { ILoggerConfig } from "../logging/ILoggerConfig";
  * @property secure - A boolean flag indicating whether the cookie is secure (only sent over HTTPS).
  * @property expiry - The expiry time of the cookie in milliseconds.
  */
-export interface ICookieConfig {
+export interface ICookieAuthConfig {
 	enabled: boolean;
 	version: number;
 	secure: boolean;
-	expiry: number;
+	expiry: number; // in seconds
+	maxAge: number; // in milliseconds
 	// http-only is always true.
 	// sameSite is always "strict",
 }
@@ -22,20 +24,31 @@ export interface ICookieConfig {
  * @property enabled - A boolean flag indicating whether Bearer authentication is enabled.
  * @property header - The name of the header used for Bearer authentication.
  */
-export interface IBearerAuthenticationConfig {
+export interface IBearerAuthConfig {
 	enabled: boolean;
 	header: string;
+	encryption: TSupportedAesAlgorithms;
+	expiry: number; // in seconds
+}
+
+/**
+ * The server's Swagger authentication configuration interface.
+ * @property enabled - A boolean flag indicating whether Swagger authentication is enabled.
+ */
+export interface ISwaggerAuthConfig {
+	enabled: boolean;
 }
 
 /**
  * The server's security configuration interface.
- * @property cookie - The server's {@link ICookieConfig} settings.
+ * @property cookie - The server's {@link ICookieAuthConfig} settings.
  * @property cors - The server's {@link https://docs.nestjs.com/security/cors} settings.
  */
 export type TSecurityConfig = {
-	cookie: ICookieConfig;
+	cookie: ICookieAuthConfig;
+	bearer: IBearerAuthConfig;
+	swagger: ISwaggerAuthConfig;
 	cors: CorsOptions;
-	bearer: IBearerAuthenticationConfig;
 };
 
 /**

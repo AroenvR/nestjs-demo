@@ -29,7 +29,7 @@ import { DefaultErrorDecorators } from "../../../http_api/decorators/DefaultErro
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
 import { TJwtCookie, TRequest } from "../../../http_api/types/TJwtCookie";
-import { ICookieConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import { ICookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { PublicRoute } from "../../../http_api/decorators/PublicRoute";
 import { CompositeAuthGuard } from "../../guards/CompositeAuthGuard";
@@ -174,7 +174,7 @@ export class SessionController {
 	 * @param config The cookie configuration.
 	 * @returns A signed JWT token.
 	 */
-	private async createAndSignJwt(responseDto: SessionResponseDto, config: ICookieConfig) {
+	private async createAndSignJwt(responseDto: SessionResponseDto, config: ICookieAuthConfig) {
 		this.logger.info(`Creating JWT for user uuid ${responseDto.uuid}`);
 
 		const now = Date.now();
