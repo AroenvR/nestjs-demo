@@ -56,7 +56,12 @@ const defaultConfig: IServerConfig = {
 		synchronize: false,
 	},
 	misc: {
-		appStatusInterval: 10000, // Default to 10 seconds
+		appStatusInterval: 10 * 1000, // Default to 10 seconds
+		cache: {
+			ttl: 5 * 60 * 1000, // Default to 5 minutes
+			refreshThreshold: 30 * 1000, // Default to 30 seconds
+			nonBlocking: true,
+		},
 	},
 };
 

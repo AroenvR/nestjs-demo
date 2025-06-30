@@ -168,11 +168,11 @@ export class AuthController {
 	@ApiOperation({ summary: `Delete the user's tokens` })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: "Request handled successfully." })
 	@DefaultErrorDecorators()
-	@UseGuards(BearerTokenAuthGuard)
+	// Public route
 	public async logout(@Request() request: INestJSBearerJwt, @Res({ passthrough: true }) response: Response) {
 		response.clearCookie(securityConstants.refreshCookieString);
 
-		if (!isTruthy(request?.user?.sub)) throw new UnauthorizedException(`${this.name}: Missing JWT information for logout request.`);
+		if (!isTruthy(request?.user?.sub)) throw new BadRequestException(`${this.name}: Missing JWT information for logout request.`);
 		this.logger.log(`Revoking token and cookie for user ${request.user.sub}`);
 
 		return this.tokenService.revokeRefreshToken(request.user);

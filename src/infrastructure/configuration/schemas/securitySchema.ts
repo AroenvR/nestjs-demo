@@ -22,13 +22,6 @@ export const securitySchema = Joi.object({
 			.max(1000 * 60 * 60 * 24 * 7) // 7 days in milliseconds
 			.default(1000 * 60 * 60 * 16), // 16 hours in milliseconds
 	}).required(),
-	cors: Joi.object({
-		origin: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
-		allowedHeaders: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
-		methods: Joi.array().items(Joi.string()).required(),
-		credentials: Joi.boolean().default(true),
-		maxAge: Joi.number().optional(),
-	}).required(),
 	bearer: Joi.object({
 		enabled: Joi.boolean().default(false),
 		header: Joi.string().default("Authorization"),
@@ -44,5 +37,12 @@ export const securitySchema = Joi.object({
 	}).required(),
 	swagger: Joi.object({
 		enabled: Joi.boolean().default(false),
+	}).required(),
+	cors: Joi.object({
+		origin: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
+		allowedHeaders: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
+		methods: Joi.array().items(Joi.string()).required(),
+		credentials: Joi.boolean().default(true),
+		maxAge: Joi.number().optional(),
 	}).required(),
 }).required();

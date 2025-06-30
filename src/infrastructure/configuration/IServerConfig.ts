@@ -15,8 +15,8 @@ export interface ICookieAuthConfig {
 	secure: boolean;
 	expiry: number; // in seconds
 	maxAge: number; // in milliseconds
-	// http-only is always true.
-	// sameSite is always "strict",
+	// http-only is always true
+	// sameSite is always "strict"
 }
 
 /**
@@ -51,12 +51,19 @@ export type TSecurityConfig = {
 	cors: CorsOptions;
 };
 
+export interface ICacheConfig {
+	ttl: number;
+	refreshThreshold: number;
+	nonBlocking: boolean;
+}
+
 /**
  * The server's miscellaneous configuration interface.
  * @property appStatusInterval - The interval in milliseconds for checking the application status.
  */
 export interface IMiscellaneousConfig {
 	appStatusInterval: number;
+	cache: ICacheConfig;
 }
 
 /**

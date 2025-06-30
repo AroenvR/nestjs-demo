@@ -22,7 +22,7 @@ export class EncryptionUtils {
 	protected logger: ILogger;
 	private readonly aesStrategies: Map<TSupportedAesAlgorithms, IAesEncryptionStrategy> = new Map();
 
-	constructor(logAdapter: WinstonAdapter) {
+	constructor(protected readonly logAdapter: WinstonAdapter) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 		this.registerAesStrategies();
 	}

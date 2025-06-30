@@ -10,6 +10,8 @@ import { MOCK_BAD_UUID, MockRepository } from "../../../__tests__/mocks/reposito
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
+import { MockCacheManagerAdapter } from "../../../__tests__/mocks/service/MockCacheAdapter";
 
 describe("UserService.Unit", () => {
 	let mockedResponse: UserEntity;
@@ -32,6 +34,10 @@ describe("UserService.Unit", () => {
 				{
 					provide: EntityManager,
 					useValue: new MockEntityManager<UserEntity>(),
+				},
+				{
+					provide: CacheManagerAdapter,
+					useValue: new MockCacheManagerAdapter(),
 				},
 			],
 		}).compile();

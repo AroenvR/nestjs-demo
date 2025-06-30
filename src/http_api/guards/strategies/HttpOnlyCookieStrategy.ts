@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { securityConstants } from "../../../common/constants/securityConstants";
-import { INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";
+import { INestJSCookieJwt } from "../../../common/interfaces/JwtInterfaces";
 
 /**
  * Passport strategy for authenticating users using JWTs stored in HTTP-Only cookies or Bearer tokens.
@@ -40,13 +40,13 @@ export class HttpOnlyCookieStrategy extends PassportStrategy(Strategy, securityC
 	 * @returns The JWT token.
 	 */
 	private static extractFromCookie(request: Request) {
-		if (!request.headers || !request.headers.cookie) return null;
+		if (!request.headers || !request.headers.cookie) throw new UnauthorizedException(`No JWT Cookie found in headers.`);
 
 		const cookies = cookie.parse(request.headers.cookie);
 		const jwt = cookies["jwt"];
 
 		if (!jwt) throw new UnauthorizedException(`No JWT cookie found in request headers.`);
 
-		return jwt || null;
+		return jwt;
 	}
 }

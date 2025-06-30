@@ -24,11 +24,6 @@ export class CompositeAuthGuard implements CanActivate {
 		const isPublic = this.reflector.getAllAndOverride<boolean>(securityConstants.IS_PUBLIC_ROUTE, [context.getHandler(), context.getClass()]);
 		const request = context.switchToHttp().getRequest();
 
-		// if (isPublic) {
-		// 	console.log("Route is public, allowing access.");
-		// 	return true;
-		// }
-
 		if (isPublic) {
 			// Try to decode JWT if present, but don't block access
 			const token = request.cookies?.jwt || request.headers["authorization"]?.replace("Bearer ", "");

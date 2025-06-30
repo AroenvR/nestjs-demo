@@ -11,6 +11,8 @@ import { IServerConfig } from "../../../infrastructure/configuration/IServerConf
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { securityConstants } from "../../../common/constants/securityConstants";
+import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
+import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * A service class that provides methods for creating/managing access tokens and HTTP-only cookies.
@@ -26,6 +28,7 @@ export class TokenService {
 		protected readonly jwtService: JwtService,
 		protected readonly configService: ConfigService,
 		protected readonly encryptionUtils: EncryptionUtils,
+		protected readonly cache: CacheManagerAdapter,
 		@InjectRepository(RefreshTokenEntity)
 		protected readonly refreshTokenRepo: Repository<RefreshTokenEntity>,
 	) {
@@ -54,6 +57,8 @@ export class TokenService {
 			exp: exp,
 		};
 
+		// Cache value is set for the BearerTokenStrategy's Guard.
+		await this.cache.set(CacheKeys.JWT_SUB + tokenInfo.jti, true, config.expiry);
 		return this.signToken(tokenInfo);
 	}
 

@@ -1,10 +1,10 @@
+import { randomUUID } from "crypto";
 import * as jwt from "jsonwebtoken";
 import { MockUserEntity } from "./entity/MockUserEntity";
-import { randomUUID } from "crypto";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
 import { TJwtCookie } from "../../http_api/types/TJwtCookie";
 import { securityConstants } from "../../common/constants/securityConstants";
-import { INestJSBearerJwt, INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";
+import { INestJSBearerJwt, INestJSCookieJwt } from "../../common/interfaces/JwtInterfaces";
 
 const cookieSecret = process.env[securityConstants.httpOnlyCookieEnvVar] || "cookie_testing_secret";
 const bearerSecret = process.env[securityConstants.bearerAccessTokenEnvVar] || "token_testing_secret";
@@ -38,7 +38,7 @@ export const mockExpiredBearerToken = jwt.sign(expiredBearerToken, bearerSecret,
 
 const faultyBearerToken: INestJSBearerJwt = {
 	user: {
-		sub: user.uuid,
+		sub: randomUUID(),
 		roles: [],
 		jti: randomUUID(),
 		iat: Math.floor(Date.now() / 1000),

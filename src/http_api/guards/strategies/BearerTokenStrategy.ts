@@ -1,9 +1,12 @@
+import { UUID } from "crypto";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { INestJSBearerJwt } from "../../../common/interfaces/JwtInterfaces";
+import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
+import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * Passport strategy for authenticating users using JWTs stored in HTTP-Only cookies or Bearer tokens.
@@ -12,7 +15,10 @@ import { INestJSBearerJwt } from "../../../common/interfaces/JwtInterfaces";
  */
 @Injectable()
 export class BearerTokenStrategy extends PassportStrategy(Strategy, securityConstants.bearerTokenBinding) {
-	constructor(private readonly configService: ConfigService) {
+	constructor(
+		private readonly configService: ConfigService,
+		private readonly cache: CacheManagerAdapter,
+	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken()]),
 			ignoreExpiration: false,
@@ -21,14 +27,19 @@ export class BearerTokenStrategy extends PassportStrategy(Strategy, securityCons
 	}
 
 	/**
-	 * Validates the JWT payload.
-	 * @param payload The JWT payload to validate.
+	 * Validates the `Authorization: Bearer` header's JWT payload.
+	 * @param jwt The JWT to validate.
 	 * @returns The validated payload.
 	 */
-	async validate(payload: INestJSBearerJwt) {
-		if (payload) return payload;
+	async validate(jwt: INestJSBearerJwt) {
+		if (!jwt || !jwt.user) throw new UnauthorizedException(`Invalid access token JWT.`);
 
-		console.error(`Invalid JWT payload.`);
-		throw new UnauthorizedException(`Invalid JWT payload.`);
+		const cachedSub = await this.cache.get<string>(CacheKeys.JWT_JTI + jwt.user.jti);
+		if (!cachedSub) throw new UnauthorizedException(`JWT Identifier does not exist in cache.`);
+
+		const userExists = await this.cache.get<UUID>(CacheKeys.USER_UUID + jwt.user.sub);
+		if (!userExists) throw new UnauthorizedException(`Subject does not exist in cache.`);
+
+		return jwt;
 	}
 }

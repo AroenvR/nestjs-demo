@@ -79,7 +79,7 @@ This document describes the authentication flow, token handling, and route prote
    - Client includes `Authorization: Bearer <accessToken>` OR `X-Swagger-API-Key` on every request.  
    - If a request returns `401 Unauthorized` (access token expired):
      1. Client immediately calls **`POST /auth/refresh`**.  
-     2. On success, client replaces in-memory `accessToken` and retries the original request.
+     2. On success, client replaces `accessToken` and retries the original request.
 
 3. **Logout** (`POST /auth/logout`)  
    - Client calls (no tokens required).  

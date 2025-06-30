@@ -1,3 +1,8 @@
 {
-    "appStatusInterval": 10000
+    "appStatusInterval": 10000,
+    "cache": {
+        "ttl": 300000,
+        "refreshThreshold": 30000,
+        "nonBlocking": true
+    }
 }
