@@ -5,6 +5,7 @@ import { securityConstants } from "../../common/constants/securityConstants";
 import { SwaggerApiKeyAuthGuard } from "./SwaggerApiKeyAuthGuard";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { BearerTokenAuthGuard } from "./BearerTokenAuthGuard";
+import { JwksAuthGuard } from "./JwksAuthGuard";
 
 /**
  * A guard that chains multiple authentication strategies.
@@ -63,6 +64,7 @@ export class CompositeAuthGuard implements CanActivate {
 			this.moduleRef.get(BearerTokenAuthGuard, { strict: false }),
 		];
 
+		if (config.jwks.enabled) enabledGuards.push(this.moduleRef.get(JwksAuthGuard, { strict: false }));
 		if (config.swagger.enabled) enabledGuards.push(this.moduleRef.get(SwaggerApiKeyAuthGuard, { strict: false }));
 
 		return enabledGuards;

@@ -9,6 +9,9 @@ import { WinstonAdapter } from "./infrastructure/logging/adapters/WinstonAdapter
 import { serverConfig } from "./infrastructure/configuration/serverConfig";
 import { securityConstants } from "./common/constants/securityConstants";
 
+// Left off at Auth schemes. Next step is implementing a Keycloak guard.
+// Testing still needs to happen as well.
+
 async function bootstrap() {
 	// TODO's:
 	/*
@@ -26,7 +29,6 @@ async function bootstrap() {
 		Implement a Queue manager
 		Implement a validator utility
 		Implement worker threads
-		Implement a custom session storage
 
 		Fix:
 		- Login scripts (scripts dir)

@@ -11,7 +11,6 @@ import { ISseMessage } from "../../application/events/ISseMessage";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { UseErrorFilters } from "../decorators/UseErrorFilters";
 import { AbstractEntity } from "../../domain/AbstractEntity";
-import { TRequest } from "../types/TJwtCookie";
 import { CompositeAuthGuard } from "../guards/CompositeAuthGuard";
 import { securityConstants } from "../../common/constants/securityConstants";
 
@@ -107,19 +106,5 @@ export class GuardedController<Entity extends AbstractEntity> {
 
 		this.logger.log(`Deleting entity by uuid ${uuid}`);
 		await this.service.remove(uuid);
-	}
-
-	/**
-	 * Asserts that the JWT is present in the request.
-	 * @param request The HTTP request object containing the user information.
-	 * @throws HttpException if the JWT is missing or invalid.
-	 */
-	protected hasValidJwt(request: TRequest): boolean {
-		let valid = true;
-
-		if (!isTruthy(request.user)) valid = false;
-		if (!isTruthy(request.user.uuid)) valid = false;
-
-		return valid;
 	}
 }

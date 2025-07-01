@@ -28,7 +28,7 @@ import { WinstonAdapter } from "../../../infrastructure/logging/adapters/Winston
 import { DefaultErrorDecorators } from "../../../http_api/decorators/DefaultErrorDecorators";
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
-import { TJwtCookie, TRequest } from "../../../http_api/types/TJwtCookie";
+import { TJwtCookie, TRequest } from "../../../common/types/TJwtCookie";
 import { ICookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { PublicRoute } from "../../../http_api/decorators/PublicRoute";

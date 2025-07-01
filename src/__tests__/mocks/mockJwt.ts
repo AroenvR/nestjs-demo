@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import * as jwt from "jsonwebtoken";
 import { MockUserEntity } from "./entity/MockUserEntity";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
-import { TJwtCookie } from "../../http_api/types/TJwtCookie";
+import { TJwtCookie } from "../../common/types/TJwtCookie";
 import { securityConstants } from "../../common/constants/securityConstants";
 import { INestJSBearerJwt, INestJSCookieJwt } from "../../common/interfaces/JwtInterfaces";
 

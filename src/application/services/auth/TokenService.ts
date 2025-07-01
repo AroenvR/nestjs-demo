@@ -16,6 +16,7 @@ import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * A service class that provides methods for creating/managing access tokens and HTTP-only cookies.
+ * TODO: test
  */
 @Injectable()
 export class TokenService {

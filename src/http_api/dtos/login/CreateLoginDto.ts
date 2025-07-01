@@ -3,6 +3,8 @@ import { IsString, MinLength } from "class-validator";
 import { CreateDto } from "../CreateDto";
 import { userConstants } from "../../../common/constants/userConstants";
 
+// TODO: Test
+
 /**
  * This class is responsible for receiving data from a client to log a user in.
  * It provides Swagger documentation for the API.

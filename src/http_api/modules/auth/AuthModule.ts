@@ -14,7 +14,9 @@ import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookie
 import { HttpOnlyCookieStrategy } from "../../../http_api/guards/strategies/HttpOnlyCookieStrategy";
 import { BearerTokenStrategy } from "../../../http_api/guards/strategies/BearerTokenStrategy";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
-
+import { JwksStrategy } from "../../../http_api/guards/strategies/JwksStrategy";
+import { JwksAuthGuard } from "../../../http_api/guards/JwksAuthGuard";
+// TODO: test
 if (!process.env[securityConstants.httpOnlyCookieEnvVar]) throw new Error("HTTP-Only Cookie secret is not defined");
 if (!process.env[securityConstants.bearerAccessTokenEnvVar]) throw new Error("Bearer Token secret is not defined");
 if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API key is not defined");
@@ -34,9 +36,11 @@ if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API 
 		TokenService,
 		BearerTokenStrategy,
 		HttpOnlyCookieStrategy,
+		JwksStrategy,
 		SwaggerApiKeyStrategy,
 		BearerTokenAuthGuard,
 		HttpOnlyCookieAuthGuard,
+		JwksAuthGuard,
 		SwaggerApiKeyAuthGuard,
 		CompositeAuthGuard,
 	],

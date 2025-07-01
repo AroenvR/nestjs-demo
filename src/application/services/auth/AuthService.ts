@@ -9,7 +9,7 @@ import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEn
 import { IHttpOnlyCookie } from "src/common/interfaces/JwtInterfaces";
 
 /**
- * TODO
+ * TODO document & test
  */
 @Injectable()
 export class AuthService {

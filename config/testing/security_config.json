@@ -12,6 +12,22 @@
         "encryption": "aes-256-gcm",
         "expiry": 900
     },
+    "jwks": {
+        "enabled": true,
+        "cache": true,
+        "cacheMaxEntries": 10,
+        "cacheMaxAge": 3600000,
+        "rateLimit": true,
+        "timeout": 5000,
+        "jwtksPerMinute": 5,
+        "jwksUri": "https://demo.duendesoftware.com/.well-known/openid-configuration/jwks",
+        "requestAgentCertPath": "",
+        "issuer": "https://demo.duendesoftware.com",
+        "audience": "api",
+        "algorithms": [
+            "RS256"
+        ]
+    },
     "swagger": {
         "enabled": true
     },

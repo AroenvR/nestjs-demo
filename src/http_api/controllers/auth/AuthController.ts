@@ -34,7 +34,7 @@ import { securityConstants } from "../../../common/constants/securityConstants";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
 
-// TODO: Create a Redis middleware with revoked JTI's
+// TODO: unit test
 
 const ENDPOINT = "auth";
 

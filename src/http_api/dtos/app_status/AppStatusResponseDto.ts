@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { TAppStatusMessage } from "../../../common/types/TAppStatusMessage";
 
+// TODO: test
+
 /**
  * Data Transfer Object for the application status response.
  * This DTO is used to encapsulate the status of the application.
