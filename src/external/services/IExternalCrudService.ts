@@ -1,4 +1,4 @@
-import { BuilderResponse } from "../../common/utility/request_builder/RequestBuilder";
+import { BuilderResponse, IBaseRequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 
 /**
  * DOC
@@ -11,7 +11,7 @@ export interface IExternalCrudService {
 	 * @param
 	 * @returns the request's raw response.
 	 */
-	get(endpoint: string, headers?: Record<string, string>, responseType?: BuilderResponse): Promise<unknown>;
+	get(endpoint: string, headers?: Record<string, string>, responseType?: BuilderResponse): IBaseRequestBuilder;
 
 	/**
 	 * Send a POST request.
@@ -26,7 +26,7 @@ export interface IExternalCrudService {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: BuilderResponse,
-	): Promise<unknown>;
+	): IBaseRequestBuilder;
 
 	/**
 	 * Send a PATCH request.
@@ -41,7 +41,7 @@ export interface IExternalCrudService {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: BuilderResponse,
-	): Promise<unknown>;
+	): IBaseRequestBuilder;
 
 	/**
 	 * Send a DELETE request.
@@ -50,5 +50,5 @@ export interface IExternalCrudService {
 	 * @param
 	 * @returns the request's raw response.
 	 */
-	delete(endpoint: string, headers?: Record<string, string>, responseType?: BuilderResponse): Promise<unknown>;
+	delete(endpoint: string, headers?: Record<string, string>, responseType?: BuilderResponse): IBaseRequestBuilder;
 }

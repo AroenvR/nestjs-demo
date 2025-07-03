@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { IExternalConfig } from "../IExternalConfig";
 import { IExternalFacade } from "./IExternalFacade";
+import { IBaseRequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 
 /**
  * test & doc
@@ -17,6 +18,7 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 	protected readonly name: string;
 	protected readonly logger: ILogger;
 	protected config: IExternalConfig;
+	protected loginData: { endpoint: string; credentials: object };
 
 	constructor(
 		protected readonly logAdapter: IPrefixedLogger,
@@ -48,18 +50,17 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 	 */
 	public async login(endpoint: string, credentials: object): Promise<void> {
 		this.logger.log(`Logging in to the external API.`);
+		this.loginData = { endpoint: endpoint, credentials: credentials };
 
 		this.config = this.configService.get(this.configSelector);
 		this.service.setConfig(this.config);
 
-		const response = await this.service.post(endpoint, credentials);
-		this.accessToken = this.handleLoginResponse(response);
-
-		this.service.setAccessToken(this.accessToken);
+		const request = this.service.post(endpoint, credentials);
+		const response = await request.execute();
+		const accessToken = this.handleLoginResponse(response);
+		this.setAccessToken(accessToken);
 
 		if (!this.config.events) return;
-
-		this.consumer.setAccessToken(this.accessToken);
 		try {
 			this.consumer.setup(this.getEventsUrl(), this.processSeverSentEvent);
 			await this.consumer.connect();
@@ -72,28 +73,62 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 	 *
 	 */
 	public async get(endpoint: string) {
-		return this.service.get(endpoint);
+		const request = this.service.get(endpoint);
+		return this.executeRequest(request);
 	}
 
 	/**
 	 *
 	 */
 	public async post(endpoint: string, payload: string | object | ArrayBuffer) {
-		return this.service.post(endpoint, payload);
+		const request = this.service.post(endpoint, payload);
+		return this.executeRequest(request);
 	}
 
 	/**
 	 *
 	 */
 	public async patch(endpoint: string, payload: string | object | ArrayBuffer) {
-		return this.service.patch(endpoint, payload);
+		const request = this.service.patch(endpoint, payload);
+		return this.executeRequest(request);
 	}
 
 	/**
 	 *
 	 */
 	public async delete(endpoint: string) {
-		return this.service.delete(endpoint);
+		const request = this.service.delete(endpoint);
+		return this.executeRequest(request);
+	}
+
+	/**
+	 * doc
+	 */
+	protected async executeRequest(request: IBaseRequestBuilder) {
+		const currentToken = this.accessToken;
+
+		try {
+			const response = await request.execute();
+			if (response.ok) return response;
+
+			if (response.status === 401) {
+				const loginRequest = this.service.post(this.loginData.endpoint, this.loginData.credentials);
+				const loginResponse = loginRequest.execute();
+				const newToken = this.handleLoginResponse(loginResponse);
+
+				if (currentToken === newToken) throw new Error(`${this.name}: Access token was not refreshed.`);
+				this.setAccessToken(this.accessToken);
+
+				request.headers = this.service.defaultRequestHeaders();
+				const retry = await request.execute();
+
+				if (retry.ok) return retry;
+				throw new Error(`${this.name}: Request RETRY failed.`);
+			}
+		} catch (err) {
+			this.logger.error(`Request to ${request.domain + "/" + request.endpoint} failed.`, err);
+			return null;
+		}
 	}
 
 	/**
@@ -105,6 +140,16 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 		const port = this.config.port ? `:${this.config.port}` : "";
 
 		return new URL(protocol + domain + port + "/");
+	}
+
+	/**
+	 * doc
+	 * @param token
+	 */
+	protected setAccessToken(token: string) {
+		this.accessToken = token;
+		this.service.setAccessToken(token);
+		if (this.config.events) this.consumer.setAccessToken(token);
 	}
 
 	/* Getters & Setters */

@@ -3,7 +3,7 @@ import { ILogger } from "../../infrastructure/logging/ILogger";
 import { BuilderResponse, RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 import { IExternalConfig } from "../IExternalConfig";
 import { IExternalCrudService } from "./IExternalCrudService";
-import { WinstonAdapter } from "src/infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
  * DOC
@@ -26,8 +26,8 @@ export class ExternalCrudService implements IExternalCrudService {
 	/**
 	 *
 	 */
-	public async get(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
-		const response = await this.requestBuilder
+	public get(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+		return this.requestBuilder
 			.setMethod("GET")
 			.setUseSsl(this.config.ssl)
 			.setDomain(this.config.domain)
@@ -35,22 +35,14 @@ export class ExternalCrudService implements IExternalCrudService {
 			.setEndpoint(endpoint)
 			.setHeaders(headers ? headers : this.defaultRequestHeaders())
 			.setResponseType(responseType)
-			.build()
-			.execute();
-
-		return response;
+			.build();
 	}
 
 	/**
 	 *
 	 */
-	public async post(
-		endpoint: string,
-		payload: string | object | ArrayBuffer,
-		headers?: Record<string, string>,
-		responseType: BuilderResponse = "json",
-	) {
-		const response = await this.requestBuilder
+	public post(endpoint: string, payload: string | object | ArrayBuffer, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+		return this.requestBuilder
 			.setMethod("POST")
 			.setUseSsl(this.config.ssl)
 			.setDomain(this.config.domain)
@@ -59,22 +51,14 @@ export class ExternalCrudService implements IExternalCrudService {
 			.setBody(payload)
 			.setHeaders(headers ? headers : this.defaultRequestHeaders())
 			.setResponseType(responseType)
-			.build()
-			.execute();
-
-		return response;
+			.build();
 	}
 
 	/**
 	 *
 	 */
-	public async patch(
-		endpoint: string,
-		payload: string | object | ArrayBuffer,
-		headers?: Record<string, string>,
-		responseType: BuilderResponse = "json",
-	) {
-		const response = await this.requestBuilder
+	public patch(endpoint: string, payload: string | object | ArrayBuffer, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+		return this.requestBuilder
 			.setMethod("PATCH")
 			.setUseSsl(this.config.ssl)
 			.setDomain(this.config.domain)
@@ -83,17 +67,14 @@ export class ExternalCrudService implements IExternalCrudService {
 			.setBody(payload)
 			.setHeaders(headers ? headers : this.defaultRequestHeaders())
 			.setResponseType(responseType)
-			.build()
-			.execute();
-
-		return response;
+			.build();
 	}
 
 	/**
 	 *
 	 */
-	public async delete(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
-		const response = await this.requestBuilder
+	public delete(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+		return this.requestBuilder
 			.setMethod("DELETE")
 			.setUseSsl(this.config.ssl)
 			.setDomain(this.config.domain)
@@ -101,17 +82,14 @@ export class ExternalCrudService implements IExternalCrudService {
 			.setEndpoint(endpoint)
 			.setHeaders(headers ? headers : this.defaultRequestHeaders())
 			.setResponseType(responseType)
-			.build()
-			.execute();
-
-		return response;
+			.build();
 	}
 
 	/**
 	 * Construct the default HTTP request headers.
 	 * @returns the default headers for this object's CRUD requests.
 	 */
-	private defaultRequestHeaders(): Record<string, string> {
+	public defaultRequestHeaders(): Record<string, string> {
 		if (!this.config) throw new Error(`${this.name}: Call setup first.`);
 
 		const defaultHeaders = { "Content-Type": "application/json" };

@@ -1,9 +1,7 @@
-import { IExternalCrudService } from "../services/IExternalCrudService";
-
 /**
  * DOC
  */
-export interface IExternalFacade extends IExternalCrudService {
+export interface IExternalFacade {
 	/**
 	 *
 	 * @param data
@@ -39,4 +37,34 @@ export interface IExternalFacade extends IExternalCrudService {
 	 * @returns
 	 */
 	login(endpoint: string, credentials: object): Promise<void>;
+
+	/**
+	 * Send a GET request.
+	 * @param
+	 * @returns the request's raw response.
+	 */
+	get(endpoint: string): Promise<unknown>;
+
+	/**
+	 * Send a POST request.
+	 * @param
+	 * @param
+	 * @returns the request's raw response.
+	 */
+	post(endpoint: string, payload: string | object | ArrayBuffer): Promise<unknown>;
+
+	/**
+	 * Send a PATCH request.
+	 * @param
+	 * @param
+	 * @returns the request's raw response.
+	 */
+	patch(endpoint: string, payload: string | object | ArrayBuffer): Promise<unknown>;
+
+	/**
+	 * Send a DELETE request.
+	 * @param
+	 * @returns the request's raw response.
+	 */
+	delete(endpoint: string): Promise<unknown>;
 }

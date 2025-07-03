@@ -13,7 +13,7 @@ import { ILogger } from "../../../infrastructure/logging/ILogger";
  * @property headers - Record<string, string> | null - Which headers to use.
  * @property responseType - {@link BuilderResponse} | null - The expected response type.
  */
-interface IBaseRequestBuilder {
+export interface IBaseRequestBuilder {
 	method: BuilderMethods | null;
 	useSsl: boolean | null;
 	port: number | null;
