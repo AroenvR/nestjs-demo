@@ -9,7 +9,7 @@ import { securityConstants } from "../../../common/constants/securityConstants";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 
 /**
- * TODO: Document & test
+ * TODO: Document
  */
 @Injectable()
 export class JwksStrategy extends PassportStrategy(Strategy, securityConstants.jwksBinding) {
@@ -26,11 +26,7 @@ export class JwksStrategy extends PassportStrategy(Strategy, securityConstants.j
 				timeout: config.timeout,
 				jwksRequestsPerMinute: config.jwtksPerMinute,
 				jwksUri: config.jwksUri,
-				requestAgent: config.requestAgentCertPath
-					? new https.Agent({
-							ca: fs.readFileSync(config.requestAgentCertPath),
-						})
-					: undefined,
+				requestAgent: config.requestAgentCertPath ? new https.Agent({ ca: fs.readFileSync(config.requestAgentCertPath) }) : undefined,
 			}),
 			issuer: config.issuer,
 			audience: config.audience,
@@ -39,7 +35,6 @@ export class JwksStrategy extends PassportStrategy(Strategy, securityConstants.j
 	}
 
 	validate(payload: any) {
-		console.log(`WIP PAYLOAD`, payload);
 		// Optionally confirm payload.sub matches a user record, etc.
 		return { sub: payload.sub, roles: payload.realm_access?.roles || [] };
 	}

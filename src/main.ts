@@ -30,6 +30,8 @@ async function bootstrap() {
 		Implement a validator utility
 		Implement worker threads
 
+		Create automated dependency documentation https://www.youtube.com/watch?v=EtTrgv1ww8o
+
 		Fix:
 		- Login scripts (scripts dir)
 		- Bash scripts for /session endpoints (scripts dir)

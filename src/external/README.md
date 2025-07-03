@@ -1,6 +1,5 @@
 # External Services Integration
-
-The modules created in this package provide a framework for integrating with external services, with support for CRUD requests as well as Server-Sent Events (SSE) consumption. It consists of abstract classes that handle the complexities of authentication, CRUD requests, SSE connection management, SSE and event processing.
+The objects in this package provide a framework for integrating with external services, with support for CRUD requests as well as Server-Sent Event (SSE) consumption. It consists of abstract classes that handle the complexities of authentication, CRUD requests, SSE connection management, SSE and event processing.
 
 ## Abstract Classes
 ### AbstractExternalService
@@ -20,9 +19,9 @@ This class serves as a template for interacting with external APIs.
 This class provides a robust way to consume Server-Sent Events (SSE) from external APIs.
 
 #### Responsibilities
-- Establish and maintain SSE connections with proper authentication
+- Establish and maintain authenticated SSE connections
 - Process incoming events and delegate them to the service
-- Handle connection lifecycle (initialization, errors, reconnection, termination)
+- Handle connection lifecycles (initialization, errors, reconnection, termination)
 - Manage correlation IDs for distributed tracing
 
 #### Lifecycle
@@ -93,21 +92,6 @@ export class ExampleExternalEventConsumer extends AbstractExternalEventConsumer 
         this.eventTypes = ['message', /* Other events as per your requirements */];
     }
 }
-```
-
-### 3. Create a Module
-```typescript
-import { Module } from '@nestjs/common';
-import { ExampleExternalService } from '../services/ExampleExternalService';
-import { ExampleExternalEventConsumer } from '../events/ExampleExternalEventConsumer';
-
-/* Remember to this the module to the imports array in src/AppModule.ts */
-
-@Module({
-    providers: [ExampleExternalService, ExampleExternalEventConsumer],
-    exports: [ExampleExternalService],
-})
-export class ExampleExternalApiModule { }
 ```
 
 ### Reconnection Logic

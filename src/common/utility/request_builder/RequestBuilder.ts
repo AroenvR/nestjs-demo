@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
 
@@ -96,6 +96,10 @@ export class RequestBuilder implements IRequestBuilder {
 					if (this.responseType === "json") return response.json();
 					else if (this.responseType === "arrayBuffer") return response.arrayBuffer();
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);
+				}
+
+				if (response.status === 401) {
+					return response.json();
 				}
 
 				// @Security - This could log sensitive data (response payloads from external API's)

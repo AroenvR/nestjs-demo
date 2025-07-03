@@ -10,6 +10,7 @@
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
+        "start:repl": "NEST_DEBUG=true nest start --watch --entryFile debug",
         "start:prod": "node dist/main",
         "test": "npm run lint && jest --maxWorkers=4",
         "test:watch": "npm run lint && jest --watchAll --maxWorkers=2",

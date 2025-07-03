@@ -1,40 +1,50 @@
 import { randomUUID } from "crypto";
 import { createEventSource, EventSourceMessage } from "eventsource-client";
-import { OnModuleInit, OnModuleDestroy, Injectable } from "@nestjs/common";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
-import { AbstractExternalService } from "../services/AbstractExternalService";
+import { OnModuleDestroy, Injectable } from "@nestjs/common";
+import { ILogger } from "../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { IExternalEventConsumer } from "./IExternalEventConsumer";
 
 /**
- * Provides a template for consuming Server-Sent Events (SSE) from an external API
- * It handles authenticated connections, message parsing, error handling, and a custom retry mechanism.
- * Intended to be extended by concrete event consumer implementations.
+ * DOC
  */
 @Injectable()
-export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnModuleDestroy {
+export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDestroy {
 	private sseClient: ReturnType<typeof createEventSource> | null = null;
-	private bearerToken: string | null = null;
+	private accessToken: string | null = null;
+	private processEventCallback: (data: unknown) => Promise<void> | null = null;
+	private eventsUrl: URL | null = null;
 	protected readonly name: string;
 	protected logger: ILogger;
 	protected eventTypes: string[] = ["message"];
 
-	constructor(
-		protected readonly logAdapter: IPrefixedLogger,
-		protected readonly service: AbstractExternalService,
-	) {
+	constructor(protected readonly logAdapter: WinstonAdapter) {
 		this.name = this.constructor.name;
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
 	}
 
 	/**
-	 * Lifecycle hook called once the module has been initialized.
-	 * Attempts to log in and then establish the event source connection.
+	 *
 	 */
-	public async onModuleInit(): Promise<void> {
-		this.logger.log(`Initializing event consuming.`);
+	public setup(eventsUrl: URL, callback: (data: unknown) => Promise<void>) {
+		this.logger.info(`Setting up.`);
+
+		this.eventsUrl = eventsUrl;
+		this.processEventCallback = callback;
+	}
+
+	/**
+	 *
+	 */
+	public async connect(): Promise<void> {
+		this.logger.info(`Initializing event consuming.`);
+
+		if (!this.eventsUrl || !this.processEventCallback) {
+			throw new Error(`${this.name}: Call setup first.`);
+		}
 
 		try {
-			this.bearerToken = await this.service.login();
-			this.connectToEventSource(this.apiUrl);
+			await this.connectToEventSource(this.eventsUrl);
 		} catch (error) {
 			this.logger.critical(`Failed to log in to external service. Event source connection will not be established.`, error);
 		}
@@ -55,7 +65,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 	 * processes the event stream, and handles outcomes like unexpected stream termination or errors.
 	 * @param url The URL of the SSE endpoint.
 	 */
-	public async connectToEventSource(url: string): Promise<void> {
+	public async connectToEventSource(url: URL): Promise<void> {
 		this.logger.info(`Attempting to connect to external event source: ${url}`);
 
 		try {
@@ -116,7 +126,7 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 			this.logger.debug(`Received an event of type ${eventType} with ID ${eventId}.`);
 
 			const parsedData = JSON.parse(msg.data);
-			this.service.handleEvent(parsedData);
+			this.processEventCallback(parsedData);
 		} catch (error) {
 			this.logger.error(`Error parsing JSON for event of of type ${eventType} with ID ${eventId}: ${error.message}.`, error);
 			this.logger.verbose(`Raw data for failed JSON parse:`, msg.data);
@@ -133,8 +143,8 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 			"Cache-Control": "no-cache",
 		};
 
-		if (this.bearerToken) {
-			headers["Authorization"] = `Bearer ${this.bearerToken}`;
+		if (this.accessToken) {
+			headers["Authorization"] = `Bearer ${this.accessToken}`;
 		}
 
 		return headers;
@@ -153,13 +163,16 @@ export abstract class AbstractExternalEventConsumer implements OnModuleInit, OnM
 
 		this.sseClient.close();
 		this.sseClient = null;
+
+		this.eventsUrl = null;
+		this.processEventCallback = null;
 	}
 
 	/**
-	 * Abstract getter for the API URL. Must be implemented by subclasses.
-	 * @returns The full URL of the Server-Sent Events endpoint.
+	 *
+	 * @param token
 	 */
-	protected get apiUrl(): string {
-		return this.service.getApiUrl();
+	public setAccessToken(token: string) {
+		this.accessToken = token;
 	}
 }
