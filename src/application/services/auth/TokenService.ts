@@ -1,4 +1,4 @@
-import { randomUUID, UUID } from "crypto";
+import { randomUUID } from "crypto";
 import { EntityManager, Repository } from "typeorm";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -59,7 +59,7 @@ export class TokenService {
 		};
 
 		// Cache value is set for the BearerTokenStrategy's Guard.
-		await this.cache.set<UUID>(CacheKeys.JWT_JTI + tokenInfo.jti, tokenInfo.jti, config.expiry);
+		this.cache.set<boolean>(CacheKeys.JWT_JTI + tokenInfo.jti, true, config.expiry * 1000);
 		return this.signToken(tokenInfo);
 	}
 

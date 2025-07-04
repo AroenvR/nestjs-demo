@@ -75,7 +75,13 @@ export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDe
 				fetch: fetch,
 			});
 
-			this.processMessageStream();
+			// fire-and-forget, on next tick
+			setImmediate(() => {
+				this.processMessageStream().catch((err) => {
+					this.logger.critical(`Error in message stream: ${err.message}`);
+					this.disconnect();
+				});
+			});
 		} catch (error) {
 			this.logger.critical(`Error caught during stream setup / processing: ${error.message}`);
 			this.disconnect();

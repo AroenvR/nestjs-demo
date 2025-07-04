@@ -4,7 +4,7 @@ import { ExternalEventConsumer } from "./ExternalEventConsumer";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
- * Mock implementation of AbstractExternalEventConsumer for testing purposes.
+ * Mock implementation of {@link ExternalEventConsumer} for testing purposes.
  */
 class MockConsumer extends ExternalEventConsumer {
 	constructor(logAdapter: WinstonAdapter) {
@@ -105,7 +105,7 @@ describe("AbstractExternalEventConsumer", () => {
 
 		// --------------------------------------------------
 
-		it("Can be initialized", async () => {
+		it("Can connect", async () => {
 			const connectToEventSourceSpy = jest.spyOn(consumer, "connectToEventSource");
 			const processMessageStreamSpy = jest.spyOn(consumer, "processMessageStream");
 
@@ -113,6 +113,7 @@ describe("AbstractExternalEventConsumer", () => {
 			consumer.setup(url, callback);
 
 			await consumer.connect();
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(consumer["sseClient"]).toBeDefined();
 			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url);
@@ -125,6 +126,7 @@ describe("AbstractExternalEventConsumer", () => {
 
 		it("Can connect to event source", async () => {
 			await consumer.connectToEventSource(url);
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(mockCreateEventSourceImplementation).toHaveBeenCalledWith({
 				url,
@@ -146,6 +148,7 @@ describe("AbstractExternalEventConsumer", () => {
 				.mockResolvedValueOnce({ done: true, value: undefined });
 
 			await consumer.connectToEventSource(url);
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(handleMessageSpy).toHaveBeenCalledWith(messageEvent);
 			expect(logger.correlationManager.runWithCorrelationId).toHaveBeenCalled();
@@ -158,6 +161,7 @@ describe("AbstractExternalEventConsumer", () => {
 
 		it("Can disconnect from event source", async () => {
 			await consumer.connectToEventSource(url);
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			consumer.disconnect();
 
@@ -192,6 +196,7 @@ describe("AbstractExternalEventConsumer", () => {
 			});
 
 			await consumer.connectToEventSource(url);
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(disconnectSpy).toHaveBeenCalled();
 
@@ -208,9 +213,10 @@ describe("AbstractExternalEventConsumer", () => {
 			jest.spyOn(consumer, "processMessageStream").mockRejectedValueOnce(new Error(errorMessage));
 
 			await consumer.connectToEventSource(url);
-			expect(disconnectSpy).toHaveBeenCalled();
+			await new Promise<void>((resolve) => setImmediate(resolve));
 
-			expect(logger.critical).toHaveBeenCalledWith(`Error caught during stream setup / processing: ${errorMessage}`);
+			expect(disconnectSpy).toHaveBeenCalled();
+			expect(logger.critical).toHaveBeenCalledWith(`Error in message stream: ${errorMessage}`);
 		});
 
 		// --------------------------------------------------

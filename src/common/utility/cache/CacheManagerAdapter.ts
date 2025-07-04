@@ -126,9 +126,9 @@ export class CacheManagerAdapter implements OnModuleDestroy {
 		this.logger.warn("Seeding cache for mock JWTs in test env");
 
 		// seed the "JWT_JTI" entry for your bearer mocks
-		this.cache.set(CacheKeys.JWT_JTI + mockPlainTextBearerToken.user.jti, mockPlainTextBearerToken.user.sub);
+		this.cache.set<boolean>(CacheKeys.JWT_JTI + mockPlainTextBearerToken.jti, true);
 
 		// seed the "USER_UUID" entry for your bearer mocks
-		this.cache.set(CacheKeys.USER_UUID + mockPlainTextBearerToken.user.sub, mockPlainTextBearerToken.user.sub);
+		this.cache.set<boolean>(CacheKeys.USER_UUID + mockPlainTextBearerToken.sub, true);
 	}
 }

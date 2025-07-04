@@ -5,10 +5,12 @@ import { ConfigService } from "@nestjs/config";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 
-// A concrete subclass for testing
+/**
+ * A concrete subclass for testing the {@link AbstractExternalFacade}.
+ */
 class TestFacade extends AbstractExternalFacade {
-	public loginData!: { endpoint: string; credentials: object };
-	public config!: any;
+	public loginData: { endpoint: string; credentials: object };
+	public config: any;
 
 	processSeverSentEvent = jest.fn();
 
@@ -45,7 +47,7 @@ describe("AbstractExternalFacade", () => {
 			error: jest.fn(),
 			critical: jest.fn(),
 			correlationManager: {
-				runWithCorrelationId: jest.fn((id, cb) => cb()),
+				runWithCorrelationId: jest.fn((_, cb) => cb()),
 			},
 		} as any;
 
@@ -71,6 +73,9 @@ describe("AbstractExternalFacade", () => {
 			post: jest.fn(),
 			patch: jest.fn(),
 			delete: jest.fn(),
+			defaultRequestHeaders: jest.fn().mockImplementation(() => {
+				return { "Content-Type": "application/json" };
+			}),
 		} as any;
 
 		// Mock ExternalEventConsumer
@@ -103,7 +108,7 @@ describe("AbstractExternalFacade", () => {
 			expect(logger.log).toHaveBeenCalledWith("Logging in to the external API.");
 			expect(configService.get).toHaveBeenCalledWith("foo.bar");
 			expect(service.setConfig).toHaveBeenCalledWith({ ssl: false, domain: "api.test", port: 8080, events: false });
-			expect(service.post).toHaveBeenCalledWith("/login", { user: "u", pass: "p" });
+			expect(service.post).toHaveBeenCalledWith("/login", { user: "u", pass: "p" }, { "Content-Type": "application/json" }, "text");
 			expect(loginBuilder.execute).toHaveBeenCalled();
 			expect((facade as any).accessToken).toBe("abc123");
 			expect(service.setAccessToken).toHaveBeenCalledWith("abc123");
@@ -163,7 +168,7 @@ describe("AbstractExternalFacade", () => {
 		it(`GET should return response when ok`, async () => {
 			const resultObj = { ok: true, data: `get-data` };
 			const builder = { execute: jest.fn().mockResolvedValue(resultObj) } as any;
-			(service as any).get().mockReturnValue(builder);
+			service.get.mockReturnValue(builder);
 
 			const result = await (facade as any).get(...args);
 			expect((service as any).get).toHaveBeenCalledWith(...args);
@@ -175,7 +180,7 @@ describe("AbstractExternalFacade", () => {
 
 		it(`GET should retry on 401 and return null`, async () => {
 			const builder = { execute: jest.fn().mockResolvedValueOnce({ ok: false, status: 401 }) } as any;
-			(service as any).get().mockReturnValue(builder);
+			service.get.mockReturnValue(builder);
 
 			// Mock login flow via service.post
 			const loginBuilder = { execute: jest.fn().mockResolvedValue({ token: "new-token" }) } as any;
@@ -186,6 +191,5 @@ describe("AbstractExternalFacade", () => {
 			expect(service.post).toHaveBeenCalledWith("/login", {});
 			expect(result).toBeNull();
 		});
-		// });
 	});
 });

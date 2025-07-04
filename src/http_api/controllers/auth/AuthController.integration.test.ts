@@ -55,8 +55,8 @@ describe(TEST_NAME, () => {
 	beforeEach(async () => {
 		user = await userRepo.save(MockUserEntity.get());
 
-		ptsHttpCookie = mockPlainTextHttpOnlyJwtCookie;
-		ptsBearerToken = mockPlainTextBearerToken;
+		ptsHttpCookie = { user: mockPlainTextHttpOnlyJwtCookie };
+		ptsBearerToken = { user: mockPlainTextBearerToken };
 
 		loginDto = MockCreateLoginDto.get();
 
@@ -131,14 +131,13 @@ describe(TEST_NAME, () => {
 
 	describe("READ", () => {
 		it("Can check an authenticated user's info", async () => {
-			const response = await controller.whoAmI(mockPlainTextBearerToken);
+			const TOKEN = { user: mockPlainTextBearerToken };
+			const response = await controller.whoAmI(TOKEN);
 
-			const found = await userRepo.findOneBy({ uuid: mockPlainTextBearerToken.user.sub });
+			const found = await userRepo.findOneBy({ uuid: TOKEN.user.sub });
 			expect(response.username).toEqual(found.username);
 
-			await expect(wasLogged(TEST_NAME, `${className}: Retrieving information for user ${mockPlainTextBearerToken.user.sub}`)).resolves.toBe(
-				true,
-			);
+			await expect(wasLogged(TEST_NAME, `${className}: Retrieving information for user ${TOKEN.user.sub}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
