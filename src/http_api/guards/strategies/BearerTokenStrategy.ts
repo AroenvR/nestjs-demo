@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { securityConstants } from "../../../common/constants/securityConstants";
-import { INestJSBearerJwt } from "../../../common/interfaces/JwtInterfaces";
+import { IBearerToken, INestJSBearerJwt } from "../../../common/interfaces/JwtInterfaces";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 
@@ -31,14 +31,18 @@ export class BearerTokenStrategy extends PassportStrategy(Strategy, securityCons
 	 * @param jwt The JWT to validate.
 	 * @returns The validated payload.
 	 */
-	async validate(jwt: INestJSBearerJwt) {
-		if (!jwt || !jwt.user) throw new UnauthorizedException(`Invalid access token JWT.`);
+	async validate(jwt: IBearerToken) {
+		console.log(`WIP yolo?`);
+		if (!jwt || !jwt.sub || !jwt.jti) throw new UnauthorizedException(`Invalid access token JWT.`);
 
-		const cachedSub = await this.cache.get<string>(CacheKeys.JWT_JTI + jwt.user.jti);
-		if (!cachedSub) throw new UnauthorizedException(`JWT Identifier does not exist in cache.`);
+		// TODO: FIX
+		// const cachedJti = await this.cache.get<UUID>(CacheKeys.JWT_JTI + jwt.jti);
+		// console.log(`WIP cachedJti`, cachedJti);
+		// if (!cachedJti) throw new UnauthorizedException(`JWT Identifier does not exist in cache.`);
 
-		const userExists = await this.cache.get<UUID>(CacheKeys.USER_UUID + jwt.user.sub);
-		if (!userExists) throw new UnauthorizedException(`Subject does not exist in cache.`);
+		// const userExists = await this.cache.get<UUID>(CacheKeys.USER_UUID + jwt.sub);
+		// console.log(`WIP userExists`, userExists);
+		// if (!userExists) throw new UnauthorizedException(`Subject does not exist in cache.`);
 
 		return jwt;
 	}

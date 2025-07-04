@@ -1,4 +1,4 @@
-import { Injectable, OnModuleDestroy } from "@nestjs/common";
+import { Injectable, OnModuleDestroy, Scope } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Cache, createCache } from "cache-manager";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
@@ -13,7 +13,7 @@ import { mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
  * - Configured via `misc_config.cache` in server configuration.
  * - Implements standard cache operations: get, set, del, clear.
  */
-@Injectable()
+@Injectable({ scope: Scope.DEFAULT })
 export class CacheManagerAdapter implements OnModuleDestroy {
 	protected logger: ILogger;
 	protected cache: Cache;
@@ -125,13 +125,10 @@ export class CacheManagerAdapter implements OnModuleDestroy {
 	private setupTestJwtData() {
 		this.logger.warn("Seeding cache for mock JWTs in test env");
 
-		// seed the "USER_UUID" entry for your bearer mocks
-		this.cache.set(CacheKeys.USER_UUID + mockPlainTextBearerToken.user.sub, mockPlainTextBearerToken.user.sub);
-
-		// seed the "JWT_SUB" entry for your bearer mocks
-		this.cache.set(CacheKeys.JWT_SUB + mockPlainTextBearerToken.user.sub, mockPlainTextBearerToken.user.sub);
-
 		// seed the "JWT_JTI" entry for your bearer mocks
 		this.cache.set(CacheKeys.JWT_JTI + mockPlainTextBearerToken.user.jti, mockPlainTextBearerToken.user.sub);
+
+		// seed the "USER_UUID" entry for your bearer mocks
+		this.cache.set(CacheKeys.USER_UUID + mockPlainTextBearerToken.user.sub, mockPlainTextBearerToken.user.sub);
 	}
 }

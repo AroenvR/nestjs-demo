@@ -21,7 +21,6 @@ const ENDPOINT = "user"; // Just finished the unit test, on to the integration a
 // NOTE: Endpoint ordering is important for NestJS to correctly resolve the routes
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
-@TransformResponseDto(UserResponseDto)
 export class UserController extends GuardedController<UserEntity> {
 	constructor(
 		protected readonly logAdapter: WinstonAdapter,
@@ -31,11 +30,13 @@ export class UserController extends GuardedController<UserEntity> {
 	}
 
 	@PostEndpoint(ENDPOINT, UserResponseDto)
+	@TransformResponseDto(UserResponseDto)
 	public async create(createDto: CreateUserDto) {
 		return super.create(createDto);
 	}
 
 	@GetEndpoint(ENDPOINT, UserResponseDto)
+	@TransformResponseDto(UserResponseDto)
 	public async findAll() {
 		return super.findAll();
 	}
@@ -46,11 +47,13 @@ export class UserController extends GuardedController<UserEntity> {
 	}
 
 	@GetByUuidEndpoint(ENDPOINT, UserResponseDto)
+	@TransformResponseDto(UserResponseDto)
 	public async findOne(uuid: UUID) {
 		return super.findOne(uuid);
 	}
 
 	@PatchEndpoint(ENDPOINT, UserResponseDto)
+	@TransformResponseDto(UserResponseDto)
 	public async update(uuid: UUID, updateDto: UpdateUserDto) {
 		return super.update(uuid, updateDto);
 	}

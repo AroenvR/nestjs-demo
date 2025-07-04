@@ -75,7 +75,7 @@ export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDe
 				fetch: fetch,
 			});
 
-			await this.processMessageStream();
+			this.processMessageStream();
 		} catch (error) {
 			this.logger.critical(`Error caught during stream setup / processing: ${error.message}`);
 			this.disconnect();

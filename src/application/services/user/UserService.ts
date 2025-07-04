@@ -139,6 +139,7 @@ export class UserService extends AbstractService<UserEntity> {
 		const seedRequirement = (await this.repository.count()) === 0;
 		if (!seedRequirement) {
 			this.logger.info(`Seed data exists. Not seeding data.`);
+			await this.hydrateUserUuidsCache(); // TODO: improve
 			return;
 		}
 

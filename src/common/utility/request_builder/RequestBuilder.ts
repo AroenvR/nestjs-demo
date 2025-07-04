@@ -52,7 +52,7 @@ export interface IRequestBuilder extends IBaseRequestBuilder {
 /**
  * HTTP Builder's supported response types.
  */
-export type BuilderResponse = "json" | "arrayBuffer";
+export type BuilderResponse = "text" | "json" | "arrayBuffer";
 
 /**
  * HTTP Builder's supported request methods.
@@ -93,6 +93,7 @@ export class RequestBuilder implements IRequestBuilder {
 			.then((response: Response) => {
 				if (response.ok) {
 					if (response.status === 204) return; // No content response
+					if (this.responseType === "text") return response.text();
 					if (this.responseType === "json") return response.json();
 					else if (this.responseType === "arrayBuffer") return response.arrayBuffer();
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);

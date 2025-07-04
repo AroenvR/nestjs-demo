@@ -1,3 +1,109 @@
+
+{
+    "ssl": false,
+    "domain": "localhost",
+    "port": 3000,
+    "events": true
+}
+
+
+
+EXAMPLE_EXTERNAL_CONFIG=/workspaces/nestjs-demo/config/development/example_external_config.json
+
+
+
+/**
+ * Example Joi schema for the server's external API configuration.
+ */
+export const exampleExternalSchema = Joi.object({
+    ssl: Joi.boolean().required(),
+	domain: Joi.string().required(),
+	port: Joi.number().integer().positive().required(),
+	events: Joi.boolean().default(false).optional(),
+}).required();
+
+
+
+
+/**
+ * The server's complete configuration interface.
+ * @property exampleExternalConfig - The server's {@link IExternalConfig} settings for the example API.
+ */
+export interface IServerConfig {
+	exampleExternalConfig: IExternalConfig;
+}
+
+
+
+
+// Example external configuration
+try {
+    const exampleExternalConfigPath = path.resolve(process.env.EXAMPLE_EXTERNAL_CONFIG);
+    const exampleExternalConfig = fs.readFileSync(externalConfigPath, "utf8");
+    const example = JSON.parse(externalConfig);
+    config.exampleExternalConfig = example;
+} catch (error: Error | unknown) {
+    console.error(`serverConfig: Could not load example external API configuration, using fallback configuration: ${error}`);
+}
+
+
+
+/**
+ * JSON schema for the NestJS server.
+ */
+export const serverJsonSchema = Joi.object({
+    exampleExternalConfig: exampleExternalSchema,
+}).required();
+
+
+PROVIDE in a module:
+ExternalCrudService,
+ExternalEventConsumer,
+ExampleExternalFacade
+
+CALL in an object:
+protected readonly exampleExternalFacade: ExampleExternalFacade,
+await this.exampleExternalFacade.login("/auth/login", { password: data.password });
+
+
+
+
+export class ExampleExternalFacade extends AbstractExternalFacade {
+    constructor(
+        @Inject(WinstonAdapter)
+        protected readonly logAdapter: WinstonAdapter,
+        protected readonly configService: ConfigService<IServerConfig>,
+        protected readonly service: ExternalCrudService,
+        protected readonly consumer: ExternalEventConsumer,
+    ) {
+        super(logAdapter, configService, service, consumer);
+    }
+
+    public processSeverSentEvent(data: unknown): Promise<void> {
+        console.log(`WIP DATA`, data);
+        return;
+    }
+
+    public getEventsUrl(): URL {
+        const baseUrl = super.getApiUrl();
+        return new URL("v1/user/events", baseUrl);
+    }
+
+    public handleLoginResponse(response: unknown): string {
+        return response as string;
+    }
+
+    protected get configSelector(): keyof IServerConfig {
+        return "exampleExternalConfig";
+    }
+}
+
+
+--------------------------------------------------
+
+
+
+
 # External Services Integration
 The objects in this package provide a framework for integrating with external services, with support for CRUD requests as well as Server-Sent Event (SSE) consumption. It consists of abstract classes that handle the complexities of authentication, CRUD requests, SSE connection management, SSE and event processing.
 

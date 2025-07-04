@@ -14,7 +14,7 @@ export class RefreshTokenEntity extends AbstractEntity {
 	@Column({ nullable: false, unique: true })
 	jti: UUID;
 
-	@Column({ nullable: false, unique: true })
+	@Column({ nullable: false })
 	sub: UUID;
 
 	@Column({ nullable: false, unique: true })

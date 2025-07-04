@@ -55,7 +55,7 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 		this.config = this.configService.get(this.configSelector);
 		this.service.setConfig(this.config);
 
-		const request = this.service.post(endpoint, credentials);
+		const request = this.service.post(endpoint, credentials, this.service.defaultRequestHeaders(), "text");
 		const response = await request.execute();
 		const accessToken = this.handleLoginResponse(response);
 		this.setAccessToken(accessToken);
