@@ -1,22 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 ENDPOINT="user"
 
-# Check if a value was provided
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <id>"
+# Locate the JWT
+JWT_FILE="$PWD/jwt.txt"
+
+# Read the JWT from the file
+JWT=$(< "$JWT_FILE" )
+
+# Ensure the JWT was read successfully
+if [[ -z "$JWT" ]]; then
+  echo "ERROR: jwt.txt is empty!" >&2
   exit 1
 fi
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Set the cookie jar path relative to the script's location
-COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
-
 # Send a POST request to the endpoint
 curl -X DELETE http://localhost:3000/v1/$ENDPOINT/$1 \
-    -b $COOKIE_JAR \
+    -H "Authorization: Bearer $JWT" \
     -H "Content-Type: application/json" \
-
-echo ""

@@ -1,22 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 ENDPOINT="user"
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Locate the JWT
+JWT_FILE="$PWD/jwt.txt"
 
-# Set the cookie jar path relative to the script's location
-COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
-JWT="FILL_IN_YOUR_JWT_HERE"
+# Read the JWT from the file
+JWT=$(< "$JWT_FILE" )
 
-# Send a GET request to the endpoint using an HTTP-Only Cookie
-curl -X GET http://localhost:3000/v1/$ENDPOINT/ \
-    -b $COOKIE_JAR \
-    -H "Content-Type: application/json" | jq
+# Ensure the JWT was read successfully
+if [[ -z "$JWT" ]]; then
+  echo "ERROR: jwt.txt is empty!" >&2
+  exit 1
+fi
 
 # Send a GET request to the endpoint using Authorization Bearer Token
-# curl -X GET http://localhost:3000/v1/$ENDPOINT/ \
-#     -H "Authorization: Bearer $JWT" \
-#     -H "Content-Type: application/json" | jq
-
-echo ""
+curl -X GET http://localhost:3000/v1/$ENDPOINT/ \
+    -H "Authorization: Bearer $JWT" \
+    -H "Content-Type: application/json" | jq

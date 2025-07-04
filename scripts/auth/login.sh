@@ -10,9 +10,8 @@ fi
 PASSWORD=$1
 
 # Locate this script’s directory so we can write cookies & jwts there
-PARENT_DIR="$(cd "$PWD/.." && pwd)"
-COOKIE_JAR="$PARENT_DIR/cookies.txt"
-JWT_FILE="$PARENT_DIR/jwt.txt"
+COOKIE_JAR="$PWD/cookies.txt"
+JWT_FILE="$PWD/jwt.txt"
 
 # 3) Hit the login endpoint:
 #    - ‘-sS’ silences the progress meter but still shows real errors

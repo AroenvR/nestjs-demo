@@ -4,8 +4,7 @@ set -euo pipefail
 ENDPOINT="auth"
 
 # Locate the JWT
-PARENT_DIR="$(cd "$PWD/.." && pwd)"
-JWT_FILE="$PARENT_DIR/jwt.txt"
+JWT_FILE="$PWD/jwt.txt"
 
 # Read the JWT from the file
 JWT=$(< "$JWT_FILE" )
