@@ -5,7 +5,7 @@
  * @property port - Which port to use.
  * @property events - Whether event consuming should be initialized or not.
  */
-export interface IExternalConfig {
+export interface IExternalConfig extends Record<string, unknown> {
 	ssl: boolean;
 	domain: string;
 	port: number;

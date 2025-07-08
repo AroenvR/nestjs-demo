@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
 /**
  * The base interface an {@link IRequestBuilder} must adhere to.
@@ -50,14 +51,24 @@ export interface IRequestBuilder extends IBaseRequestBuilder {
 }
 
 /**
+ * HTTP Builder's supported request methods.
+ */
+export type BuilderMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+/**
  * HTTP Builder's supported response types.
  */
 export type BuilderResponse = "text" | "json" | "arrayBuffer";
 
 /**
- * HTTP Builder's supported request methods.
+ * A map of supported response types to their corresponding return types.
+ * This is used to ensure type safety when handling different response types.
  */
-export type BuilderMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type ResponseTypeMap = {
+	text: Promise<string>;
+	json: Promise<Record<string, unknown>>; // Replace `any` with a more specific type if possible
+	arrayBuffer: Promise<ArrayBuffer>;
+};
 
 /**
  * A builder for creating dynamic HTTP(s) requests.
@@ -89,6 +100,7 @@ export class RequestBuilder implements IRequestBuilder {
 		const url = this.urlBuilder();
 		const payload = this.payloadBuilder();
 
+		let unauthorized = false;
 		const response = await fetch(url, payload)
 			.then((response: Response) => {
 				if (response.ok) {
@@ -100,7 +112,8 @@ export class RequestBuilder implements IRequestBuilder {
 				}
 
 				if (response.status === 401) {
-					return response.json();
+					unauthorized = true;
+					return HttpExceptionMessages.UNAUTHORIZED;
 				}
 
 				// @Security - This could log sensitive data (response payloads from external API's)
@@ -120,7 +133,8 @@ export class RequestBuilder implements IRequestBuilder {
 		this.setHeaders({});
 		this.setResponseType("json");
 
-		return response;
+		if (unauthorized) return response as ResponseTypeMap["text"];
+		return response as ResponseTypeMap[BuilderResponse];
 	}
 
 	/**
