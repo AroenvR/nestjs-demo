@@ -1,5 +1,5 @@
 import { RequestBuilder } from "../../../common/utility/request_builder/RequestBuilder";
-import { WinstonAdapter } from "src/infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
  * A Mock object for the {@link RequestBuilder} object to be used in testing.
