@@ -1,8 +1,8 @@
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
-import { RequestBuilder, IRequestBuilder, BuilderResponse } from "./RequestBuilder";
+import { RequestBuilder, IRequestBuilder, TRequestBuilderResponse } from "./RequestBuilder";
 import { UtilityModule } from "../UtilityModule";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
-import { fetchRequestSpy } from "../../../__tests__/helpers/fetchRequestSpy";
+import { mockAndSpyFetchRequest } from "../../../__tests__/helpers/mockAndSpyFetchRequest";
 
 describe("RequestBuilder", () => {
 	let requestBuilder: IRequestBuilder;
@@ -11,7 +11,7 @@ describe("RequestBuilder", () => {
 		const module = await createMockAppModule(UtilityModule);
 		requestBuilder = module.get<IRequestBuilder>(RequestBuilder);
 
-		fetchRequestSpy();
+		mockAndSpyFetchRequest();
 	});
 
 	afterEach(() => {
@@ -58,7 +58,7 @@ describe("RequestBuilder", () => {
 
 		// Prepare a mock fetch response
 		const mockJsonResponse = { yolo: true };
-		fetchRequestSpy(mockJsonResponse);
+		mockAndSpyFetchRequest(mockJsonResponse);
 
 		// Execute the request
 		const response = await built.execute();
@@ -89,7 +89,7 @@ describe("RequestBuilder", () => {
 			.build();
 
 		const mockTextResponse = "Success!";
-		fetchRequestSpy(mockTextResponse);
+		mockAndSpyFetchRequest(mockTextResponse);
 
 		const response = await built.execute();
 		expect(response).toEqual(mockTextResponse);
@@ -110,7 +110,7 @@ describe("RequestBuilder", () => {
 			.build();
 
 		const mockJsonResponse = { success: true };
-		fetchRequestSpy(mockJsonResponse);
+		mockAndSpyFetchRequest(mockJsonResponse);
 
 		const response = await built.execute();
 		expect(response).toEqual(mockJsonResponse);
@@ -130,7 +130,7 @@ describe("RequestBuilder", () => {
 			.build();
 
 		const mockArrayBufferResponse = new ArrayBuffer(8);
-		fetchRequestSpy(mockArrayBufferResponse);
+		mockAndSpyFetchRequest(mockArrayBufferResponse);
 
 		const response = await built.execute();
 		expect(response).toEqual(mockArrayBufferResponse);
@@ -139,7 +139,7 @@ describe("RequestBuilder", () => {
 
 	// --------------------------------------------------
 
-	it("Should handle unauthorized response", async () => {
+	it("Should handle unauthorized responses", async () => {
 		const built = requestBuilder
 			.setMethod("GET")
 			.setUseSsl(false)
@@ -149,11 +149,53 @@ describe("RequestBuilder", () => {
 			.setResponseType("json")
 			.build();
 
-		fetchRequestSpy({ ok: false, status: 401 });
+		mockAndSpyFetchRequest({ ok: false, status: 401 });
 
 		const response = await built.execute();
 		expect(response).toEqual(HttpExceptionMessages.UNAUTHORIZED);
 		expect(typeof response).toEqual("string");
+	});
+
+	// --------------------------------------------------
+
+	describe("No Content responses", () => {
+		it("Should handle no content responses when requesting JSON", async () => {
+			const built = requestBuilder
+				.setMethod("GET")
+				.setUseSsl(false)
+				.setDomain("example.com")
+				.setEndpoint("/api/test")
+				.setHeaders({ "Content-Type": "application/json" })
+				.setResponseType("json")
+				.build();
+
+			const mockResponse = { ok: true, status: 204 };
+			mockAndSpyFetchRequest(mockResponse);
+
+			const response = await built.execute();
+			expect(response).toEqual(mockResponse);
+			expect(typeof response).toEqual("object");
+		});
+
+		// --------------------------------------------------
+
+		it("Should handle no content responses when requesting TEXT", async () => {
+			const built = requestBuilder
+				.setMethod("GET")
+				.setUseSsl(false)
+				.setDomain("example.com")
+				.setEndpoint("/api/test")
+				.setHeaders({ "Content-Type": "application/json" })
+				.setResponseType("text")
+				.build();
+
+			const mockResponse = { ok: true, status: 204 };
+			mockAndSpyFetchRequest(mockResponse);
+
+			const response = await built.execute();
+			expect(response).toEqual(mockResponse);
+			expect(typeof response).toEqual("object");
+		});
 	});
 
 	// --------------------------------------------------
@@ -166,10 +208,10 @@ describe("RequestBuilder", () => {
 				.setDomain("example.com")
 				.setEndpoint("/api/test")
 				.setHeaders({ "Content-Type": "application/json" })
-				.setResponseType("yolo" as BuilderResponse)
+				.setResponseType("yolo" as TRequestBuilderResponse)
 				.build();
 
-			fetchRequestSpy();
+			mockAndSpyFetchRequest();
 
 			await expect(built.execute()).rejects.toThrow();
 		});
@@ -183,10 +225,10 @@ describe("RequestBuilder", () => {
 				.setDomain("example.com")
 				.setEndpoint("/api/test")
 				.setHeaders({ "Content-Type": "application/json" })
-				.setResponseType("unsupportedType" as BuilderResponse)
+				.setResponseType("unsupportedType" as TRequestBuilderResponse)
 				.build();
 
-			fetchRequestSpy();
+			mockAndSpyFetchRequest();
 
 			await expect(built.execute()).rejects.toThrow("RequestBuilder: Response type unsupportedType not yet supported.");
 		});
@@ -208,7 +250,7 @@ describe("RequestBuilder", () => {
 				status: 500,
 				statusText: "Internal Server Error",
 			};
-			fetchRequestSpy(mockResponse);
+			mockAndSpyFetchRequest(mockResponse);
 
 			await expect(built.execute()).rejects.toThrow(
 				"RequestBuilder: GET request to http://example.com/api/test | Status: 500 | Message: Internal Server Error",

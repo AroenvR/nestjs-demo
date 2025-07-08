@@ -1,9 +1,11 @@
-import { TRequestBuilderResponse, IBaseRequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
+import { TRequestBuilderResponse } from "src/common/utility/request_builder/RequestBuilder";
 
 /**
- * DOC
+ * Interface for an External API Adapter.
+ * This interface defines methods for sending HTTP requests
+ * to external APIs, including GET, POST, PATCH, and DELETE methods.
  */
-export interface IExternalCrudService {
+export interface IExternalApiAdapter {
 	/**
 	 * Send a GET request.
 	 * @param
@@ -11,7 +13,11 @@ export interface IExternalCrudService {
 	 * @param
 	 * @returns the request's raw response.
 	 */
-	get(endpoint: string, headers?: Record<string, string>, responseType?: TRequestBuilderResponse): IBaseRequestBuilder;
+	get(
+		endpoint: string,
+		headers?: Record<string, string>,
+		responseType?: TRequestBuilderResponse,
+	): Promise<string | ArrayBuffer | Record<string, unknown>>;
 
 	/**
 	 * Send a POST request.
@@ -26,7 +32,7 @@ export interface IExternalCrudService {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: TRequestBuilderResponse,
-	): IBaseRequestBuilder;
+	): Promise<string | ArrayBuffer | Record<string, unknown>>;
 
 	/**
 	 * Send a PATCH request.
@@ -41,7 +47,7 @@ export interface IExternalCrudService {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: TRequestBuilderResponse,
-	): IBaseRequestBuilder;
+	): Promise<string | ArrayBuffer | Record<string, unknown>>;
 
 	/**
 	 * Send a DELETE request.
@@ -50,5 +56,9 @@ export interface IExternalCrudService {
 	 * @param
 	 * @returns the request's raw response.
 	 */
-	delete(endpoint: string, headers?: Record<string, string>, responseType?: TRequestBuilderResponse): IBaseRequestBuilder;
+	delete(
+		endpoint: string,
+		headers?: Record<string, string>,
+		responseType?: TRequestBuilderResponse,
+	): Promise<string | ArrayBuffer | Record<string, unknown>>;
 }

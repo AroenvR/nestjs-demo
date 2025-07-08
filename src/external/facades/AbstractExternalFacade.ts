@@ -109,22 +109,23 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 
 		try {
 			const response = await request.execute();
-			if (response.ok) return response;
+			return response;
+			// if (response.ok) return response;
 
-			if (response.status === 401) {
-				const loginRequest = this.service.post(this.loginData.endpoint, this.loginData.credentials);
-				const loginResponse = loginRequest.execute();
-				const newToken = this.handleLoginResponse(loginResponse);
+			// if (response.status === 401) {
+			// 	const loginRequest = this.service.post(this.loginData.endpoint, this.loginData.credentials);
+			// 	const loginResponse = loginRequest.execute();
+			// 	const newToken = this.handleLoginResponse(loginResponse);
 
-				if (currentToken === newToken) throw new Error(`${this.name}: Access token was not refreshed.`);
-				this.setAccessToken(this.accessToken);
+			// 	if (currentToken === newToken) throw new Error(`${this.name}: Access token was not refreshed.`);
+			// 	this.setAccessToken(this.accessToken);
 
-				request.headers = this.service.defaultRequestHeaders();
-				const retry = await request.execute();
+			// 	request.headers = this.service.defaultRequestHeaders();
+			// 	const retry = await request.execute();
 
-				if (retry.ok) return retry;
-				throw new Error(`${this.name}: Request RETRY failed.`);
-			}
+			// 	if (retry.ok) return retry;
+			// 	throw new Error(`${this.name}: Request RETRY failed.`);
+			// }
 		} catch (err) {
 			this.logger.error(`Request to ${request.domain + "/" + request.endpoint} failed.`, err);
 			return null;

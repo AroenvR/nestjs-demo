@@ -6,28 +6,28 @@ import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessag
 /**
  * The base interface an {@link IRequestBuilder} must adhere to.
  *
- * @property method - {@link BuilderMethods} | null - The HTTP method to use.
+ * @property method - {@link TRequestBuilderMethods} | null - The HTTP method to use.
  * @property useSsl - boolean | null - Whether to use SSL or not.
  * @property port - number | null - Which port to use.
  * @property domain - string | null - Which domain the URL resides at.
  * @property endpoint - string | object | ArrayBuffer | null - Which endpoint to call.
  * @property headers - Record<string, string> | null - Which headers to use.
- * @property responseType - {@link BuilderResponse} | null - The expected response type.
+ * @property responseType - {@link TRequestBuilderResponse} | null - The expected response type.
  */
 export interface IBaseRequestBuilder {
-	method: BuilderMethods | null;
+	method: TRequestBuilderMethods | null;
 	useSsl: boolean | null;
 	port: number | null;
 	domain: string | null;
 	endpoint: string | null;
 	body: string | object | ArrayBuffer | null;
 	headers: Record<string, string> | null;
-	responseType: BuilderResponse | null;
+	responseType: TRequestBuilderResponse | null;
 
 	/**
 	 * Execute the built request.
 	 */
-	execute(): Promise<any>;
+	execute(): Promise<TRequestBuilderResponseTypeMap[TRequestBuilderResponse]>;
 }
 
 /**
@@ -40,31 +40,31 @@ export interface IRequestBuilder extends IBaseRequestBuilder {
 	 */
 	build(): IBaseRequestBuilder;
 
-	setMethod(method: BuilderMethods): RequestBuilder;
+	setMethod(method: TRequestBuilderMethods): RequestBuilder;
 	setUseSsl(ssl: boolean): RequestBuilder;
 	setPort(port: number | null): RequestBuilder;
 	setDomain(domain: string): RequestBuilder;
 	setEndpoint(endpoint: string | null): RequestBuilder;
 	setBody(body: string | object | ArrayBuffer | null): RequestBuilder;
 	setHeaders(headers: Record<string, string>): RequestBuilder;
-	setResponseType(responseType: BuilderResponse): RequestBuilder;
+	setResponseType(responseType: TRequestBuilderResponse): RequestBuilder;
 }
 
 /**
  * HTTP Builder's supported request methods.
  */
-export type BuilderMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type TRequestBuilderMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 /**
  * HTTP Builder's supported response types.
  */
-export type BuilderResponse = "text" | "json" | "arrayBuffer";
+export type TRequestBuilderResponse = "text" | "json" | "arrayBuffer";
 
 /**
  * A map of supported response types to their corresponding return types.
  * This is used to ensure type safety when handling different response types.
  */
-type ResponseTypeMap = {
+export type TRequestBuilderResponseTypeMap = {
 	text: Promise<string>;
 	json: Promise<Record<string, unknown>>; // Replace `any` with a more specific type if possible
 	arrayBuffer: Promise<ArrayBuffer>;
@@ -77,14 +77,14 @@ type ResponseTypeMap = {
 export class RequestBuilder implements IRequestBuilder {
 	private readonly logger: ILogger;
 	private readonly name: string;
-	private _method: BuilderMethods | null = null;
+	private _method: TRequestBuilderMethods | null = null;
 	private _useSsl: boolean | null = null;
 	private _port: number | null = null;
 	private _domain: string | null = null;
 	private _endpoint: string | null = null;
 	private _body: string | object | ArrayBuffer | null = null;
 	private _headers: Record<string, string> | null = null;
-	private _responseType: BuilderResponse | null = null;
+	private _responseType: TRequestBuilderResponse | null = null;
 
 	constructor(logAdapter: WinstonAdapter) {
 		this.name = this.constructor.name;
@@ -94,20 +94,20 @@ export class RequestBuilder implements IRequestBuilder {
 	/**
 	 *
 	 */
-	public async execute() {
+	public async execute(): Promise<TRequestBuilderResponseTypeMap[TRequestBuilderResponse]> {
 		this.logger.debug(`Executing HTTP(s) request.`);
 
 		const url = this.urlBuilder();
 		const payload = this.payloadBuilder();
 
 		let unauthorized = false;
+
 		const response = await fetch(url, payload)
 			.then((response: Response) => {
 				if (response.ok) {
-					if (response.status === 204) return; // No content response
 					if (this.responseType === "text") return response.text();
 					if (this.responseType === "json") return response.json();
-					else if (this.responseType === "arrayBuffer") return response.arrayBuffer();
+					if (this.responseType === "arrayBuffer") return response.arrayBuffer();
 					else throw new Error(`${this.name}: Response type ${this.responseType} not yet supported.`);
 				}
 
@@ -133,8 +133,8 @@ export class RequestBuilder implements IRequestBuilder {
 		this.setHeaders({});
 		this.setResponseType("json");
 
-		if (unauthorized) return response as ResponseTypeMap["text"];
-		return response as ResponseTypeMap[BuilderResponse];
+		if (unauthorized) return response as TRequestBuilderResponseTypeMap["text"];
+		return response as TRequestBuilderResponseTypeMap[TRequestBuilderResponse];
 	}
 
 	/**
@@ -186,7 +186,7 @@ export class RequestBuilder implements IRequestBuilder {
 		this.logger.debug(`Building payload.`);
 
 		interface Payload {
-			method: BuilderMethods;
+			method: TRequestBuilderMethods;
 			body?: string | ArrayBuffer;
 			headers: Record<string, string>;
 		}
@@ -213,7 +213,7 @@ export class RequestBuilder implements IRequestBuilder {
 		if (!this._method) throw new Error(`${this.name}: Method was not set.`);
 		return this._method;
 	}
-	public setMethod(method: BuilderMethods) {
+	public setMethod(method: TRequestBuilderMethods) {
 		this._method = method;
 		return this;
 	}
@@ -273,7 +273,7 @@ export class RequestBuilder implements IRequestBuilder {
 		if (!this._responseType) throw new Error(`${this.name}: Response type was not defined.`);
 		return this._responseType;
 	}
-	public setResponseType(responseType: BuilderResponse) {
+	public setResponseType(responseType: TRequestBuilderResponse) {
 		this._responseType = responseType;
 		return this;
 	}

@@ -4,6 +4,8 @@ import { serverConfig } from "../../../infrastructure/configuration/serverConfig
 
 /**
  * Mock implementation of the ConfigService for testing purposes.
+ * @devnote if no override value is given, this class behaves like the real ConfigService with the serverConfig object.
+ * @devnote if an override value is given, the get method will always return that value.
  */
 export class MockConfigService extends ConfigService<IServerConfig, false> {
 	private readonly forceValue: Record<string, unknown> | undefined = undefined;
@@ -24,6 +26,7 @@ export class MockConfigService extends ConfigService<IServerConfig, false> {
 			return this.forceValue;
 		}
 
-		return super.get(key);
+		const foo = super.get(key);
+		return foo;
 	}
 }

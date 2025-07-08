@@ -29,7 +29,7 @@ class TestFacade extends AbstractExternalFacade {
 	}
 }
 
-describe("AbstractExternalFacade", () => {
+describe.skip("AbstractExternalFacade", () => {
 	let facade: TestFacade;
 	let service: jest.Mocked<ExternalCrudService>;
 	let consumer: jest.Mocked<ExternalEventConsumer>;

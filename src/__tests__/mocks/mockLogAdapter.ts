@@ -1,3 +1,4 @@
+import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
@@ -17,3 +18,10 @@ export const mockILogger: jest.Mocked<IPrefixedLogger> = {
 	critical: jest.fn(),
 	getPrefixedLogger: jest.fn((_: string) => mockILogger),
 };
+
+/**
+ * Mocked {@link WinstonAdapter} for testing purposes.
+ */
+export const mockWinstonAdapter = {
+	getPrefixedLogger: jest.fn().mockReturnValue(mockILogger),
+} as unknown as WinstonAdapter;

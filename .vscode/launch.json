@@ -19,6 +19,16 @@
             "request": "attach",
             "name": "Attach to NestJS App",
             "port": 9229
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Jest Tests",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test"
+            ]
         }
     ]
 }

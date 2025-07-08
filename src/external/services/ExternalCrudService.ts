@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ILogger } from "../../infrastructure/logging/ILogger";
-import { BuilderResponse, RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
+import { TRequestBuilderResponse, RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 import { IExternalConfig } from "../IExternalConfig";
 import { IExternalCrudService } from "./IExternalCrudService";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
@@ -26,7 +26,7 @@ export class ExternalCrudService implements IExternalCrudService {
 	/**
 	 *
 	 */
-	public get(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+	public get(endpoint: string, headers?: Record<string, string>, responseType: TRequestBuilderResponse = "json") {
 		return this.requestBuilder
 			.setMethod("GET")
 			.setUseSsl(this.config.ssl)
@@ -41,7 +41,12 @@ export class ExternalCrudService implements IExternalCrudService {
 	/**
 	 *
 	 */
-	public post(endpoint: string, payload: string | object | ArrayBuffer, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+	public post(
+		endpoint: string,
+		payload: string | object | ArrayBuffer,
+		headers?: Record<string, string>,
+		responseType: TRequestBuilderResponse = "json",
+	) {
 		return this.requestBuilder
 			.setMethod("POST")
 			.setUseSsl(this.config.ssl)
@@ -57,7 +62,12 @@ export class ExternalCrudService implements IExternalCrudService {
 	/**
 	 *
 	 */
-	public patch(endpoint: string, payload: string | object | ArrayBuffer, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+	public patch(
+		endpoint: string,
+		payload: string | object | ArrayBuffer,
+		headers?: Record<string, string>,
+		responseType: TRequestBuilderResponse = "json",
+	) {
 		return this.requestBuilder
 			.setMethod("PATCH")
 			.setUseSsl(this.config.ssl)
@@ -73,7 +83,7 @@ export class ExternalCrudService implements IExternalCrudService {
 	/**
 	 *
 	 */
-	public delete(endpoint: string, headers?: Record<string, string>, responseType: BuilderResponse = "json") {
+	public delete(endpoint: string, headers?: Record<string, string>, responseType: TRequestBuilderResponse = "json") {
 		return this.requestBuilder
 			.setMethod("DELETE")
 			.setUseSsl(this.config.ssl)

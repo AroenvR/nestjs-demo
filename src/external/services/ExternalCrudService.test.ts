@@ -1,5 +1,5 @@
 import { ExternalCrudService } from "./ExternalCrudService";
-import { RequestBuilder, BuilderResponse } from "../../common/utility/request_builder/RequestBuilder";
+import { RequestBuilder, TRequestBuilderResponse } from "../../common/utility/request_builder/RequestBuilder";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 import { IExternalConfig } from "../IExternalConfig";
 
@@ -76,7 +76,7 @@ describe("ExternalCrudService", () => {
 		const endpoint = "/widgets";
 		const customHeaders = { "X-Custom": "yes" };
 		const payload = { a: 1 };
-		const customResponse: BuilderResponse = "json";
+		const customResponse: TRequestBuilderResponse = "json";
 
 		beforeEach(() => {
 			service.setConfig(config);

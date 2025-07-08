@@ -3,7 +3,7 @@
  * @param response Optional response to return when fetch is called. If not provided, it defaults to an empty object.
  * @returns A jest spy on the global fetch function that resolves to a mock Response object.
  */
-export const fetchRequestSpy = (response?: unknown) => {
+export const mockAndSpyFetchRequest = (response?: unknown) => {
 	const responseProm = new Promise<Response>((resolve) => {
 		const mockResponseObject = {
 			ok: true,
