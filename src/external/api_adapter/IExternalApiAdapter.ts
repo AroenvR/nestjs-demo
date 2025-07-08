@@ -8,9 +8,9 @@ import { TRequestBuilderResponse } from "src/common/utility/request_builder/Requ
 export interface IExternalApiAdapter {
 	/**
 	 * Send a GET request.
-	 * @param
-	 * @param
-	 * @param
+	 * @param endpoint - The endpoint to send the request to.
+	 * @param headers - Optional headers to include in the request.
+	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
 	get(
@@ -21,10 +21,10 @@ export interface IExternalApiAdapter {
 
 	/**
 	 * Send a POST request.
-	 * @param
-	 * @param
-	 * @param
-	 * @param
+	 * @param endpoint - The endpoint to send the request to.
+	 * @param payload - The data to send in the request body.
+	 * @param headers - Optional headers to include in the request.
+	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
 	post(
@@ -36,10 +36,10 @@ export interface IExternalApiAdapter {
 
 	/**
 	 * Send a PATCH request.
-	 * @param
-	 * @param
-	 * @param
-	 * @param
+	 * @param endpoint - The endpoint to send the request to.
+	 * @param payload - The data to send in the request body.
+	 * @param headers - Optional headers to include in the request.
+	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
 	patch(
@@ -51,9 +51,9 @@ export interface IExternalApiAdapter {
 
 	/**
 	 * Send a DELETE request.
-	 * @param
-	 * @param
-	 * @param
+	 * @param endpoint - The endpoint to send the request to.
+	 * @param headers - Optional headers to include in the request.
+	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
 	delete(

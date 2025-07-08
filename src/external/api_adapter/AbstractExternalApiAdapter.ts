@@ -9,7 +9,12 @@ import { IExternalApiAdapter } from "./IExternalApiAdapter";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 
 /**
- * todo: doc and test
+ * Abstract class for external API adapters.
+ * This class provides methods for sending HTTP requests to external APIs,
+ * including GET, POST, PATCH, and DELETE methods.
+ * It also handles authentication by allowing login with credentials and managing access tokens.
+ * It is intended to be extended by specific external API adapters.
+ * - Implements the {@link IExternalApiAdapter} interface.
  */
 @Injectable()
 export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter {
@@ -145,7 +150,13 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
-	 * Logs in with the provided credentials.
+	 * Logs in to the external API using the provided endpoint and credentials.
+	 * This method sets the login endpoint and credentials for future requests.
+	 * It sends a POST request to the specified endpoint with the provided credentials.
+	 * If the request is successful, it sets the access token for authenticated requests.
+	 * @param endpoint - The endpoint to send the login request to.
+	 * @param credentials - The credentials to use for logging in.
+	 * @throws Error if the login request does not return a response.
 	 */
 	public async login(endpoint: string, credentials: object) {
 		this.logger.log(`Logging in to ${this.config.domain}`);
@@ -179,7 +190,10 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
-	 * doc
+	 * Executes the provided request and handles errors.
+	 * If the request returns an unauthorized response, it retries the request after logging in again.
+	 * @param request The request to execute.
+	 * @returns The response of the executed request or null if an error occurred.
 	 */
 	protected async executeRequest(request: IBaseRequestBuilder) {
 		this.logger.debug(`Executing ${request.method} request to Domain: ${request.domain} | Endpoint: ${request.endpoint}`);
@@ -204,6 +218,13 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	 * @returns The response of the retried request or "unauthorized".
 	 */
 	private async retryUnauthorizedRequest(request: IBaseRequestBuilder) {
+		this.logger.debug(`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request.`);
+
+		if (!this.loginEndpoint || !this.credentials) {
+			this.logger.warn(`No credentials are set. Aborting retry request.`);
+			return HttpExceptionMessages.UNAUTHORIZED;
+		}
+
 		const requestClone = new RequestBuilder(this.logAdapter)
 			.setMethod(request.method)
 			.setDomain(request.domain)
@@ -214,21 +235,17 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 			.setUseSsl(request.useSsl)
 			.setResponseType(request.responseType);
 
-		if (!this.loginEndpoint || !this.credentials) {
-			this.logger.debug(`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. No credentials are set. Aborting request.`);
-			return HttpExceptionMessages.UNAUTHORIZED;
-		}
-
-		this.logger.debug(`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request after retrying login.`);
-
 		const currentToken = this.accessToken;
 		await this.login(this.loginEndpoint, this.credentials);
 
 		if (this.accessToken === currentToken) {
-			this.logger.debug(`Access token did not change after retrying login. Aborting request.`);
+			this.logger.debug(`Access token did not change after retrying login. Aborting retry request.`);
 			return HttpExceptionMessages.UNAUTHORIZED;
 		}
 
+		this.logger.debug(
+			`Credentials were updated. Retrying ${request.method} request to Domain: ${request.domain} | Endpoint: ${request.endpoint}`,
+		);
 		return requestClone.setHeaders(this.getAuthenticatedHeaders()).build().execute();
 	}
 
@@ -248,7 +265,7 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
-	 *
+	 * Returns the key of the server configuration object that this adapter uses.
 	 */
 	public abstract configString(): keyof IServerConfig;
 }

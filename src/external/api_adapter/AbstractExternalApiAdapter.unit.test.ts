@@ -184,9 +184,8 @@ describe("AbstractExternalApiAdapter", () => {
 		const response = await adapter.get(ENDPOINT);
 		expect(response).toEqual("unauthorized");
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(
-			`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. No credentials are set. Aborting request.`,
-		);
+		expect(mockILogger.debug).toHaveBeenCalledWith(`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request.`);
+		expect(mockILogger.warn).toHaveBeenCalledWith(`No credentials are set. Aborting retry request.`);
 	});
 
 	// --------------------------------------------------
@@ -203,9 +202,10 @@ describe("AbstractExternalApiAdapter", () => {
 
 		await adapter.get(ENDPOINT);
 		expect(mockILogger.debug).toHaveBeenCalledWith(
-			`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request after retrying login.`,
+			`Credentials were updated. Retrying GET request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`,
 		);
 	});
+
 	// --------------------------------------------------
 
 	describe("Errors", () => {
