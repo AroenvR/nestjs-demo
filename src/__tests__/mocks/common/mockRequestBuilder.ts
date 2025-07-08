@@ -1,4 +1,4 @@
-import { IRequestBuilder, RequestBuilder } from "../../../common/utility/request_builder/RequestBuilder";
+import { RequestBuilder } from "../../../common/utility/request_builder/RequestBuilder";
 import { WinstonAdapter } from "src/infrastructure/logging/adapters/WinstonAdapter";
 
 /**
@@ -39,30 +39,3 @@ export class MockRequestBuilder extends RequestBuilder {
 		execute: this.execute,
 	});
 }
-
-/**
- * A Mock object for the {@link IRequestBuilder} object to be used in testing.
- */
-export const mockRequestBuilder: jest.Mocked<IRequestBuilder> = {
-	method: "GET",
-	useSsl: true,
-	port: 443,
-	domain: "example.com",
-	endpoint: "/test",
-	body: null,
-	headers: { "Content-Type": "application/json" },
-	responseType: "json",
-
-	execute: jest.fn(),
-
-	build: jest.fn(),
-
-	setMethod: jest.fn().mockReturnThis(),
-	setUseSsl: jest.fn().mockReturnThis(),
-	setPort: jest.fn().mockReturnThis(),
-	setDomain: jest.fn().mockReturnThis(),
-	setEndpoint: jest.fn().mockReturnThis(),
-	setBody: jest.fn().mockReturnThis(),
-	setHeaders: jest.fn().mockReturnThis(),
-	setResponseType: jest.fn().mockReturnThis(),
-};
