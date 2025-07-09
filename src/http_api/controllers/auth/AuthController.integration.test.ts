@@ -83,10 +83,11 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("CREATE", () => {
+	describe("LOGIN", () => {
 		it("Can create an entity", async () => {
 			const response = await controller.login(loginDto, mockResponse);
-			expect(response).toBeDefined();
+			expect(typeof response).toEqual("string");
+			expect(response).not.toEqual("success");
 
 			expect(mockResponse.cookie).toHaveBeenCalledWith(
 				securityConstants.refreshCookieString,
@@ -129,7 +130,7 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("READ", () => {
+	describe("WHO AM I", () => {
 		it("Can check an authenticated user's info", async () => {
 			const TOKEN = { user: mockPlainTextBearerToken };
 			const response = await controller.whoAmI(TOKEN);
@@ -142,6 +143,17 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
+		it("Throws when the user isn't found", async () => {
+			const token = { user: mockPlainTextBearerToken };
+
+			const uuid = randomUUID();
+			token.user.sub = uuid;
+
+			await expect(controller.whoAmI(token)).rejects.toThrow(`Entity by uuid ${uuid} not found`);
+		});
+
+		// --------------------------------------------------
+
 		it("Throws on empty input", async () => {
 			await expect(controller.whoAmI(null)).rejects.toThrow(`${className}: Missing JWT information for whoami request.`);
 		});
@@ -149,7 +161,7 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("UPDATE", () => {
+	describe("REFRESH", () => {
 		it("Updates an entity", async () => {
 			const jti = randomUUID();
 			const iat = Math.floor(Date.now() / 1000);
@@ -251,7 +263,7 @@ describe(TEST_NAME, () => {
 
 	// -------------------------------------------------- \\
 
-	describe("DELETE", () => {
+	describe("LOGOUT", () => {
 		it("Deletes an entity", async () => {
 			await controller.login(loginDto, mockResponse);
 

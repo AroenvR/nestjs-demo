@@ -34,12 +34,12 @@ import { securityConstants } from "../../../common/constants/securityConstants";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
 
-// TODO: unit test
-
 const ENDPOINT = "auth";
 
 /**
  * This controller is responsible for handling authentication-related endpoints.
+ * It provides methods for user login, retrieving user information,
+ * refreshing sessions, and logging out users.
  */
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
@@ -77,8 +77,6 @@ export class AuthController {
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
 
 		const user = await this.authService.authenticate(data);
-		if (!user) throw new UnauthorizedException(`${this.name}: Authentication failed.`);
-
 		const tokenData: ICreateAuthTokenData = {
 			sub: user.uuid,
 			roles: [], // TODO: Set user roles if applicable
@@ -118,16 +116,15 @@ export class AuthController {
 		const uuid = request.user.sub;
 		this.logger.log(`Retrieving information for user ${uuid}`);
 
-		const user = await this.userService.findOne(uuid);
-		if (!user) throw new BadRequestException(`${this.name}: User ${uuid} not found`);
-
-		return user;
+		return await this.userService.findOne(uuid);
 	}
 
 	/**
-	 *
-	 * @param request
-	 * @param response
+	 * Updates an existing session by refreshing the JWT and cookie.
+	 * This endpoint is protected and requires a valid HTTP-only cookie.
+	 * @param request The request object containing the user's HTTP-only cookie.
+	 * @param response The HTTP response object used to set cookies.
+	 * @returns A string indicating success or a new access token if bearer authentication is enabled.
 	 */
 	@Patch("refresh")
 	@HttpCode(HttpStatus.OK)
@@ -163,6 +160,13 @@ export class AuthController {
 		return this.tokenService.createAccessToken(tokenData);
 	}
 
+	/**
+	 * Deletes the user's tokens and clears the refresh cookie.
+	 * This endpoint is protected and requires a valid JWT (Bearer) access token.
+	 * @param request The request object containing the user's JWT.
+	 * @param response The HTTP response object used to clear cookies.
+	 * @returns A void response indicating successful logout.
+	 */
 	@Delete("logout")
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@ApiOperation({ summary: `Delete the user's tokens` })
