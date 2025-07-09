@@ -9,7 +9,7 @@ import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEn
 import { IHttpOnlyCookie } from "src/common/interfaces/JwtInterfaces";
 
 /**
- * TODO document & test
+ * A service class that provides methods for user authentication and retrieval.
  */
 @Injectable()
 export class AuthService {
@@ -29,7 +29,9 @@ export class AuthService {
 	}
 
 	/**
-	 * Authenticates a user and returns an object containing the user's ID and roles.
+	 * Authenticates a user based on the provided credentials.
+	 * @param data The credentials to authenticate the user.
+	 * @returns The authenticated UserEntity if successful.
 	 */
 	public async authenticate(data: CreateLoginDto): Promise<UserEntity> {
 		this.logger.info(`Authenticating a user.`);
@@ -39,7 +41,7 @@ export class AuthService {
 			where: { password: data.password },
 			relations: [],
 		});
-		if (!user) throw new UnauthorizedException(`Authentication failed. User not found.`);
+		if (!user) throw new UnauthorizedException(`${this.name}: Authentication failed. User not found.`);
 
 		return user;
 	}
