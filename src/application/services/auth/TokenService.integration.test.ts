@@ -15,175 +15,169 @@ import { wasLogged } from "../../../__tests__/helpers/wasLogged";
 
 const TEST_NAME = "TokenService.Integration";
 describe(TEST_NAME, () => {
-    process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
+	process.env.TEST_NAME = TEST_NAME; // Creates a log file named with this test's name.
 
-    let app: INestApplication;
-    let service: TokenService;
-    let repository: Repository<RefreshTokenEntity>;
-    let cache: CacheManagerAdapter;
+	let app: INestApplication;
+	let service: TokenService;
+	let repository: Repository<RefreshTokenEntity>;
+	let cache: CacheManagerAdapter;
 
-    let entity: RefreshTokenEntity;
+	beforeAll(async () => {
+		app = await createMockAppModule(AuthModule);
+		service = app.get(TokenService);
+		repository = app.get(getRepositoryToken(RefreshTokenEntity));
+		cache = app.get(CacheManagerAdapter);
+	});
 
-    beforeAll(async () => {
-        app = await createMockAppModule(AuthModule);
-        service = app.get(TokenService);
-        repository = app.get(getRepositoryToken(RefreshTokenEntity));
-        cache = app.get(CacheManagerAdapter);
-    });
+	afterEach(async () => {
+		await repository.clear();
+	});
 
-    beforeEach(async () => {
-        entity = await repository.save(MockRefreshTokenEntity.get());
-    });
+	afterAll(async () => {
+		await app.close();
+	});
 
-    afterEach(async () => {
-        await repository.clear();
-    });
+	// --------------------------------------------------
 
-    afterAll(async () => {
-        await app.close();
-    });
+	it("Should be defined", () => {
+		expect(service).toBeDefined();
+	});
 
-    // --------------------------------------------------
+	// --------------------------------------------------
 
-    it("Should be defined", () => {
-        expect(service).toBeDefined();
-    });
+	it("Can create an Authorization: Bearer access token", async () => {
+		const tokenData: ICreateAuthTokenData = {
+			sub: randomUUID(),
+			roles: [],
+		};
+		const token = await service.createAccessToken(tokenData);
+		expect(typeof token).toEqual("string");
+		expect(token.length).toBeGreaterThan(1);
+		expect(token.slice(0, 2)).toEqual("ey");
 
-    // --------------------------------------------------
+		const decoded = decode(token) as IBearerToken;
+		expect(decoded.sub).toEqual(tokenData.sub);
+		expect(decoded.roles).toEqual(tokenData.roles);
+		expect(decoded.iat).toEqual(expect.any(Number));
+		expect(decoded.exp).toEqual(expect.any(Number));
 
-    it("Can create an Authorization: Bearer access token", async () => {
-        const tokenData: ICreateAuthTokenData = {
-            sub: randomUUID(),
-            roles: [],
-        };
-        const token = await service.createAccessToken(tokenData);
-        expect(typeof token).toEqual("string");
-        expect(token.length).toBeGreaterThan(1);
-        expect(token.slice(0, 2)).toEqual("ey");
+		const cached = await cache.get(CacheKeys.JWT_JTI + decoded.jti);
+		expect(cached).toBe(true);
 
-        const decoded = decode(token) as IBearerToken;
-        expect(decoded.sub).toEqual(tokenData.sub);
-        expect(decoded.roles).toEqual(tokenData.roles);
-        expect(decoded.iat).toEqual(expect.any(Number));
-        expect(decoded.exp).toEqual(expect.any(Number));
+		await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Creating access token.`)).resolves.toBe(true);
+	});
 
-        const cached = await cache.get(CacheKeys.JWT_JTI + decoded.jti);
-        expect(cached).toBe(true);
+	// --------------------------------------------------
 
-        await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Creating access token.`)).resolves.toBe(true);
-    });
+	it("Can create an HTTP-Only Cookie", async () => {
+		const tokenData: ICreateAuthTokenData = {
+			sub: randomUUID(),
+			roles: [],
+		};
 
-    // --------------------------------------------------
+		const token = await service.createHttpOnlyCookie(tokenData);
+		expect(typeof token).toEqual("string");
+		expect(token.length).toBeGreaterThan(1);
+		expect(token.slice(0, 2)).toEqual("ey");
 
-    it("Can create an HTTP-Only Cookie", async () => {
-        const tokenData: ICreateAuthTokenData = {
-            sub: randomUUID(),
-            roles: [],
-        };
+		const decoded = decode(token) as IHttpOnlyCookie;
+		expect(decoded.jti).toEqual(expect.any(String));
+		expect(decoded.iat).toEqual(expect.any(Number));
+		expect(decoded.exp).toEqual(expect.any(Number));
 
-        const token = await service.createHttpOnlyCookie(tokenData);
-        expect(typeof token).toEqual("string");
-        expect(token.length).toBeGreaterThan(1);
-        expect(token.slice(0, 2)).toEqual("ey");
+		const refreshToken = await repository.findOne({
+			where: { jti: decoded.jti },
+		});
+		expect(refreshToken).toBeInstanceOf(RefreshTokenEntity);
+		expect(refreshToken.jti).toEqual(decoded.jti);
+		expect(refreshToken.sub).toEqual(tokenData.sub);
 
-        const decoded = decode(token) as IHttpOnlyCookie;
-        expect(decoded.jti).toEqual(expect.any(String));
-        expect(decoded.iat).toEqual(expect.any(Number));
-        expect(decoded.exp).toEqual(expect.any(Number));
+		await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Creating a new refresh entity for ${tokenData.sub}`)).resolves.toBe(true);
+	});
 
-        const refreshToken = await repository.findOne({
-            where: { jti: decoded.jti }
-        });
-        expect(refreshToken).toBeInstanceOf(RefreshTokenEntity);
-        expect(refreshToken.jti).toEqual(decoded.jti);
-        expect(refreshToken.sub).toEqual(tokenData.sub);
+	// --------------------------------------------------
 
-        await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Creating a new refresh entity for ${tokenData.sub}`)).resolves.toBe(true);
-    });
+	it("Can rotate a refresh token", async () => {
+		const tokenData: ICreateAuthTokenData = {
+			sub: randomUUID(),
+			roles: [],
+		};
+		const initialToken = await service.createHttpOnlyCookie(tokenData);
+		const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
+		const initialTokenEntity = await repository.findOne({
+			where: { jti: decodedInitialToken.jti },
+		});
 
-    // --------------------------------------------------
+		jest.useFakeTimers({ doNotFake: ["nextTick"] }); // Do not mock nextTick or jwtService.signAsync gets stuck.
+		jest.advanceTimersByTime(10 * 60 * 1000); // Advance time by 10 minutes
 
-    it("Can rotate a refresh token", async () => {
-        const tokenData: ICreateAuthTokenData = {
-            sub: randomUUID(),
-            roles: [],
-        };
-        const initialToken = await service.createHttpOnlyCookie(tokenData);
-        const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
-        const initialTokenEntity = await repository.findOne({
-            where: { jti: decodedInitialToken.jti }
-        });
+		const token = await service.rotateRefreshToken(decodedInitialToken);
+		expect(token).not.toEqual(initialToken);
 
-        jest.useFakeTimers({ doNotFake: ["nextTick"] }); // Do not mock nextTick or jwtService.signAsync gets stuck.
-        jest.advanceTimersByTime(10 * 60 * 1000); // Advance time by 10 minutes
+		jest.useRealTimers();
 
-        const token = await service.rotateRefreshToken(decodedInitialToken);
-        expect(token).not.toEqual(initialToken);
+		const decoded = decode(token) as IHttpOnlyCookie;
+		expect(decoded).not.toEqual(decodedInitialToken);
 
-        jest.useRealTimers();
+		const refreshTokenEntity = await repository.findOne({
+			where: { jti: decoded.jti },
+		});
+		expect(refreshTokenEntity.id).toEqual(initialTokenEntity.id);
+		expect(refreshTokenEntity.uuid).toEqual(initialTokenEntity.uuid);
+		expect(refreshTokenEntity.createdAt).toEqual(initialTokenEntity.createdAt);
 
-        const decoded = decode(token) as IHttpOnlyCookie;
-        expect(decoded).not.toEqual(decodedInitialToken);
+		expect(refreshTokenEntity.jti).not.toEqual(initialTokenEntity.jti);
+		expect(refreshTokenEntity.hash).not.toEqual(initialTokenEntity.hash);
+		expect(refreshTokenEntity.lastRefreshedAt).toBeGreaterThan(initialTokenEntity.lastRefreshedAt);
 
-        const refreshTokenEntity = await repository.findOne({
-            where: { jti: decoded.jti }
-        });
-        expect(refreshTokenEntity.id).toEqual(initialTokenEntity.id);
-        expect(refreshTokenEntity.uuid).toEqual(initialTokenEntity.uuid);
-        expect(refreshTokenEntity.createdAt).toEqual(initialTokenEntity.createdAt);
+		await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Refreshing token ${decodedInitialToken.jti}`)).resolves.toBe(true);
+	});
 
-        expect(refreshTokenEntity.jti).not.toEqual(initialTokenEntity.jti);
-        expect(refreshTokenEntity.hash).not.toEqual(initialTokenEntity.hash);
-        expect(refreshTokenEntity.lastRefreshedAt).toBeGreaterThan(initialTokenEntity.lastRefreshedAt);
+	// --------------------------------------------------
 
-        await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Refreshing token ${decodedInitialToken.jti}`)).resolves.toBe(true);
-    });
+	it("Can revoke a refresh token", async () => {
+		const tokenData: ICreateAuthTokenData = {
+			sub: randomUUID(),
+			roles: [],
+		};
+		const token = await service.createAccessToken(tokenData);
+		const decodedToken = decode(token) as IBearerToken;
 
-    // --------------------------------------------------
+		const cookie = await service.createHttpOnlyCookie(tokenData);
+		const decodedCookie = decode(cookie) as IHttpOnlyCookie;
 
-    it("Can revoke a refresh token", async () => {
-        const tokenData: ICreateAuthTokenData = {
-            sub: randomUUID(),
-            roles: [],
-        };
-        const token = await service.createAccessToken(tokenData);
-        const decodedToken = decode(token) as IBearerToken;
+		const refreshTokenEntity = await repository.findOne({
+			where: { sub: decodedToken.sub },
+		});
+		expect(refreshTokenEntity.jti).toEqual(decodedCookie.jti);
 
-        const cookie = await service.createHttpOnlyCookie(tokenData);
-        const decodedCookie = decode(cookie) as IHttpOnlyCookie;
+		await service.revokeRefreshToken(decodedToken);
 
-        const refreshTokenEntity = await repository.findOne({
-            where: { sub: decodedToken.sub }
-        });
-        expect(refreshTokenEntity.jti).toEqual(decodedCookie.jti);
+		const query1 = await repository.findOne({
+			where: { sub: decodedToken.sub },
+		});
+		expect(query1).toBeNull();
 
-        await service.revokeRefreshToken(decodedToken);
+		const query2 = await repository.findOne({
+			where: { jti: decodedCookie.jti },
+		});
+		expect(query2).toBeNull();
 
-        const query1 = await repository.findOne({
-            where: { sub: decodedToken.sub }
-        });
-        expect(query1).toBeNull();
+		await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Revoking token for user ${tokenData.sub}`)).resolves.toBe(true);
+	});
 
-        const query2 = await repository.findOne({
-            where: { jti: decodedCookie.jti }
-        });
-        expect(query2).toBeNull();
+	// --------------------------------------------------
 
-        await expect(wasLogged(TEST_NAME, `${service.constructor.name}: Revoking token for user ${tokenData.sub}`)).resolves.toBe(true);
-    });
+	describe("Errors", () => {
+		it("Can not rotate a refresh token too early", async () => {
+			const tokenData: ICreateAuthTokenData = {
+				sub: randomUUID(),
+				roles: [],
+			};
+			const initialToken = await service.createHttpOnlyCookie(tokenData);
+			const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
 
-    // --------------------------------------------------
-
-    describe("Errors", () => {
-        it("Can not rotate a refresh token too early", async () => {
-            const tokenData: ICreateAuthTokenData = {
-                sub: randomUUID(),
-                roles: [],
-            };
-            const initialToken = await service.createHttpOnlyCookie(tokenData);
-            const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
-
-            await expect(service.rotateRefreshToken(decodedInitialToken)).rejects.toThrow("Refreshing too soon.");
-        });
-    });
+			await expect(service.rotateRefreshToken(decodedInitialToken)).rejects.toThrow("Refreshing too soon.");
+		});
+	});
 });
