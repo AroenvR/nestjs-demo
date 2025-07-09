@@ -18,7 +18,9 @@ module.exports = {
     ],
     coverageDirectory: "../coverage",
     coveragePathIgnorePatterns: [
-        "<rootDir>/main.ts"
+        "<rootDir>/main.ts",
+        "<rootDir>/__tests__/",
+        "<rootDir>/debug.ts",
     ],
     testEnvironment: "node",
     setupFilesAfterEnv: ['<rootDir>/__tests__/jest.setup.ts'],
