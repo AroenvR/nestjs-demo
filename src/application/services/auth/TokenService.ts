@@ -16,7 +16,6 @@ import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * A service class that provides methods for creating/managing access tokens and HTTP-only cookies.
- * TODO: test
  */
 @Injectable()
 export class TokenService {
@@ -77,7 +76,9 @@ export class TokenService {
 	}
 
 	/**
-	 *
+	 * Rotates the refresh token for the user.
+	 * @param data The HTTP-only cookie data containing the claims.
+	 * @returns A signed JWT string representing the new HTTP-only cookie.
 	 */
 	public async rotateRefreshToken(data: IHttpOnlyCookie): Promise<string> {
 		this.logger.info(`Refreshing token ${data.jti}`);
@@ -103,7 +104,9 @@ export class TokenService {
 	}
 
 	/**
-	 *
+	 * Revokes the refresh token for the user.
+	 * @param data The HTTP-only cookie data containing the claims.
+	 * @throws InternalServerErrorException if the token is not found.
 	 */
 	public async revokeRefreshToken(data: IBearerToken): Promise<void> {
 		this.logger.info(`Revoking token for user ${data.sub}`);
@@ -125,8 +128,8 @@ export class TokenService {
 		this.logger.info(`Creating a new refresh entity for ${data.sub}`);
 
 		const tokenStr = JSON.stringify(tokenInfo);
-
 		const tokenHash = this.encryptionUtils.sha256(tokenStr);
+
 		const refreshTokenData: Partial<RefreshTokenEntity> = {
 			jti: tokenInfo.jti,
 			sub: data.sub,
@@ -141,7 +144,8 @@ export class TokenService {
 	}
 
 	/**
-	 *
+	 * Creates the HTTP-only cookie information with a unique identifier, issued at time, and expiration time.
+	 * @returns An object containing the JTI, issued at time (iat), and expiration
 	 */
 	private async createHttpOnlyCookieInfo(): Promise<IHttpOnlyCookie> {
 		const config = this.configService.get<IServerConfig["security"]>("security").cookie;
@@ -164,11 +168,13 @@ export class TokenService {
 		this.logger.debug(`Signing JWT: ${data.jti}`);
 
 		if ("sub" in data && data.sub) {
+			// Sign Authorization: Bearer Access Token
 			return this.jwtService.signAsync(data, {
 				secret: this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar),
 			});
 		}
 
+		// Sign HTTP-Only Cookie
 		return this.jwtService.signAsync(data, {
 			secret: this.configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
 		});
