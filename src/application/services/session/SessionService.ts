@@ -11,6 +11,7 @@ import { ILogger } from "../../../infrastructure/logging/ILogger";
 
 /**
  * A service class that provides basic CRUD operations for the SessionEntity.
+ * @deprecated
  */
 export class SessionService {
 	protected logger: ILogger;

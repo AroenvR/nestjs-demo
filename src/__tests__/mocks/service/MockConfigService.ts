@@ -26,7 +26,6 @@ export class MockConfigService extends ConfigService<IServerConfig, false> {
 			return this.forceValue;
 		}
 
-		const foo = super.get(key);
-		return foo;
+		return super.get(key);
 	}
 }

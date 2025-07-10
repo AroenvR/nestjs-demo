@@ -55,11 +55,11 @@ export class RefreshTokenEntity extends AbstractEntity {
 	 * @param hash The new hash to set
 	 * @returns The updated RefreshTokenEntity
 	 */
-	public refresh(jti: UUID, hash: string, maxCookieAge: number, accessTokenExpiry: number) {
-		const expired = Date.now() - this.createdAt > maxCookieAge;
+	public refresh(jti: UUID, hash: string, cookieExpiry: number, tokenExpiry: number) {
+		const expired = Date.now() - this.createdAt > cookieExpiry;
 		if (expired) throw new Error("Cookie has expired.");
 
-		const refreshThrottle = Date.now() - this.lastRefreshedAt < accessTokenExpiry;
+		const refreshThrottle = Date.now() - this.lastRefreshedAt < tokenExpiry;
 		if (refreshThrottle) throw new InternalServerErrorException("Refreshing too soon.");
 
 		this.jti = jti;

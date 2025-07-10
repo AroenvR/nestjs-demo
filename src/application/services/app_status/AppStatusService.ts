@@ -1,11 +1,13 @@
 import { Subject } from "rxjs";
-import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from "@nestjs/common";
+import { CronJob } from "cron";
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown, OnModuleDestroy } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TAppStatusMessage } from "../../../common/types/TAppStatusMessage";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { SchedulerRegistry } from "@nestjs/schedule";
 
 /**
  * A service class that handles and publishes application status messages.
@@ -13,39 +15,56 @@ import { ILogger } from "../../../infrastructure/logging/ILogger";
  * It implements the OnApplicationBootstrap and OnApplicationShutdown interfaces to manage the lifecycle of the service.
  */
 @Injectable()
-export class AppStatusService implements OnApplicationBootstrap, OnApplicationShutdown {
+export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy {
 	public readonly name: string;
+	private readonly CRON_JOB_NAME = "AppStatusPublishCronJob";
 	protected logger: ILogger;
 	protected readonly events = new Subject<{ data: AppStatusResponseDto }>();
-	private intervalId: NodeJS.Timeout | null = null;
-	private _status: TAppStatusMessage;
+	private _status: TAppStatusMessage = "starting";
 
 	constructor(
 		protected readonly logAdapter: WinstonAdapter,
 		protected readonly configService: ConfigService<IServerConfig>,
+		private readonly schedulerRegistry: SchedulerRegistry,
 	) {
-		this._status = "starting";
-
 		this.name = this.constructor.name;
 		this.logger = logAdapter.getPrefixedLogger(this.name);
 	}
 
 	/**
-	 *
+	 * Lifecycle hook that runs when the application starts.
+	 * It sets up a cron job to periodically publish the application status.
+	 * The interval for publishing is configured in the application settings.
 	 */
-	public onApplicationBootstrap() {
+	public async onApplicationBootstrap() {
 		this.logger.info("Starting periodic status message publishing.");
-		this.startStatusMessages();
+
+		const intervalMs = this.configService.get<IServerConfig["misc"]>("misc").appStatusInterval;
+		const appStatusIntervalSeconds = Math.floor(intervalMs / 1000);
+		const cronExpression = `*/${appStatusIntervalSeconds} * * * * *`; // Runs every `interval` seconds
+
+		const cronJob = new CronJob(cronExpression, () => {
+			this.emit(this.status);
+		});
+
+		this.schedulerRegistry.addCronJob(this.CRON_JOB_NAME, cronJob);
+		cronJob.start();
+
+		await this.setStatusAndEmit("listening");
 	}
 
 	/**
-	 *
+	 * Lifecycle hook that runs when the application is shutting down.
+	 * It stops the cron job that publishes the application status messages.
+	 * It also sets the status to "stopping" and emits this status.
 	 */
-	public onApplicationShutdown() {
+	public async onModuleDestroy() {
 		this.logger.info("Stopping periodic status message publishing.");
 
-		this.status = "stopping";
-		if (this.intervalId) clearInterval(this.intervalId);
+		const job = this.schedulerRegistry.getCronJob(this.CRON_JOB_NAME);
+		await job.stop();
+
+		await this.setStatusAndEmit("stopping");
 	}
 
 	/**
@@ -61,29 +80,11 @@ export class AppStatusService implements OnApplicationBootstrap, OnApplicationSh
 	 */
 	public async emit(message: TAppStatusMessage) {
 		try {
-			this.events.next({ data: AppStatusResponseDto.create(message) });
+			// @ts-expect-error: todo
+			this.events.next({ data: message });
 		} catch (err) {
 			this.logger.error(`Error while emitting application status: ${err}`);
 		}
-	}
-
-	/**
-	 * Starts the periodic status message publishing.
-	 */
-	private startStatusMessages() {
-		if (this.intervalId) {
-			this.logger.warn("Status message interval already running. Skipping start.");
-			return;
-		}
-
-		this.status = "listening";
-		const interval = this.configService.get<IServerConfig["misc"]>("misc").appStatusInterval;
-
-		this.intervalId = setInterval(() => {
-			this.emit(this.status);
-		}, interval); // Emit status every 10 seconds
-
-		this.logger.info("Periodic status message publishing started.");
 	}
 
 	/**
@@ -95,17 +96,25 @@ export class AppStatusService implements OnApplicationBootstrap, OnApplicationSh
 		return this.status;
 	}
 
+	/**
+	 * Sets the application status and emits the new status message.
+	 * @param status The new status to set, of type TAppStatusMessage.
+	 * @returns A promise that resolves when the status has been set and emitted.
+	 */
+	public async setStatusAndEmit(status: TAppStatusMessage) {
+		this.logger.debug(`Application status changing from "${this.status}" to: "${status}".`);
+
+		this.status = status;
+		await this.emit(status);
+	}
+
 	/* Getters & Setters */
 
 	private get status(): TAppStatusMessage {
-		if (!this._status) return "error";
 		return this._status;
 	}
 
 	private set status(status: TAppStatusMessage) {
-		this.logger.debug(`Application status changing from "${this.status}" to: "${status}".`);
-
 		this._status = status;
-		this.emit(status);
 	}
 }

@@ -12,13 +12,6 @@ export const securitySchema = Joi.object({
 		expiry: Joi.number()
 			.integer()
 			.positive()
-			.min(60 * 60 * 0.5) // 30 minutes in seconds
-			.max(60 * 60 * 24) // 24 hours in seconds
-			.default(60 * 60 * 1) // 1 hour in seconds
-			.optional(),
-		maxAge: Joi.number()
-			.integer()
-			.positive()
 			.min(1000 * 60 * 60 * 4) // 4 hours in milliseconds
 			.max(1000 * 60 * 60 * 24 * 7) // 7 days in milliseconds
 			.default(1000 * 60 * 60 * 16) // 16 hours in milliseconds
@@ -34,9 +27,9 @@ export const securitySchema = Joi.object({
 		expiry: Joi.number()
 			.integer()
 			.positive()
-			.min(60 * 1) // 1 minute in seconds
-			.max(60 * 60) // 1 hour in seconds
-			.default(60 * 15) // 15 minutes in seconds
+			.min(60 * 1000) // 1 minute in milliseconds
+			.max(60 * 60 * 1000) // 1 hour in milliseconds
+			.default(60 * 15 * 1000) // 15 minutes in milliseconds
 			.optional(),
 	}).required(),
 	jwks: Joi.object({
@@ -67,6 +60,6 @@ export const securitySchema = Joi.object({
 		allowedHeaders: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())).required(),
 		methods: Joi.array().items(Joi.string()).required(),
 		credentials: Joi.boolean().default(true).optional(),
-		maxAge: Joi.number().optional(),
+		maxAge: Joi.number().optional(), // ??? TODO !
 	}).required(),
 }).required();

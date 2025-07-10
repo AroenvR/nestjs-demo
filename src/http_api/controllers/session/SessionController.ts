@@ -39,6 +39,7 @@ const ENDPOINT = "session";
 /**
  * A controller class that handles session-related operations.
  * It provides endpoints for creating, updating, and deleting sessions.
+ * @deprecated
  */
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)

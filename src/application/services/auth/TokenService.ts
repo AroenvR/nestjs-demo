@@ -45,9 +45,8 @@ export class TokenService {
 		this.logger.info(`Creating access token.`);
 
 		const config = this.configService.get<IServerConfig["security"]>("security").bearer;
-
 		const iat = Math.floor(Date.now() / 1000);
-		const exp = iat + config.expiry;
+		const exp = iat + config.expiry / 1000;
 
 		const tokenInfo: IBearerToken = {
 			jti: randomUUID(),
@@ -57,8 +56,6 @@ export class TokenService {
 			exp: exp,
 		};
 
-		// Cache value is set for the BearerTokenStrategy's Guard.
-		this.cache.set<boolean>(CacheKeys.JWT_JTI + tokenInfo.jti, true, config.expiry * 1000);
 		return this.signToken(tokenInfo);
 	}
 
@@ -82,6 +79,7 @@ export class TokenService {
 	 */
 	public async rotateRefreshToken(data: IHttpOnlyCookie): Promise<string> {
 		this.logger.info(`Refreshing token ${data.jti}`);
+		await this.cache.del(CacheKeys.JWT_JTI + data.jti);
 
 		const currentTokenHash = this.encryptionUtils.sha256(JSON.stringify(data));
 		const tokenEntity = await this.refreshTokenRepo.findOne({
@@ -94,7 +92,7 @@ export class TokenService {
 
 		const refreshData = await this.createHttpOnlyCookieInfo();
 		const newTokenHash = this.encryptionUtils.sha256(JSON.stringify(refreshData));
-		tokenEntity.refresh(refreshData.jti, newTokenHash, config.cookie.maxAge, config.bearer.expiry);
+		tokenEntity.refresh(refreshData.jti, newTokenHash, config.cookie.expiry, config.bearer.expiry);
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			return entityManager.save(tokenEntity);
@@ -110,6 +108,7 @@ export class TokenService {
 	 */
 	public async revokeRefreshToken(data: IBearerToken): Promise<void> {
 		this.logger.info(`Revoking token for user ${data.sub}`);
+		await this.cache.del(CacheKeys.JWT_JTI + data.jti);
 
 		const token = await this.refreshTokenRepo.findOne({
 			where: { sub: data.sub },
@@ -150,7 +149,7 @@ export class TokenService {
 	private async createHttpOnlyCookieInfo(): Promise<IHttpOnlyCookie> {
 		const config = this.configService.get<IServerConfig["security"]>("security").cookie;
 		const iat = Math.floor(Date.now() / 1000);
-		const exp = iat + config.expiry;
+		const exp = iat + config.expiry / 1000;
 
 		return {
 			jti: randomUUID(),
@@ -167,19 +166,25 @@ export class TokenService {
 	private async signToken(data: IBearerToken | IHttpOnlyCookie): Promise<string> {
 		this.logger.debug(`Signing JWT: ${data.jti}`);
 
+		// Cache value is set for the Security Guards.
+		const config = this.configService.get<IServerConfig["security"]>("security");
+
+		// Bearer Access Token
 		if ("sub" in data && data.sub) {
-			// Sign Authorization: Bearer Access Token
+			this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.bearer.expiry);
 			return this.jwtService.signAsync(data, {
 				secret: this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar),
 			});
 		}
 
-		// Sign HTTP-Only Cookie
+		// HTTP-Only Cookie
+		this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.cookie.expiry);
 		return this.jwtService.signAsync(data, {
 			secret: this.configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
 		});
 	}
 
 	// TODO: Periodic cleanup of expired refresh tokens
+	// This should also remove accepted JTI's from the cache
 	// This can be implemented as a scheduled task or a background job.
 }

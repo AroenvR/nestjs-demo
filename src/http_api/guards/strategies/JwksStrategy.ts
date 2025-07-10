@@ -9,7 +9,9 @@ import { securityConstants } from "../../../common/constants/securityConstants";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 
 /**
- * TODO: Document
+ * A strategy for validating JWTs using JSON Web Key Sets (JWKS).
+ * It uses the jwks-rsa library to retrieve the public keys from a JWKS endpoint
+ * and validates the JWTs against these keys.
  */
 @Injectable()
 export class JwksStrategy extends PassportStrategy(Strategy, securityConstants.jwksBinding) {
@@ -34,6 +36,11 @@ export class JwksStrategy extends PassportStrategy(Strategy, securityConstants.j
 		});
 	}
 
+	/**
+	 * Validates the JWT payload.
+	 * @param payload The JWT payload to validate.
+	 * @returns The validated payload, which includes the subject and roles.
+	 */
 	validate(payload: any) {
 		// Optionally confirm payload.sub matches a user record, etc.
 		return { sub: payload.sub, roles: payload.realm_access?.roles || [] };

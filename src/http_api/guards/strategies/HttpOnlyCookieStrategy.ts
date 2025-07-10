@@ -6,6 +6,8 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { INestJSCookieJwt } from "../../../common/interfaces/JwtInterfaces";
+import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
+import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * Passport strategy for authenticating users using JWTs stored in HTTP-Only cookies or Bearer tokens.
@@ -14,7 +16,10 @@ import { INestJSCookieJwt } from "../../../common/interfaces/JwtInterfaces";
  */
 @Injectable()
 export class HttpOnlyCookieStrategy extends PassportStrategy(Strategy, securityConstants.httpOnlyCookieGuardBinding) {
-	constructor(private readonly configService: ConfigService) {
+	constructor(
+		private readonly configService: ConfigService,
+		private readonly cache: CacheManagerAdapter,
+	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([HttpOnlyCookieStrategy.extractFromCookie]),
 			ignoreExpiration: false,
@@ -28,6 +33,9 @@ export class HttpOnlyCookieStrategy extends PassportStrategy(Strategy, securityC
 	 * @returns The validated payload.
 	 */
 	async validate(payload: INestJSCookieJwt) {
+		const cachedJti = await this.cache.get<boolean>(CacheKeys.JWT_JTI + payload.user.jti);
+		if (!cachedJti) throw new UnauthorizedException(`JWT Identifier does not exist in cache.`);
+
 		if (payload) return payload;
 
 		console.error(`Invalid JWT payload.`);

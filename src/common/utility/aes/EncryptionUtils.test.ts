@@ -1,7 +1,7 @@
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { EncryptionUtils } from "./EncryptionUtils";
 import { UtilityModule } from "../UtilityModule";
-import { wasLogged } from "../../../__tests__/helpers/wasLogged";
+import { wasLoggedSync } from "../../../__tests__/helpers/wasLogged";
 import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 
 const TEST_NAME = "EncryptionUtils";
@@ -22,7 +22,7 @@ describe(TEST_NAME, () => {
 
 	it("Should be defined", async () => {
 		expect(encryptionUtil).toBeDefined();
-		await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Registered an encryption/decryption strategy for aes-256-gcm`)).resolves.toBe(true);
+		await expect(wasLoggedSync(TEST_NAME, `${TEST_NAME}: Registered an encryption/decryption strategy for aes-256-gcm`)).resolves.toBe(true);
 	});
 
 	// --------------------------------------------------
@@ -91,8 +91,8 @@ describe(TEST_NAME, () => {
 			expect(aesData.version).toEqual(1);
 			expect(aesData.cipher).not.toEqual(DATA);
 
-			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Encrypting data using ${algorithm}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Successfully encrypted data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLoggedSync(TEST_NAME, `${TEST_NAME}: Encrypting data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLoggedSync(TEST_NAME, `${TEST_NAME}: Successfully encrypted data using ${algorithm}`)).resolves.toBe(true);
 		});
 
 		// --------------------------------------------------
@@ -104,8 +104,8 @@ describe(TEST_NAME, () => {
 
 			expect(decrypted).toEqual(DATA);
 
-			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Decrypting data using ${algorithm}`)).resolves.toBe(true);
-			await expect(wasLogged(TEST_NAME, `${TEST_NAME}: Successfully decrypted data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLoggedSync(TEST_NAME, `${TEST_NAME}: Decrypting data using ${algorithm}`)).resolves.toBe(true);
+			await expect(wasLoggedSync(TEST_NAME, `${TEST_NAME}: Successfully decrypted data using ${algorithm}`)).resolves.toBe(true);
 		});
 	});
 });

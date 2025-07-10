@@ -16,7 +16,6 @@ const ENDPOINT = "app_status";
 /**
  * A controller class that handles and publishes application status messages.
  * It exposes API endpoints and hands DTO's to the correct services.
- * TODO: test
  */
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)

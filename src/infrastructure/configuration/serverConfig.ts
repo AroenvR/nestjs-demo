@@ -14,14 +14,13 @@ const defaultConfig: IServerConfig = {
 			enabled: false,
 			version: 1,
 			secure: false,
-			expiry: 3600, // 1 hour in seconds
-			maxAge: 57600000, // 16 hours in milliseconds
+			expiry: 57600000, // 16 hours in milliseconds
 		},
 		bearer: {
 			enabled: false,
 			header: "Authorization",
 			encryption: "aes-256-gcm",
-			expiry: 900, // 15 minutes in seconds
+			expiry: 900000, // 15 minutes in milliseconds
 		},
 		swagger: {
 			enabled: false,

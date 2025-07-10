@@ -3,14 +3,13 @@
         "enabled": true,
         "version": 1,
         "secure": false,
-        "expiry": 3600,
-        "maxAge": 57600000
+        "expiry": 57600000
     },
     "bearer": {
         "enabled": true,
         "header": "Authorization",
         "encryption": "aes-256-gcm",
-        "expiry": 900
+        "expiry": 900000
     },
     "jwks": {
         "enabled": true,

@@ -89,7 +89,7 @@ export class AuthController {
 				httpOnly: true,
 				sameSite: "strict",
 				secure: config.cookie.secure,
-				maxAge: config.cookie.maxAge,
+				maxAge: config.cookie.expiry,
 			});
 		}
 
@@ -147,7 +147,7 @@ export class AuthController {
 				httpOnly: true,
 				sameSite: "strict",
 				secure: config.cookie.secure,
-				maxAge: config.cookie.maxAge,
+				maxAge: config.cookie.expiry,
 			});
 		}
 

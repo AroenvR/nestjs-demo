@@ -20,10 +20,12 @@ import { ICreateAuthTokenData } from "../../../common/interfaces/JwtInterfaces";
 import { MockEncryptionUtils } from "../../../__tests__/mocks/common/MockEncryptionUtils";
 import { mockPlainTextBearerToken, mockPlainTextHttpOnlyJwtCookie } from "../../../__tests__/mocks/mockJwt";
 import { securityConstants } from "../../../common/constants/securityConstants";
+import { IServerConfig } from "src/infrastructure/configuration/IServerConfig";
 
 describe("TokenService.Unit", () => {
 	let mockedRefreshToken: RefreshTokenEntity;
 	let service: TokenService;
+	let configService: ConfigService;
 
 	beforeEach(async () => {
 		mockedRefreshToken = MockRefreshTokenEntity.get();
@@ -63,6 +65,7 @@ describe("TokenService.Unit", () => {
 		}).compile();
 
 		service = module.get(TokenService);
+		configService = module.get(ConfigService);
 	});
 
 	afterEach(() => {
@@ -125,6 +128,14 @@ describe("TokenService.Unit", () => {
 		// Spying on the prototype as spying on the object makes the JSON schema fail.
 		const refreshSpy = jest.spyOn(RefreshTokenEntity.prototype, "refresh");
 		const jwtSignSpy = jest.spyOn(service["jwtService"], "signAsync");
+
+		const expiry = configService.get<IServerConfig["security"]>("security").bearer.expiry;
+		const timeToSet = mockedRefreshToken.lastRefreshedAt - expiry;
+
+		mockedRefreshToken.lastRefreshedAt = timeToSet;
+
+		const repository = service["refreshTokenRepo"];
+		jest.spyOn(repository, "findOne").mockResolvedValueOnce(mockedRefreshToken);
 
 		const cookie = await service.rotateRefreshToken(mockPlainTextHttpOnlyJwtCookie);
 

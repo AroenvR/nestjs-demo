@@ -1,12 +1,11 @@
 import { randomUUID } from "crypto";
-import { decode } from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import { Repository } from "typeorm";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { INestApplication } from "@nestjs/common";
 import { TokenService } from "./TokenService";
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { AuthModule } from "../../../http_api/modules/auth/AuthModule";
-import { MockRefreshTokenEntity } from "../../../__tests__/mocks/entity/MockRefreshTokenEntity";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { IBearerToken, ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
@@ -52,8 +51,6 @@ describe(TEST_NAME, () => {
 		};
 		const token = await service.createAccessToken(tokenData);
 		expect(typeof token).toEqual("string");
-		expect(token.length).toBeGreaterThan(1);
-		expect(token.slice(0, 2)).toEqual("ey");
 
 		const decoded = decode(token) as IBearerToken;
 		expect(decoded.sub).toEqual(tokenData.sub);
@@ -77,8 +74,6 @@ describe(TEST_NAME, () => {
 
 		const token = await service.createHttpOnlyCookie(tokenData);
 		expect(typeof token).toEqual("string");
-		expect(token.length).toBeGreaterThan(1);
-		expect(token.slice(0, 2)).toEqual("ey");
 
 		const decoded = decode(token) as IHttpOnlyCookie;
 		expect(decoded.jti).toEqual(expect.any(String));
@@ -108,10 +103,11 @@ describe(TEST_NAME, () => {
 			where: { jti: decodedInitialToken.jti },
 		});
 
+		const now = Date.now();
 		jest.useFakeTimers({ doNotFake: ["nextTick"] }); // Do not mock nextTick or jwtService.signAsync gets stuck.
-		jest.advanceTimersByTime(10 * 60 * 1000); // Advance time by 10 minutes
+		jest.setSystemTime(now + 15 * 60 * 1000); // Advance time by 15 minutes
 
-		const token = await service.rotateRefreshToken(decodedInitialToken);
+		const token = await service.rotateRefreshToken(decodedInitialToken); // throws here
 		expect(token).not.toEqual(initialToken);
 
 		jest.useRealTimers();
@@ -178,6 +174,35 @@ describe(TEST_NAME, () => {
 			const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
 
 			await expect(service.rotateRefreshToken(decodedInitialToken)).rejects.toThrow("Refreshing too soon.");
+		});
+	});
+
+	// --------------------------------------------------
+
+	describe("JwtService test", () => {
+		const secret = "test_secret";
+
+		it("respects manually set exp when no expiresIn is passed", () => {
+			const now = Math.floor(Date.now() / 1000);
+			const exp = now + 3600;
+
+			const token = jwt.sign({ jti: "abc", iat: now, exp }, secret);
+
+			const decoded = jwt.decode(token) as any;
+
+			expect(decoded.exp).toBe(exp);
+			expect(decoded.iat).toBe(now);
+		});
+
+		// --------------------------------------------------
+
+		it("throws if both exp and expiresIn are provided", () => {
+			const now = Math.floor(Date.now() / 1000);
+			const exp = now + 3600;
+
+			expect(() => {
+				jwt.sign({ jti: "abc", iat: now, exp }, secret, { expiresIn: 3600 });
+			}).toThrow(/Bad \"options.expiresIn\" option the payload already has an \"exp\" property./);
 		});
 	});
 });

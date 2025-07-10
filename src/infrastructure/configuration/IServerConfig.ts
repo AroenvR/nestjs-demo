@@ -16,8 +16,7 @@ export interface ICookieAuthConfig {
 	enabled: boolean;
 	version: number;
 	secure: boolean;
-	expiry: number; // in seconds
-	maxAge: number; // in milliseconds
+	expiry: number; // in milliseconds
 	// http-only is always true
 	// sameSite is always "strict"
 }
@@ -82,7 +81,7 @@ export interface ISwaggerAuthConfig {
  * @property swagger - The server's swagger authentication configuration.
  * @property cors - The server's {@link https://docs.nestjs.com/security/cors} config.
  */
-export interface TSecurityConfig {
+export interface ISecurityConfig {
 	cookie: ICookieAuthConfig;
 	bearer: IBearerAuthConfig;
 	jwks?: IJwksAuthConfig;
@@ -114,13 +113,13 @@ export interface IMiscellaneousConfig {
 
 /**
  * The server's complete configuration interface.
- * @property security - The server's {@link TSecurityConfig} settings.
+ * @property security - The server's {@link ISecurityConfig} settings.
  * @property logging - The server's {@link ILoggerConfig} settings.
  * @property database - The server's {@link TDatabaseConfig} settings.
  * @property misc - The server's {@link IMiscellaneousConfig} settings.
  */
 export interface IServerConfig {
-	security: TSecurityConfig;
+	security: ISecurityConfig;
 	logging: ILoggerConfig;
 	database: TDatabaseConfig;
 	misc: IMiscellaneousConfig;

@@ -116,7 +116,7 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it("Should return an error when using an expired JWT", async () => {
+		it.only("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)

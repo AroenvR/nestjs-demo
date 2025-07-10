@@ -96,7 +96,7 @@ describe(TEST_NAME, () => {
 					httpOnly: true,
 					sameSite: "strict",
 					secure: cookieConfig.secure,
-					maxAge: cookieConfig.maxAge,
+					maxAge: cookieConfig.expiry,
 				}),
 			);
 
