@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { UUID } from "crypto";
 import { Entity, Column } from "typeorm";
-import { InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { AbstractEntity } from "../AbstractEntity";
 import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
@@ -57,10 +57,10 @@ export class RefreshTokenEntity extends AbstractEntity {
 	 */
 	public refresh(jti: UUID, hash: string, cookieExpiry: number, tokenExpiry: number) {
 		const expired = Date.now() - this.createdAt > cookieExpiry;
-		if (expired) throw new Error("Cookie has expired.");
+		if (expired) throw new BadRequestException("Cookie has expired.");
 
 		const refreshThrottle = Date.now() - this.lastRefreshedAt < tokenExpiry;
-		if (refreshThrottle) throw new InternalServerErrorException("Refreshing too soon.");
+		if (refreshThrottle) throw new BadRequestException("Refreshing too soon.");
 
 		this.jti = jti;
 		this.hash = hash;

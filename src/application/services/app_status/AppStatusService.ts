@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 import { CronJob } from "cron";
-import { Injectable, OnApplicationBootstrap, OnApplicationShutdown, OnModuleDestroy } from "@nestjs/common";
+import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TAppStatusMessage } from "../../../common/types/TAppStatusMessage";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";

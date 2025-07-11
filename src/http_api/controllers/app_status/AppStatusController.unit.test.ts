@@ -1,21 +1,13 @@
 describe("AppStatusController.Unit", () => {
-    beforeAll(async () => {
+	beforeAll(async () => {});
 
-    });
+	beforeEach(async () => {});
 
-    beforeEach(async () => {
+	afterEach(async () => {});
 
-    });
+	afterAll(async () => {});
 
-    afterEach(async () => {
-
-    });
-
-    afterAll(async () => {
-
-    });
-
-    it("Can yolo", () => {
-        expect("WIP").toEqual(true);
-    });
+	it("Can yolo", () => {
+		expect("WIP").toEqual(true);
+	});
 });

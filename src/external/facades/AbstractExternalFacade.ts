@@ -105,7 +105,7 @@ export abstract class AbstractExternalFacade implements IExternalFacade {
 	 * doc
 	 */
 	protected async executeRequest(request: IBaseRequestBuilder) {
-		const currentToken = this.accessToken;
+		// const currentToken = this.accessToken;
 
 		try {
 			const response = await request.execute();

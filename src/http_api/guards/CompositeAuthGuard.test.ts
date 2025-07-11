@@ -102,7 +102,7 @@ describe(TEST_NAME, () => {
 		// --------------------------------------------------
 
 		it("Rejects an expired access token using the JwtService's 'expiresIn' value", async () => {
-			const { exp, ...tokenWithoutExp } = mockToken;
+			const { exp, ...tokenWithoutExp } = mockToken; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 			const token = await jwtService.signAsync(tokenWithoutExp, {
 				secret,

@@ -30,6 +30,11 @@ async function bootstrap() {
 		Implement a validator utility
 		Implement worker threads
 
+		Create a middleware that looks at all of the application's responses and asserts:
+		- It either:
+		-- Fits a DTO scheme and has the `isDto` value set to true
+		-- Fits a the IHttpErrorResponseObj interface
+
 		Create automated dependency documentation https://www.youtube.com/watch?v=EtTrgv1ww8o
 
 		Fix:

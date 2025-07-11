@@ -20,7 +20,6 @@ export class HttpErrorFilter extends AbstractHttpFilter {
 		}
 
 		super.catch(exception, host);
-
 		this.logger.warn(`Exception was caught by the default Error filter.`);
 	}
 }

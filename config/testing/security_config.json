@@ -12,7 +12,7 @@
         "expiry": 900000
     },
     "jwks": {
-        "enabled": true,
+        "enabled": false,
         "cache": true,
         "cacheMaxEntries": 10,
         "cacheMaxAge": 3600000,

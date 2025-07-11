@@ -44,7 +44,7 @@ export class TokenService {
 	public async createAccessToken(data: ICreateAuthTokenData): Promise<string> {
 		this.logger.info(`Creating access token.`);
 
-		const config = this.configService.get<IServerConfig["security"]>("security").bearer;
+		const config = this.configService.getOrThrow<IServerConfig["security"]>("security").bearer;
 		const iat = Math.floor(Date.now() / 1000);
 		const exp = iat + config.expiry / 1000;
 
@@ -79,7 +79,7 @@ export class TokenService {
 	 */
 	public async rotateRefreshToken(data: IHttpOnlyCookie): Promise<string> {
 		this.logger.info(`Refreshing token ${data.jti}`);
-		await this.cache.del(CacheKeys.JWT_JTI + data.jti);
+		await this.cache.del(CacheKeys.JWT_JTI + data.jti); // TODO: Move this to a middleware
 
 		const currentTokenHash = this.encryptionUtils.sha256(JSON.stringify(data));
 		const tokenEntity = await this.refreshTokenRepo.findOne({
@@ -115,6 +115,7 @@ export class TokenService {
 		});
 		if (!token) throw new InternalServerErrorException(`Token for user ${data.sub} not found.`);
 
+		await this.cache.del(CacheKeys.JWT_JTI + token.jti);
 		await this.refreshTokenRepo.remove(token);
 	}
 
@@ -171,14 +172,14 @@ export class TokenService {
 
 		// Bearer Access Token
 		if ("sub" in data && data.sub) {
-			this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.bearer.expiry);
+			await this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.bearer.expiry);
 			return this.jwtService.signAsync(data, {
 				secret: this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar),
 			});
 		}
 
 		// HTTP-Only Cookie
-		this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.cookie.expiry);
+		await this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.cookie.expiry);
 		return this.jwtService.signAsync(data, {
 			secret: this.configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
 		});

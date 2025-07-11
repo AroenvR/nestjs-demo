@@ -4,24 +4,16 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { HttpErrorFilter } from "./HttpErrorFilter";
+import { InternalServerExceptionFilter } from "./InternalServerExceptionFilter";
 
-const ERROR = new Error("HTTP error test");
-
-const INTERNAL_SERVER_EXCEPTION_PATH = "/internal_server_exception";
-const INTERNAL_SERVER_EXCEPTION = new InternalServerErrorException("HTTP Internal Server error test");
+const ERROR = new InternalServerErrorException("HTTP Internal Server error test");
 
 @Controller("test")
-@UseFilters(HttpErrorFilter)
+@UseFilters(InternalServerExceptionFilter)
 class TestController {
 	@Get()
 	hello() {
 		throw ERROR;
-	}
-
-	@Get(INTERNAL_SERVER_EXCEPTION_PATH)
-	internalServerException() {
-		throw INTERNAL_SERVER_EXCEPTION;
 	}
 }
 
@@ -51,47 +43,35 @@ describe("HttpErrorFilter", () => {
 
 	// --------------------------------------------------
 
-	it("Handles the base Error class", async () => {
-		await request(app.getHttpServer())
+	it("Handles Nest's InternalServerException class", async () => {
+		const response = await request(app.getHttpServer())
 			.get(ENDPOINT)
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
 					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
-					path: "/test",
+					path: ENDPOINT,
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});
 
-		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`HTTP error test`, ERROR);
-		expect(mockILogger.warn).toHaveBeenCalledWith(`Exception was caught by the default Error filter.`);
-	});
-
-	// --------------------------------------------------
-
-	it("Handles Nest's InternalServerException class", async () => {
-		const path = ENDPOINT + INTERNAL_SERVER_EXCEPTION_PATH;
-
-		const response = await request(app.getHttpServer())
-			.get(path)
-			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
-			.expect((res) => {
-				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-					timestamp: expect.any(Number),
-					path: path,
-					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
-				});
-			});
-
+		// Verify a safe error object was returned
 		expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+		expect(response.body.timestamp).toEqual(expect.any(Number));
 		expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
-		expect(response.body.path).toEqual(path);
+		expect(response.body.path).toEqual(ENDPOINT);
+
+		// TODO: Use a JSON schema which can be reused by the future middleware.
+		for (const key of Object.keys(response.body)) {
+			if (key === "statusCode") continue;
+			if (key === "timestamp") continue;
+			if (key === "message") continue;
+			if (key === "path") continue;
+			throw new Error(`[TEST]: Key not allowed.`);
+		}
 
 		// Verify that the logger was called
-		expect(mockILogger.error).toHaveBeenCalledWith(`HTTP Internal Server error test`, INTERNAL_SERVER_EXCEPTION);
-		expect(mockILogger.warn).toHaveBeenCalledWith(`Exception was caught by the default Error filter.`);
+		expect(mockILogger.error).toHaveBeenCalledWith(`HTTP Internal Server error test`, ERROR);
 	});
 });

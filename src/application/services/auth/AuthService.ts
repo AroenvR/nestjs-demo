@@ -1,5 +1,5 @@
 import { EntityManager, Repository } from "typeorm";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
@@ -41,7 +41,7 @@ export class AuthService {
 			where: { password: data.password },
 			relations: [],
 		});
-		if (!user) throw new UnauthorizedException(`${this.name}: Authentication failed. User not found.`);
+		if (!user) throw new BadRequestException(`${this.name}: Authentication failed. User not found.`);
 
 		return user;
 	}

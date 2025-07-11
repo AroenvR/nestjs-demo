@@ -8,6 +8,7 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
+	InternalServerErrorException,
 	Patch,
 	Post,
 	Request,
@@ -33,6 +34,7 @@ import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessag
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
+import { CompositeAuthGuard } from "../../../http_api/guards/CompositeAuthGuard";
 
 const ENDPOINT = "auth";
 
@@ -76,14 +78,16 @@ export class AuthController {
 		this.logger.log(`User attempting to log in.`);
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
 
+		const config = this.configService.getOrThrow<IServerConfig["security"]>("security");
+		if (!config.bearer?.enabled) throw new InternalServerErrorException(`${this.name}: Bearer tokens must be configured.`);
+
 		const user = await this.authService.authenticate(data);
 		const tokenData: ICreateAuthTokenData = {
 			sub: user.uuid,
 			roles: [], // TODO: Set user roles if applicable
 		};
 
-		const config = this.configService.get<IServerConfig["security"]>("security");
-		if (config.cookie.enabled) {
+		if (config.cookie?.enabled) {
 			const httpOnlyCookie = await this.tokenService.createHttpOnlyCookie(tokenData);
 			response.cookie(securityConstants.refreshCookieString, httpOnlyCookie, {
 				httpOnly: true,
@@ -93,7 +97,6 @@ export class AuthController {
 			});
 		}
 
-		if (!config.bearer.enabled) return "success";
 		return this.tokenService.createAccessToken(tokenData);
 	}
 
@@ -108,8 +111,8 @@ export class AuthController {
 	@ApiOperation({ summary: `Get the authenticated user's information` })
 	@ApiResponse({ status: HttpStatus.OK, description: `The authenticated user's information.`, type: UserResponseDto })
 	@DefaultErrorDecorators()
-	@TransformResponseDto(UserResponseDto)
 	@UseGuards(BearerTokenAuthGuard)
+	@TransformResponseDto(UserResponseDto)
 	public async whoAmI(@Request() request: INestJSBearerJwt) {
 		if (!isTruthy(request?.user?.sub)) throw new UnauthorizedException(`${this.name}: Missing JWT information for whoami request.`);
 
@@ -172,13 +175,16 @@ export class AuthController {
 	@ApiOperation({ summary: `Delete the user's tokens` })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: "Request handled successfully." })
 	@DefaultErrorDecorators()
+	@UseGuards(CompositeAuthGuard)
 	// Public route
 	public async logout(@Request() request: INestJSBearerJwt, @Res({ passthrough: true }) response: Response) {
 		response.clearCookie(securityConstants.refreshCookieString);
 
+		// Handle jwks logout?
+
 		if (!isTruthy(request?.user?.sub)) throw new BadRequestException(`${this.name}: Missing JWT information for logout request.`);
 		this.logger.log(`Revoking token and cookie for user ${request.user.sub}`);
 
-		return this.tokenService.revokeRefreshToken(request.user);
+		await this.tokenService.revokeRefreshToken(request.user);
 	}
 }

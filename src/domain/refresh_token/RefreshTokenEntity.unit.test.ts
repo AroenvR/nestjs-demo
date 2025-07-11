@@ -1,23 +1,15 @@
 describe("RefreshTokenEntity.Unit", () => {
-    beforeAll(async () => {
+	beforeAll(async () => {});
 
-    });
+	beforeEach(async () => {});
 
-    beforeEach(async () => {
+	afterEach(async () => {});
 
-    });
+	afterAll(async () => {});
 
-    afterEach(async () => {
-
-    });
-
-    afterAll(async () => {
-
-    });
-
-    it("Yolo", () => {
-        expect("WIP").toEqual(true);
-    });
+	it("Yolo", () => {
+		expect("WIP").toEqual(true);
+	});
 });
 
 /*
