@@ -1,20 +1,47 @@
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
-import { RequestBuilder, IRequestBuilder, TRequestBuilderResponse } from "./RequestBuilder";
+import { RequestBuilder, IRequestBuilder, TRequestBuilderResponse, TRequestBuilderMethods } from "./RequestBuilder";
 import { UtilityModule } from "../UtilityModule";
-import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { mockAndSpyFetchRequest } from "../../../__tests__/helpers/mockAndSpyFetchRequest";
+import { HttpStatus, INestApplication } from "@nestjs/common";
+import { IPrefixedLogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+
+function getHttpSuccessStatusCodes(): number[] {
+	return [
+		200, // OK
+		201, // Created
+		202, // Accepted
+		203, // Non-Authoritative Information
+		204, // No Content
+		205, // Reset Content
+		206, // Partial Content
+		207, // Multi-Status (WebDAV)
+		208, // Already Reported (WebDAV)
+		226, // IM Used (HTTP Delta encoding)
+	];
+}
 
 describe("RequestBuilder", () => {
+	let app: INestApplication;
+
 	let requestBuilder: IRequestBuilder;
+	let logger: jest.Mocked<IPrefixedLogger>;
+
+	const GET_MEHTOD: TRequestBuilderMethods = "GET";
+	const DOMAIN = "example.com";
 
 	beforeEach(async () => {
-		const module = await createMockAppModule(UtilityModule);
-		requestBuilder = module.get<IRequestBuilder>(RequestBuilder);
+		app = await createMockAppModule(UtilityModule);
+		requestBuilder = app.get<IRequestBuilder>(RequestBuilder);
+		logger = app.get(WinstonAdapter);
 
 		mockAndSpyFetchRequest();
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
+		await app.close();
+
 		jest.resetAllMocks();
 	});
 
@@ -25,7 +52,7 @@ describe("RequestBuilder", () => {
 			.setMethod("POST")
 			.setUseSsl(true)
 			.setPort(443)
-			.setDomain("example.com")
+			.setDomain(DOMAIN)
 			.setEndpoint("/api/test")
 			.setBody({ key: "value" })
 			.setHeaders({ "Content-Type": "application/json" })
@@ -35,7 +62,7 @@ describe("RequestBuilder", () => {
 		expect(built.method).toEqual("POST");
 		expect(built.useSsl).toEqual(true);
 		expect(built.port).toEqual(443);
-		expect(built.domain).toEqual("example.com");
+		expect(built.domain).toEqual(DOMAIN);
 		expect(built.endpoint).toEqual("/api/test");
 		expect(built.body).toEqual({ key: "value" });
 		expect(built.headers).toEqual({ "Content-Type": "application/json" });
@@ -49,7 +76,7 @@ describe("RequestBuilder", () => {
 			.setMethod("POST")
 			.setUseSsl(true)
 			.setPort(443)
-			.setDomain("example.com")
+			.setDomain(DOMAIN)
 			.setEndpoint("/api/test")
 			.setBody("test body")
 			.setHeaders({ "Content-Type": "text/plain" })
@@ -78,108 +105,13 @@ describe("RequestBuilder", () => {
 
 	// --------------------------------------------------
 
-	it("Should return text response when responseType is 'text'", async () => {
-		const built = requestBuilder
-			.setMethod("GET")
-			.setUseSsl(false)
-			.setDomain("example.com")
-			.setEndpoint("/api/test")
-			.setHeaders({ "Content-Type": "text/plain" })
-			.setResponseType("text")
-			.build();
+	it("Logs when a request was successful", async () => {
+		const method = "GET";
+		const domain = "example.com";
 
-		const mockTextResponse = "Success!";
-		mockAndSpyFetchRequest(mockTextResponse);
+		for (const code of getHttpSuccessStatusCodes()) {
+			const loggerDebugSpy = jest.spyOn(logger, "debug");
 
-		const response = await built.execute();
-		expect(response).toEqual(mockTextResponse);
-		expect(typeof response).toEqual("string");
-	});
-
-	// --------------------------------------------------
-
-	it("Should return JSON response when responseType is 'json'", async () => {
-		const built = requestBuilder
-			.setMethod("POST")
-			.setUseSsl(true)
-			.setDomain("example.com")
-			.setEndpoint("/api/test")
-			.setBody({ key: "value" })
-			.setHeaders({ "Content-Type": "application/json" })
-			.setResponseType("json")
-			.build();
-
-		const mockJsonResponse = { success: true };
-		mockAndSpyFetchRequest(mockJsonResponse);
-
-		const response = await built.execute();
-		expect(response).toEqual(mockJsonResponse);
-		expect(typeof response).toEqual("object");
-	});
-
-	// --------------------------------------------------
-
-	it("Should return arrayBuffer response when responseType is 'arrayBuffer'", async () => {
-		const built = requestBuilder
-			.setMethod("GET")
-			.setUseSsl(false)
-			.setDomain("example.com")
-			.setEndpoint("/api/test")
-			.setHeaders({ "Content-Type": "application/octet-stream" })
-			.setResponseType("arrayBuffer")
-			.build();
-
-		const mockArrayBufferResponse = new ArrayBuffer(8);
-		mockAndSpyFetchRequest(mockArrayBufferResponse);
-
-		const response = await built.execute();
-		expect(response).toEqual(mockArrayBufferResponse);
-		expect(typeof response).toEqual("object");
-	});
-
-	// --------------------------------------------------
-
-	it("Should handle unauthorized responses", async () => {
-		const built = requestBuilder
-			.setMethod("GET")
-			.setUseSsl(false)
-			.setDomain("example.com")
-			.setEndpoint("/api/test")
-			.setHeaders({ "Content-Type": "application/json" })
-			.setResponseType("json")
-			.build();
-
-		mockAndSpyFetchRequest({ ok: false, status: 401 });
-
-		const response = await built.execute();
-		expect(response).toEqual(HttpExceptionMessages.UNAUTHORIZED);
-		expect(typeof response).toEqual("string");
-	});
-
-	// --------------------------------------------------
-
-	describe("No Content responses", () => {
-		it("Should handle no content responses when requesting JSON", async () => {
-			const built = requestBuilder
-				.setMethod("GET")
-				.setUseSsl(false)
-				.setDomain("example.com")
-				.setEndpoint("/api/test")
-				.setHeaders({ "Content-Type": "application/json" })
-				.setResponseType("json")
-				.build();
-
-			const mockResponse = { ok: true, status: 204 };
-			mockAndSpyFetchRequest(mockResponse);
-
-			const response = await built.execute();
-			expect(response).toEqual(mockResponse);
-			expect(typeof response).toEqual("object");
-		});
-
-		// --------------------------------------------------
-
-		it("Should handle no content responses when requesting TEXT", async () => {
 			const built = requestBuilder
 				.setMethod("GET")
 				.setUseSsl(false)
@@ -189,12 +121,150 @@ describe("RequestBuilder", () => {
 				.setResponseType("text")
 				.build();
 
-			const mockResponse = { ok: true, status: 204 };
+			const mockResponse = { ok: true, status: code };
 			mockAndSpyFetchRequest(mockResponse);
 
-			const response = await built.execute();
-			expect(response).toEqual(mockResponse);
-			expect(typeof response).toEqual("object");
+			await built.execute();
+
+			expect(loggerDebugSpy).toHaveBeenCalledWith(
+				requestBuilder.constructor.name,
+				`Successful ${method} request to ${domain} | Status: ${code}`,
+				undefined,
+			);
+
+			loggerDebugSpy.mockClear();
+		}
+	});
+
+	// --------------------------------------------------
+
+	describe("Response types", () => {
+		describe("TEXT", () => {
+			it("Should return a string", async () => {
+				const built = requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setHeaders({ "Content-Type": "text/plain" })
+					.setResponseType("text")
+					.build();
+
+				const expectedText = "Success";
+
+				jest.spyOn(global, "fetch").mockResolvedValueOnce(
+					new Promise<Response>((resolve) => {
+						resolve({
+							ok: true,
+							status: HttpStatus.OK,
+							text: jest.fn().mockResolvedValue(expectedText),
+						} as unknown as Response);
+					}),
+				);
+
+				const response = await built.execute();
+				expect(response).toEqual(expectedText);
+				expect(typeof response).toEqual("string");
+			});
+
+			// --------------------------------------------------
+
+			it("Should handle no content responses", async () => {
+				const built = requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setHeaders({ "Content-Type": "application/json" })
+					.setResponseType("text")
+					.build();
+
+				const mockResponse = { ok: true, status: 204 };
+				mockAndSpyFetchRequest(mockResponse);
+
+				const response = await built.execute();
+				expect(response).toEqual(null);
+			});
+		});
+
+		// --------------------------------------------------
+
+		describe("JSON", () => {
+			it("Should return an object", async () => {
+				const built = requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setBody({ key: "value" })
+					.setHeaders({ "Content-Type": "application/json" })
+					.setResponseType("json")
+					.build();
+
+				const expectedObj = { success: true };
+				jest.spyOn(global, "fetch").mockResolvedValueOnce(
+					new Promise<Response>((resolve) => {
+						resolve({
+							ok: true,
+							status: HttpStatus.OK,
+							json: jest.fn().mockResolvedValue(expectedObj),
+						} as unknown as Response);
+					}),
+				);
+
+				const response = await built.execute();
+				expect(response).toEqual(expectedObj);
+				expect(typeof response).toEqual("object");
+			});
+
+			// --------------------------------------------------
+
+			it("Should handle no content responses", async () => {
+				const built = requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setHeaders({ "Content-Type": "application/json" })
+					.setResponseType("json")
+					.build();
+
+				const mockResponse = { ok: true, status: 204 };
+				mockAndSpyFetchRequest(mockResponse);
+
+				const response = await built.execute();
+				expect(response).toEqual(null);
+			});
+		});
+
+		// --------------------------------------------------
+
+		describe("ARRAY_BUFFER", () => {
+			it("Should return an ArrayBuffer", async () => {
+				const built = requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setHeaders({ "Content-Type": "application/octet-stream" })
+					.setResponseType("arrayBuffer")
+					.build();
+
+				const expectedArrayBuffer = new ArrayBuffer(8);
+				jest.spyOn(global, "fetch").mockResolvedValueOnce(
+					new Promise<Response>((resolve) => {
+						resolve({
+							ok: true,
+							status: HttpStatus.OK,
+							arrayBuffer: jest.fn().mockResolvedValue(expectedArrayBuffer),
+						} as unknown as Response);
+					}),
+				);
+
+				const response = await built.execute();
+				expect(response).toEqual(expectedArrayBuffer);
+				expect(typeof response).toEqual("object");
+			});
 		});
 	});
 
@@ -203,9 +273,9 @@ describe("RequestBuilder", () => {
 	describe("Errors", () => {
 		it("Should throw an error if response type is unsupported", async () => {
 			const built = requestBuilder
-				.setMethod("GET")
+				.setMethod(GET_MEHTOD)
 				.setUseSsl(false)
-				.setDomain("example.com")
+				.setDomain(DOMAIN)
 				.setEndpoint("/api/test")
 				.setHeaders({ "Content-Type": "application/json" })
 				.setResponseType("yolo" as TRequestBuilderResponse)
@@ -213,48 +283,74 @@ describe("RequestBuilder", () => {
 
 			mockAndSpyFetchRequest();
 
-			await expect(built.execute()).rejects.toThrow();
+			await expect(built.execute()).rejects.toThrow('RequestBuilder: Response type "yolo" is not supported.');
 		});
 
 		// --------------------------------------------------
 
-		it("Should throw an error for unsupported response type", async () => {
-			const built = requestBuilder
-				.setMethod("GET")
-				.setUseSsl(false)
-				.setDomain("example.com")
-				.setEndpoint("/api/test")
-				.setHeaders({ "Content-Type": "application/json" })
-				.setResponseType("unsupportedType" as TRequestBuilderResponse)
-				.build();
+		it("Handles known error responses", async () => {
+			for (const [status, message] of requestBuilder.knownErrors.entries()) {
+				const loggerErrorSpy = jest.spyOn(logger, "error");
 
-			mockAndSpyFetchRequest();
+				const mockResponse = { ok: false, status: status };
+				mockAndSpyFetchRequest(mockResponse);
 
-			await expect(built.execute()).rejects.toThrow("RequestBuilder: Response type unsupportedType not yet supported.");
+				const response = await requestBuilder
+					.setMethod(GET_MEHTOD)
+					.setUseSsl(false)
+					.setDomain(DOMAIN)
+					.setEndpoint("/api/test")
+					.setHeaders({ "Content-Type": "application/json" })
+					.setResponseType("json")
+					.build()
+					.execute();
+
+				expect(response).toEqual({
+					status: status,
+					message: message,
+				});
+
+				expect(loggerErrorSpy).toHaveBeenCalledWith(
+					requestBuilder.constructor.name,
+					`Failed ${GET_MEHTOD} request to ${DOMAIN} | Status: ${status} | Message: ${message}`,
+					undefined,
+				);
+				loggerErrorSpy.mockClear();
+			}
 		});
 
 		// --------------------------------------------------
 
-		it("Should throw an error for failed requests", async () => {
-			const built = requestBuilder
-				.setMethod("GET")
+		it("Handles unknown error responses", async () => {
+			const loggerErrorSpy = jest.spyOn(logger, "error");
+
+			const status = HttpStatus.PERMANENT_REDIRECT;
+			const message = HttpExceptionMessages.UNKNOWN;
+
+			const mockResponse = { ok: false, status: status };
+			mockAndSpyFetchRequest(mockResponse);
+
+			const response = await requestBuilder
+				.setMethod(GET_MEHTOD)
 				.setUseSsl(false)
-				.setDomain("example.com")
+				.setDomain(DOMAIN)
 				.setEndpoint("/api/test")
 				.setHeaders({ "Content-Type": "application/json" })
 				.setResponseType("json")
-				.build();
+				.build()
+				.execute();
 
-			const mockResponse = {
-				ok: false,
-				status: 500,
-				statusText: "Internal Server Error",
-			};
-			mockAndSpyFetchRequest(mockResponse);
+			expect(response).toEqual({
+				status: status,
+				message: message,
+			});
 
-			await expect(built.execute()).rejects.toThrow(
-				"RequestBuilder: GET request to http://example.com/api/test | Status: 500 | Message: Internal Server Error",
+			expect(loggerErrorSpy).toHaveBeenCalledWith(
+				requestBuilder.constructor.name,
+				`Failed ${GET_MEHTOD} request to ${DOMAIN} | Status: ${status} | Message: ${message}`,
+				undefined,
 			);
+			loggerErrorSpy.mockClear();
 		});
 	});
 });

@@ -3,9 +3,14 @@ import { IServerConfig } from "../../infrastructure/configuration/IServerConfig"
 import { mockILogger, mockWinstonAdapter } from "../../__tests__/mocks/mockLogAdapter";
 import { MockConfigService } from "../../__tests__/mocks/service/MockConfigService";
 import { IExternalConfig } from "../IExternalConfig";
-import { mockAndSpyFetchRequest } from "../../__tests__/helpers/mockAndSpyFetchRequest";
+import { mockAndSpyFetchRequest, mapFetchRequestResponse } from "../../__tests__/helpers/mockAndSpyFetchRequest";
 import { IRequestBuilder, RequestBuilder, TRequestBuilderMethods } from "../../common/utility/request_builder/RequestBuilder";
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";
+import { ConfigService } from "@nestjs/config";
+import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
+import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
+import { HttpStatus } from "@nestjs/common";
+import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 
 /**
@@ -21,9 +26,12 @@ class TestApiAdapter extends AbstractExternalApiAdapter {
 	}
 }
 
-describe("AbstractExternalApiAdapter", () => {
+describe("AbstractExternalApiAdapter.Unit", () => {
 	let adapter: TestApiAdapter;
 	let requestBuilder: IRequestBuilder;
+	let configService: ConfigService<IServerConfig>;
+	let eventConsumer: IExternalEventConsumer;
+	let logger: jest.Mocked<IPrefixedLogger>;
 
 	const CONFIG: IExternalConfig = {
 		ssl: false,
@@ -52,8 +60,13 @@ describe("AbstractExternalApiAdapter", () => {
 	});
 
 	beforeEach(() => {
+		logger = mockILogger;
+
 		requestBuilder = new RequestBuilder(mockWinstonAdapter);
-		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService(CONFIG));
+		configService = new MockConfigService(CONFIG);
+		eventConsumer = new MockExternalEventConsumer(mockWinstonAdapter);
+
+		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, configService, eventConsumer);
 
 		mockAndSpyFetchRequest(MOCK_RESPONSE);
 	});
@@ -66,144 +79,231 @@ describe("AbstractExternalApiAdapter", () => {
 
 	// --------------------------------------------------
 
-	it("Should execute a GET request correctly", async () => {
-		const response = await adapter.get(ENDPOINT);
+	describe("Authorization management", () => {
+		describe("Credentials based", () => {
+			it("Can send a login request to another server and sets the response's access token", async () => {
+				const mockToken = "access_token";
 
-		expect(response).toEqual(MOCK_RESPONSE);
-		expect(typeof response).toEqual("object");
+				mockAndSpyFetchRequest(mockToken);
+				const setAccessTokenSpy = jest.spyOn(adapter, "setAccessToken");
 
-		const method: TRequestBuilderMethods = "GET";
+				await adapter.login("/v1/auth/login", MockCreateLoginDto.get());
 
-		expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
-		expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
-		expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
-		expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
-		expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
-		expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
-		expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
+				expect(setAccessTokenSpy).toHaveBeenCalledWith(mockToken);
+				expect(logger.log).toHaveBeenCalledWith(`Logging in to ${CONFIG.domain}`);
+			});
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
+			// --------------------------------------------------
+
+			it("Sets the header Authorization: Bearer ${token} for CRUD requests if an access token exists", async () => {
+				const token = "jwt";
+				adapter.setAccessToken(token);
+
+				await adapter.get(ENDPOINT);
+				expect(requestBuilder.setHeaders).toHaveBeenCalledWith({ ...adapter.defaultRequestHeaders(), Authorization: `Bearer ${token}` });
+			});
+
+			// --------------------------------------------------
+
+			it("Can log out of the other server", async () => {
+				await adapter.login("/v1/auth/login", MockCreateLoginDto.get());
+
+				const setAccessTokenSpy = jest.spyOn(adapter, "setAccessToken");
+				await adapter.logout("/v1/auth/logout");
+
+				expect(setAccessTokenSpy).toHaveBeenCalledWith(null);
+				expect(logger.log).toHaveBeenCalledWith(`Logging out of ${CONFIG.domain}`);
+			});
+
+			// --------------------------------------------------
+
+			it("Will reauthenticate and retry an UNAUTHORIZED response once when logged in to a server", async () => {
+				// Simulate a login response
+				const mockToken = "access_token";
+				mockAndSpyFetchRequest(mockToken);
+
+				const credentials = MockCreateLoginDto.get();
+				await adapter.login("/v1/auth/login", credentials);
+
+				/* Simulate an UNAUTHORIZED response, then a successful login's response, and lastly a generic success response */
+
+				const unauthorizedResponse = mapFetchRequestResponse({
+					ok: false,
+					status: HttpStatus.UNAUTHORIZED,
+					message: HttpExceptionMessages.UNAUTHORIZED,
+				});
+				const newTokenResponse = mapFetchRequestResponse("updated_access_token");
+				const successResponse = mapFetchRequestResponse({ ok: true });
+
+				jest.spyOn(global, "fetch")
+					.mockResolvedValueOnce(unauthorizedResponse)
+					.mockResolvedValueOnce(newTokenResponse)
+					.mockResolvedValueOnce(successResponse);
+
+				/* Execute the GET request which should attempt to re-authenticate */
+
+				const response = await adapter.get(ENDPOINT);
+				expect(() => adapter.throwIfUnsuccessful(response)).not.toThrow();
+
+				expect(mockILogger.debug).toHaveBeenCalledWith(`Got an ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request.`);
+				expect(mockILogger.info).toHaveBeenCalledWith(
+					`Credentials were updated. Retrying GET request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`,
+				);
+			});
+		});
+
+		// --------------------------------------------------
+
+		describe("RSA key based - JWKs & OIDC", () => {
+			// TODO
+		});
 	});
 
 	// --------------------------------------------------
 
-	it("Should execute a POST request correctly", async () => {
-		const payload = { key: "value" };
-		const response = await adapter.post(ENDPOINT, payload);
+	describe("CRUD methods", () => {
+		describe("GET requests", () => {
+			it("Can execute a GET request correctly", async () => {
+				const response = await adapter.get(ENDPOINT);
 
-		expect(response).toEqual(MOCK_RESPONSE);
-		expect(typeof response).toEqual("object");
+				expect(response).toEqual(MOCK_RESPONSE);
+				expect(typeof response).toEqual("object");
 
-		const method: TRequestBuilderMethods = "POST";
+				const method: TRequestBuilderMethods = "GET";
 
-		expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
-		expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
-		expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
-		expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
-		expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
-		expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
-		expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
+				expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
+				expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
+				expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
+				expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
+				expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
+				expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
+				expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
-	});
+				expect(logger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
+			});
 
-	// --------------------------------------------------
+			// --------------------------------------------------
 
-	it("Should execute a PATCH request correctly", async () => {
-		const payload = { key: "value" };
-		const response = await adapter.patch(ENDPOINT, payload);
+			it("Can handle known error responses", async () => {
+				for (const [key, value] of requestBuilder.knownErrors.entries()) {
+					const mockResponse = { status: key, message: value };
+					mockAndSpyFetchRequest({ ok: false, ...mockResponse });
 
-		expect(response).toEqual(MOCK_RESPONSE);
-		expect(typeof response).toEqual("object");
+					const getResp = await adapter.get(ENDPOINT);
+					expect(getResp).toEqual(mockResponse);
+				}
+			});
+		});
 
-		const method: TRequestBuilderMethods = "PATCH";
+		// --------------------------------------------------
 
-		expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
-		expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
-		expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
-		expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
-		expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
-		expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
-		expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
+		describe("POST requests", () => {
+			it("Can execute a POST request correctly", async () => {
+				const payload = { key: "value" };
+				const response = await adapter.post(ENDPOINT, payload);
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
-	});
+				expect(response).toEqual(MOCK_RESPONSE);
+				expect(typeof response).toEqual("object");
 
-	// --------------------------------------------------
+				const method: TRequestBuilderMethods = "POST";
 
-	it("Should execute a DELETE request correctly", async () => {
-		const mockResponse = { ok: true, status: 204, statusText: "No Content" };
-		mockAndSpyFetchRequest(mockResponse);
+				expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
+				expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
+				expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
+				expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
+				expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
+				expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
+				expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
 
-		const response = await adapter.delete(ENDPOINT);
-		expect(response).toEqual(mockResponse);
+				expect(logger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
+			});
 
-		const method: TRequestBuilderMethods = "DELETE";
+			// --------------------------------------------------
 
-		expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
-		expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
-		expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
-		expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
-		expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
-		expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
-		expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
+			it("Can handle known error responses", async () => {
+				for (const [key, value] of requestBuilder.knownErrors.entries()) {
+					const mockResponse = { status: key, message: value };
+					mockAndSpyFetchRequest({ ok: false, ...mockResponse });
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
-	});
+					const payload = { key: "value" };
+					const postResp = await adapter.post(ENDPOINT, payload);
+					expect(postResp).toEqual(mockResponse);
+				}
+			});
+		});
 
-	// --------------------------------------------------
+		// --------------------------------------------------
 
-	it("Sets the Authorization: Bearer header if an access token exists", async () => {
-		const token = "jwt";
-		adapter.setAccessToken(token);
+		describe("PATCH requests", () => {
+			it("Can execute a PATCH request correctly", async () => {
+				const payload = { key: "value" };
+				const response = await adapter.patch(ENDPOINT, payload);
 
-		await adapter.get(ENDPOINT);
-		expect(requestBuilder.setHeaders).toHaveBeenCalledWith({ ...adapter.defaultRequestHeaders(), Authorization: `Bearer ${token}` });
-	});
+				expect(response).toEqual(MOCK_RESPONSE);
+				expect(typeof response).toEqual("object");
 
-	// --------------------------------------------------
+				const method: TRequestBuilderMethods = "PATCH";
 
-	it("Can send a login request to another server", async () => {
-		const mockToken = "access_token";
-		mockAndSpyFetchRequest(mockToken);
+				expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
+				expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
+				expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
+				expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
+				expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
+				expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
+				expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
 
-		const setAccessTokenSpy = jest.spyOn(adapter, "setAccessToken");
+				expect(logger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
+			});
 
-		await adapter.login("/v1/auth/login", MockCreateLoginDto.get());
-		expect(setAccessTokenSpy).toHaveBeenCalledWith(mockToken);
+			// --------------------------------------------------
 
-		expect(mockILogger.log).toHaveBeenCalledWith(`Logging in to ${CONFIG.domain}`);
-	});
+			it("Can handle known error responses", async () => {
+				for (const [key, value] of requestBuilder.knownErrors.entries()) {
+					const mockResponse = { status: key, message: value };
+					mockAndSpyFetchRequest({ ok: false, ...mockResponse });
 
-	// --------------------------------------------------
+					const payload = { key: "value" };
+					const patchResp = await adapter.patch(ENDPOINT, payload);
+					expect(patchResp).toEqual(mockResponse);
+				}
+			});
+		});
 
-	it("Should handle an UNAUTHORIZED response without any credentials", async () => {
-		const mockResponse = { ok: false, status: 401, statusText: "unauthorized" };
-		mockAndSpyFetchRequest(mockResponse);
+		// --------------------------------------------------
 
-		const response = await adapter.get(ENDPOINT);
-		expect(response).toEqual("unauthorized");
+		describe("DELETE requests", () => {
+			it("Can execute a DELETE request correctly", async () => {
+				const mockResponse = { ok: true, status: HttpStatus.NO_CONTENT, message: "no_content" };
+				mockAndSpyFetchRequest(mockResponse);
 
-		expect(mockILogger.debug).toHaveBeenCalledWith(`Got a ${HttpExceptionMessages.UNAUTHORIZED} response. Retrying request.`);
-		expect(mockILogger.warn).toHaveBeenCalledWith(`No credentials are set. Aborting retry request.`);
-	});
+				const response = await adapter.delete(ENDPOINT);
+				expect(response).toEqual(null);
 
-	// --------------------------------------------------
+				const method: TRequestBuilderMethods = "DELETE";
 
-	it("Should handle an UNAUTHORIZED response with credentials set", async () => {
-		const mockToken = "access_token";
-		mockAndSpyFetchRequest(mockToken);
+				expect(requestBuilder.setMethod).toHaveBeenCalledWith(method);
+				expect(requestBuilder.setUseSsl).toHaveBeenCalledWith(CONFIG.ssl);
+				expect(requestBuilder.setDomain).toHaveBeenCalledWith(CONFIG.domain);
+				expect(requestBuilder.setPort).toHaveBeenCalledWith(CONFIG.port);
+				expect(requestBuilder.setEndpoint).toHaveBeenCalledWith(ENDPOINT);
+				expect(requestBuilder.setHeaders).toHaveBeenCalledWith(adapter.defaultRequestHeaders());
+				expect(requestBuilder.setResponseType).toHaveBeenCalledWith("json");
 
-		const credentials = MockCreateLoginDto.get();
-		await adapter.login("/v1/auth/login", credentials);
+				expect(logger.debug).toHaveBeenCalledWith(`Executing ${method} request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`);
+			});
 
-		const mockResponse = { ok: false, status: 401, statusText: "unauthorized" };
-		mockAndSpyFetchRequest(mockResponse);
+			// --------------------------------------------------
 
-		await adapter.get(ENDPOINT);
-		expect(mockILogger.debug).toHaveBeenCalledWith(
-			`Credentials were updated. Retrying GET request to Domain: ${CONFIG.domain} | Endpoint: ${ENDPOINT}`,
-		);
+			it("Can handle known error responses", async () => {
+				for (const [key, value] of requestBuilder.knownErrors.entries()) {
+					const mockResponse = { status: key, message: value };
+					mockAndSpyFetchRequest({ ok: false, ...mockResponse });
+
+					const deleteResp = await adapter.delete(ENDPOINT);
+					expect(deleteResp).toEqual(mockResponse);
+				}
+			});
+		});
 	});
 
 	// --------------------------------------------------
@@ -212,7 +312,7 @@ describe("AbstractExternalApiAdapter", () => {
 		it("Should throw when no configuration object is set", async () => {
 			try {
 				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService());
+				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService(), eventConsumer);
 
 				fail("Did not throw");
 			} catch (error) {
@@ -227,7 +327,7 @@ describe("AbstractExternalApiAdapter", () => {
 		it("Should throw when an invalid configuration object is set", async () => {
 			try {
 				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService({ badConfig: true }));
+				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService({ badConfig: true }), eventConsumer);
 
 				fail("Did not throw");
 			} catch (error) {

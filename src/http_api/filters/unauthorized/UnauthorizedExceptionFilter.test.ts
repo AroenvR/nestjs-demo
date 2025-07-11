@@ -47,7 +47,7 @@ describe("UnauthorizedExceptionFilter", () => {
 			.expect(HttpStatus.UNAUTHORIZED)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.UNAUTHORIZED,
+					status: HttpStatus.UNAUTHORIZED,
 					timestamp: expect.any(Number),
 					path: "/test",
 					message: HttpExceptionMessages.UNAUTHORIZED,

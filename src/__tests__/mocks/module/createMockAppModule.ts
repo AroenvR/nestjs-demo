@@ -15,7 +15,7 @@ import { AppModule } from "../../../infrastructure/AppModule";
  * @param module To test.
  * @returns The app module.
  */
-export const createMockAppModule = async (module?: Type<any>, port?: number) => {
+export const createMockAppModule = async (module?: Type<any>, listen = false) => {
 	let moduleFixture: TestingModule;
 
 	if (!module) {
@@ -64,7 +64,7 @@ export const createMockAppModule = async (module?: Type<any>, port?: number) => 
 		// Use the @Version decorator to specify the version of the controller or endpoint.
 	});
 
-	if (port) await app.listen(port);
+	if (listen) await app.listen(0);
 
 	await app.init();
 	return app;

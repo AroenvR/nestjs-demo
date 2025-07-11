@@ -47,7 +47,7 @@ describe("NotImplementedExceptionFilter", () => {
 			.expect(HttpStatus.NOT_IMPLEMENTED)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.NOT_IMPLEMENTED,
+					status: HttpStatus.NOT_IMPLEMENTED,
 					timestamp: expect.any(Number),
 					path: "/test",
 					message: HttpExceptionMessages.NOT_IMPLEMENTED,

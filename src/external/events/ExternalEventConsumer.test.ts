@@ -2,15 +2,7 @@ import { EventSourceMessage } from "eventsource-client";
 import { ILogger } from "../../infrastructure/logging/ILogger";
 import { ExternalEventConsumer } from "./ExternalEventConsumer";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
-
-/**
- * Mock implementation of {@link ExternalEventConsumer} for testing purposes.
- */
-class MockConsumer extends ExternalEventConsumer {
-	constructor(logAdapter: WinstonAdapter) {
-		super(logAdapter);
-	}
-}
+import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
 
 /* eslint-disable no-var */
 // The no-var ESLint rule is disabled here to fix these variables being stuck in the TDZ.
@@ -74,8 +66,8 @@ describe("AbstractExternalEventConsumer", () => {
 			}),
 		} as unknown as WinstonAdapter;
 
-		consumer = new MockConsumer(logAdapter);
-		logger = logAdapter.getPrefixedLogger(MockConsumer.name);
+		consumer = new MockExternalEventConsumer(logAdapter);
+		logger = logAdapter.getPrefixedLogger(consumer.constructor.name);
 
 		messageEvent = {
 			id: "1",

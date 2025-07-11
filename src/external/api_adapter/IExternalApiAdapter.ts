@@ -13,11 +13,7 @@ export interface IExternalApiAdapter {
 	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
-	get(
-		endpoint: string,
-		headers?: Record<string, string>,
-		responseType?: TRequestBuilderResponse,
-	): Promise<string | ArrayBuffer | Record<string, unknown>>;
+	get(endpoint: string, headers?: Record<string, string>, responseType?: TRequestBuilderResponse): Promise<string | ArrayBuffer | object>;
 
 	/**
 	 * Send a POST request.
@@ -32,7 +28,7 @@ export interface IExternalApiAdapter {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: TRequestBuilderResponse,
-	): Promise<string | ArrayBuffer | Record<string, unknown>>;
+	): Promise<string | ArrayBuffer | object>;
 
 	/**
 	 * Send a PATCH request.
@@ -47,7 +43,7 @@ export interface IExternalApiAdapter {
 		payload: string | object | ArrayBuffer,
 		headers?: Record<string, string>,
 		responseType?: TRequestBuilderResponse,
-	): Promise<string | ArrayBuffer | Record<string, unknown>>;
+	): Promise<string | ArrayBuffer | object>;
 
 	/**
 	 * Send a DELETE request.
@@ -56,9 +52,5 @@ export interface IExternalApiAdapter {
 	 * @param responseType - The expected response type (default is "json").
 	 * @returns the request's raw response.
 	 */
-	delete(
-		endpoint: string,
-		headers?: Record<string, string>,
-		responseType?: TRequestBuilderResponse,
-	): Promise<string | ArrayBuffer | Record<string, unknown>>;
+	delete(endpoint: string, headers?: Record<string, string>, responseType?: TRequestBuilderResponse): Promise<string | ArrayBuffer | object>;
 }

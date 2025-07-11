@@ -7,6 +7,7 @@ import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAda
 
 /**
  * DOC
+ * @deprecated
  */
 @Injectable()
 export class ExternalCrudService implements IExternalCrudService {

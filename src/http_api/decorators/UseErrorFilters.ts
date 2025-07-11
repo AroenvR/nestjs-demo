@@ -32,3 +32,12 @@ export function UseErrorFilters() {
 		),
 	);
 }
+
+/* 
+
+Started messing with trying to handle each and every error that the server can return with the RequestBuilder
+- The AbstractAPIAdapter should return 'null' in stead of the error string, as that's easier to handle.
+- Maybe add a 'last response type' variable or something, 
+- I'm procrastinating setting up event listening on the External API Adapter but it needs to happen
+
+*/

@@ -1,15 +1,14 @@
 import { randomUUID } from "crypto";
 import { createEventSource, EventSourceMessage } from "eventsource-client";
 import { OnModuleDestroy, Injectable } from "@nestjs/common";
-import { ILogger } from "../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { IExternalEventConsumer } from "./IExternalEventConsumer";
 
 /**
  * DOC
  */
 @Injectable()
-export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDestroy {
+export abstract class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDestroy {
 	private sseClient: ReturnType<typeof createEventSource> | null = null;
 	private accessToken: string | null = null;
 	private processEventCallback: (data: unknown) => Promise<void> | null = null;
@@ -18,7 +17,7 @@ export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDe
 	protected logger: ILogger;
 	protected eventTypes: string[] = ["message"];
 
-	constructor(protected readonly logAdapter: WinstonAdapter) {
+	constructor(protected readonly logAdapter: IPrefixedLogger) {
 		this.name = this.constructor.name;
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
 	}

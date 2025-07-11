@@ -47,7 +47,7 @@ describe("NotFoundExceptionFilter", () => {
 			.expect(HttpStatus.NOT_FOUND)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.NOT_FOUND,
+					status: HttpStatus.NOT_FOUND,
 					timestamp: expect.any(Number),
 					path: "/test",
 					message: HttpExceptionMessages.NOT_FOUND,

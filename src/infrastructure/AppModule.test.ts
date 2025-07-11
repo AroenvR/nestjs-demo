@@ -96,7 +96,7 @@ describe("AppModule", () => {
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					status: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
 					path: "/mock/error",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,

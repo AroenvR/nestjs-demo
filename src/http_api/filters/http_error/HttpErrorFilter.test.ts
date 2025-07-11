@@ -57,7 +57,7 @@ describe("HttpErrorFilter", () => {
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					status: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
 					path: "/test",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
@@ -79,14 +79,14 @@ describe("HttpErrorFilter", () => {
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					status: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
 					path: path,
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
 				});
 			});
 
-		expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+		expect(response.body.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
 		expect(response.body.path).toEqual(path);
 

@@ -49,7 +49,7 @@ describe("HttpErrorFilter", () => {
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					status: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
 					path: ENDPOINT,
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,
@@ -57,14 +57,14 @@ describe("HttpErrorFilter", () => {
 			});
 
 		// Verify a safe error object was returned
-		expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+		expect(response.body.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		expect(response.body.timestamp).toEqual(expect.any(Number));
 		expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
 		expect(response.body.path).toEqual(ENDPOINT);
 
 		// TODO: Use a JSON schema which can be reused by the future middleware.
 		for (const key of Object.keys(response.body)) {
-			if (key === "statusCode") continue;
+			if (key === "status") continue;
 			if (key === "timestamp") continue;
 			if (key === "message") continue;
 			if (key === "path") continue;

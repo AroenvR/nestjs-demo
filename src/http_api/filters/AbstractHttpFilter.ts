@@ -33,7 +33,7 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 		this.logger.error(`${error instanceof Error ? error.message : "Unknown issue."}`, error);
 
 		const responseObj: IHttpErrorResponseObj = {
-			statusCode: this.status,
+			status: this.status,
 			timestamp: Date.now(),
 			path: this.request.url,
 			message: this.message,
