@@ -18,10 +18,7 @@ import { randomUUID, UUID } from "crypto";
 import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 import { ConfigService } from "@nestjs/config";
-
-/*
-	Just about to start implementing the ExternalEventConsumer's functionality into the ExternalApiAdapter.
-*/
+import { ExternalEventConsumer } from "../events/ExternalEventConsumer";
 
 /**
  * A Mock implementation of the {@link AbstractExternalApiAdapter} for testing purposes.
@@ -62,7 +59,7 @@ describe(TEST_NAME, () => {
 			ssl: false,
 			domain: "localhost",
 			port: app.getHttpServer().address().port,
-			events: false,
+			events: true, // TODO: Chance to an array of events endpoints to subscribe to
 		};
 	});
 
@@ -77,6 +74,7 @@ describe(TEST_NAME, () => {
 	});
 
 	afterEach(async () => {
+		eventConsumer.disconnect();
 		await userRepo.clear();
 	});
 
@@ -413,15 +411,68 @@ describe(TEST_NAME, () => {
 
 	// --------------------------------------------------
 
-	describe("SSE streams", () => {});
+	describe("Server Sent Events streams", () => {
+		beforeEach(() => {
+			requestBuilder = new RequestBuilder(mockWinstonAdapter);
+			configService = new MockConfigService(config);
+			eventConsumer = new ExternalEventConsumer(mockWinstonAdapter);
+
+			adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, configService, eventConsumer);
+		});
+
+		afterEach(() => {
+			eventConsumer.disconnect();
+		});
+
+		it("Subscribes to an unauthenticated SSE stream with correct callback and headers", async () => {
+			const callback = jest.fn().mockResolvedValue(undefined);
+
+			const eventsEndpoint = ENDPOINT + "/events";
+			await adapter.subscribeToSSE(eventsEndpoint, callback);
+
+			expect(mockILogger.info).toHaveBeenCalledWith(`Successfully connected to ${eventsEndpoint}`);
+		});
+
+		// --------------------------------------------------
+
+		it("Subscribes to an authenticated SSE stream with correct callback and headers", async () => {
+			const callback = jest.fn().mockResolvedValue(undefined);
+
+			adapter.setAccessToken("access_token");
+
+			const eventsEndpoint = ENDPOINT + "/events";
+			await adapter.subscribeToSSE(eventsEndpoint, callback);
+
+			expect(mockILogger.info).toHaveBeenCalledWith(`Successfully connected to ${eventsEndpoint}`);
+		});
+
+		// --------------------------------------------------
+		//  * TODO: Create a factory for EventConsumers, each being their own instance
+
+		it("Receives SSE events", async () => {
+			const callback = jest.fn().mockResolvedValue(undefined);
+
+			await adapter.login("/v1/auth/login", MockCreateLoginDto.get());
+
+			const eventsEndpoint = ENDPOINT + "/events";
+			await adapter.subscribeToSSE(eventsEndpoint, callback);
+
+			const newUser = MockCreateUserDto.get();
+			const response = await adapter.post(ENDPOINT, newUser);
+
+			await adapter.logout("/v1/auth/logout");
+
+			expect(callback).toHaveBeenLastCalledWith(response);
+		});
+	});
 
 	// --------------------------------------------------
 
-	describe("Websockets", () => {});
+	describe("Websockets", () => { });
 
 	// --------------------------------------------------
 
-	describe("Data streams", () => {});
+	describe("Data streams", () => { });
 
 	// --------------------------------------------------
 

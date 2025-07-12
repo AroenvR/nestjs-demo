@@ -14,7 +14,7 @@ import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages"
 import { IExternalApiAdapter } from "./IExternalApiAdapter";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
-import { IHttpErrorObj } from "src/http_api/filters/IHttpErrorResponseObj";
+import { IHttpErrorObj } from "../../http_api/filters/IHttpErrorResponseObj";
 
 /**
  * Abstract class for external API adapters.
@@ -44,6 +44,30 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 
 		const config = this.configService.get(this.configString());
 		this.safeSetConfig(config);
+	}
+
+	/**
+	 * Subscribes to an SSE stream at the specified URL.
+	 * This method registers a callback function to process incoming events
+	 * and establishes a connection to the event source.
+	 * @param eventsEndpoint The string of the events endpoint to connect to.
+	 * @param callback A function that takes the parsed event data as an argument and returns a
+	 * Promise<void>. This function will be called for each event received from the event source.
+	 */
+	public async subscribeToSSE(eventsEndpoint: string, callback: (data: unknown) => Promise<void>): Promise<void> {
+		this.logger.log(`Subscribing to SSE stream at ${eventsEndpoint}`);
+
+		this.eventConsumer.registerCallback(callback);
+
+		const headers: Record<string, string> = {
+			Accept: "text/event-stream",
+			"Cache-Control": "no-cache",
+		};
+		if (this.accessToken) headers["Authorization"] = `Bearer ${this.accessToken}`;
+
+		const fullUrl = new URL(eventsEndpoint, this.getExternalApiUrl());
+		await this.eventConsumer.connect(fullUrl, headers)
+			.then(() => this.logger.info(`Successfully connected to ${eventsEndpoint}`));
 	}
 
 	/**
@@ -190,6 +214,20 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 
 		await request.execute();
 		this.setAccessToken(null);
+	}
+
+	/**
+	 * Get the external API's base URL.
+	 * This method constructs the URL based on the configuration settings.
+	 * @returns The base URL of the external API. Example: `https://www.example.com:443/`
+	 * @security @Security this could be apotentially dangerous to leave public or to log. Need to check.
+	 */
+	public getExternalApiUrl(): URL {
+		const protocol = this.config.ssl ? "https://" : "http://";
+		const domain = this.config.domain;
+		const port = this.config.port ? `:${this.config.port}` : "";
+
+		return new URL(protocol + domain + port + "/");
 	}
 
 	/**

@@ -71,6 +71,10 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 		mockAndSpyFetchRequest(MOCK_RESPONSE);
 	});
 
+	afterEach(() => {
+		eventConsumer.disconnect();
+	});
+
 	// --------------------------------------------------
 
 	it("Should be defined", () => {
@@ -302,6 +306,48 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 					const deleteResp = await adapter.delete(ENDPOINT);
 					expect(deleteResp).toEqual(mockResponse);
 				}
+			});
+		});
+	});
+
+	// --------------------------------------------------
+
+	describe("Server Sent Events", () => {
+		it("Subscribes to an unauthenticated SSE stream with correct callback and headers", async () => {
+			const mockConnect = jest.spyOn(eventConsumer, "connect");
+			const mockRegisterCallback = jest.spyOn(eventConsumer, "registerCallback");
+			const callback = jest.fn().mockResolvedValue(undefined);
+
+			const testEndpoint = "/v1/events";
+			const mockUrl = new URL(testEndpoint, adapter.getExternalApiUrl());
+
+			await adapter.subscribeToSSE(testEndpoint, callback);
+
+			expect(mockRegisterCallback).toHaveBeenCalledWith(callback);
+			expect(mockConnect).toHaveBeenCalledWith(mockUrl, {
+				Accept: "text/event-stream",
+				"Cache-Control": "no-cache",
+			});
+		});
+
+		// --------------------------------------------------
+
+		it("Subscribes to an authenticated SSE stream with correct callback and headers", async () => {
+			const mockConnect = jest.spyOn(eventConsumer, "connect");
+			const mockRegisterCallback = jest.spyOn(eventConsumer, "registerCallback");
+			const callback = jest.fn().mockResolvedValue(undefined);
+
+			const testEndpoint = "/v1/events";
+			const mockUrl = new URL(testEndpoint, adapter.getExternalApiUrl());
+
+			adapter.setAccessToken("mock-token");
+			await adapter.subscribeToSSE(testEndpoint, callback);
+
+			expect(mockRegisterCallback).toHaveBeenCalledWith(callback);
+			expect(mockConnect).toHaveBeenCalledWith(mockUrl, {
+				Accept: "text/event-stream",
+				"Cache-Control": "no-cache",
+				Authorization: expect.stringContaining("Bearer "),
 			});
 		});
 	});

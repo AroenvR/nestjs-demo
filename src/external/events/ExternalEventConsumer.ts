@@ -5,48 +5,23 @@ import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { IExternalEventConsumer } from "./IExternalEventConsumer";
 
 /**
- * DOC
+ * ExternalEventConsumer is a service that subscribes to an external event source
+ * using Server-Sent Events (SSE) to publish events.
+ * It handles connection management, message processing, and error handling.
+ * This class implements the {@link IExternalEventConsumer} interface.
  */
 @Injectable()
-export abstract class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDestroy {
+export class ExternalEventConsumer implements IExternalEventConsumer, OnModuleDestroy {
 	private sseClient: ReturnType<typeof createEventSource> | null = null;
-	private accessToken: string | null = null;
 	private processEventCallback: (data: unknown) => Promise<void> | null = null;
 	private eventsUrl: URL | null = null;
 	protected readonly name: string;
 	protected logger: ILogger;
-	protected eventTypes: string[] = ["message"];
+	protected eventTypes: string[] = ["message"]; // TODO: Add support for different event types.
 
 	constructor(protected readonly logAdapter: IPrefixedLogger) {
 		this.name = this.constructor.name;
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
-	}
-
-	/**
-	 *
-	 */
-	public setup(eventsUrl: URL, callback: (data: unknown) => Promise<void>) {
-		this.logger.info(`Setting up.`);
-
-		this.eventsUrl = eventsUrl;
-		this.processEventCallback = callback;
-	}
-
-	/**
-	 *
-	 */
-	public async connect(): Promise<void> {
-		this.logger.info(`Initializing event consuming.`);
-
-		if (!this.eventsUrl || !this.processEventCallback) {
-			throw new Error(`${this.name}: Call setup first.`);
-		}
-
-		try {
-			await this.connectToEventSource(this.eventsUrl);
-		} catch (error) {
-			this.logger.critical(`Failed to log in to external service. Event source connection will not be established.`, error);
-		}
 	}
 
 	/**
@@ -59,18 +34,44 @@ export abstract class ExternalEventConsumer implements IExternalEventConsumer, O
 	}
 
 	/**
+	 *
+	 */
+	public registerCallback(callback: (data: unknown) => Promise<void>) {
+		this.logger.info(`Registering callback.`);
+		this.processEventCallback = callback;
+	}
+
+	/**
+	 *
+	 */
+	public async connect(eventsUrl: URL, headers?: Record<string, string>): Promise<void> {
+		this.logger.info(`Initializing event consuming.`);
+
+		this.eventsUrl = eventsUrl;
+		if (!this.eventsUrl || !this.processEventCallback) {
+			throw new Error(`${this.name}: Call setup first.`);
+		}
+
+		try {
+			await this.connectToEventSource(this.eventsUrl, headers);
+		} catch (error) {
+			this.logger.critical(`Failed to log in to external service. Event source connection will not be established.`, error);
+		}
+	}
+
+	/**
 	 * Core method to orchestrate establishing and managing the SSE connection.
 	 * It ensures cleanup of previous clients, initializes a new client,
 	 * processes the event stream, and handles outcomes like unexpected stream termination or errors.
 	 * @param url The URL of the SSE endpoint.
 	 */
-	public async connectToEventSource(url: URL): Promise<void> {
+	public async connectToEventSource(url: URL, headers?: Record<string, string>): Promise<void> {
 		this.logger.info(`Attempting to connect to external event source: ${url}`);
 
 		try {
 			this.sseClient = createEventSource({
 				url,
-				headers: this.getHeaders(),
+				headers: headers ?? this.getDefaultHeaders(),
 				fetch: fetch,
 			});
 
@@ -139,18 +140,14 @@ export abstract class ExternalEventConsumer implements IExternalEventConsumer, O
 	}
 
 	/**
-	 * Constructs the headers for the SSE request.
+	 * Constructs the minimum default headers for an unauthenticated SSE request.
 	 * @returns The request headers.
 	 */
-	public getHeaders(): Record<string, string> {
+	public getDefaultHeaders(): Record<string, string> {
 		const headers: Record<string, string> = {
 			Accept: "text/event-stream",
 			"Cache-Control": "no-cache",
 		};
-
-		if (this.accessToken) {
-			headers["Authorization"] = `Bearer ${this.accessToken}`;
-		}
 
 		return headers;
 	}
@@ -171,13 +168,5 @@ export abstract class ExternalEventConsumer implements IExternalEventConsumer, O
 
 		this.eventsUrl = null;
 		this.processEventCallback = null;
-	}
-
-	/**
-	 *
-	 * @param token
-	 */
-	public setAccessToken(token: string) {
-		this.accessToken = token;
 	}
 }

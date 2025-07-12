@@ -88,11 +88,10 @@ describe("AbstractExternalEventConsumer", () => {
 		it("Can be initialized", async () => {
 			const callback = async (_: unknown) => {};
 
-			consumer.setup(url, callback);
+			consumer.registerCallback(callback);
 
-			expect(consumer["eventsUrl"]).toEqual(url);
 			expect(consumer["processEventCallback"]).toEqual(callback);
-			expect(logger.info).toHaveBeenCalledWith(`Setting up.`);
+			expect(logger.info).toHaveBeenCalledWith(`Registering callback.`);
 		});
 
 		// --------------------------------------------------
@@ -102,13 +101,37 @@ describe("AbstractExternalEventConsumer", () => {
 			const processMessageStreamSpy = jest.spyOn(consumer, "processMessageStream");
 
 			const callback = async (_: unknown) => {};
-			consumer.setup(url, callback);
+			consumer.registerCallback(callback);
 
-			await consumer.connect();
+			await consumer.connect(url);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(consumer["sseClient"]).toBeDefined();
-			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url);
+			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url, undefined);
+			expect(processMessageStreamSpy).toHaveBeenCalledTimes(1);
+
+			expect(logger.info).toHaveBeenCalledWith(`Initializing event consuming.`);
+		});
+
+		// --------------------------------------------------
+
+		it("Can connect with custom headers", async () => {
+			const connectToEventSourceSpy = jest.spyOn(consumer, "connectToEventSource");
+			const processMessageStreamSpy = jest.spyOn(consumer, "processMessageStream");
+
+			const callback = async (_: unknown) => {};
+			consumer.registerCallback(callback);
+
+			const headers: Record<string, string> = {
+				Accept: "text/event-stream",
+				"Cache-Control": "no-cache",
+				Authorization: `Bearer access_token`,
+			};
+			await consumer.connect(url, headers);
+			await new Promise<void>((resolve) => setImmediate(resolve));
+
+			expect(consumer["sseClient"]).toBeDefined();
+			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url, headers);
 			expect(processMessageStreamSpy).toHaveBeenCalledTimes(1);
 
 			expect(logger.info).toHaveBeenCalledWith(`Initializing event consuming.`);
@@ -122,7 +145,7 @@ describe("AbstractExternalEventConsumer", () => {
 
 			expect(mockCreateEventSourceImplementation).toHaveBeenCalledWith({
 				url,
-				headers: consumer.getHeaders(),
+				headers: consumer.getDefaultHeaders(),
 				fetch: expect.any(Function),
 			});
 			expect(lastCreatedMockSseClient).toBeDefined();
@@ -246,7 +269,7 @@ describe("AbstractExternalEventConsumer", () => {
 
 			beforeEach(() => {
 				const fakeCallback = jest.fn();
-				consumer.setup(url, fakeCallback);
+				consumer.registerCallback(fakeCallback);
 				handleEventSpy = jest.spyOn(consumer as any, "processEventCallback");
 			});
 

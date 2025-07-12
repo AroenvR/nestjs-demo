@@ -7,7 +7,7 @@ import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 export const mockILogger: jest.Mocked<IPrefixedLogger> = {
 	correlationManager: {
 		getCorrelationId: jest.fn(),
-		runWithCorrelationId: jest.fn(),
+		runWithCorrelationId: jest.fn((_id, callback) => callback()),
 	},
 	verbose: jest.fn(),
 	debug: jest.fn(),
