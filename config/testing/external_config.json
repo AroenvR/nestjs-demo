@@ -1,0 +1,11 @@
+[
+    {
+        "key": "test_api",
+        "ssl": false,
+        "domain": "localhost",
+        "port": 29868,
+        "events": [
+            "/v1/users/events"
+        ]
+    }
+]

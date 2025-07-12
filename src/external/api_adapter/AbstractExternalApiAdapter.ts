@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import {
 	TRequestBuilderResponse,
 	IBaseRequestBuilder,
-	IRequestBuilder,
 	RequestBuilder,
 	TRequestBuilderMethods,
 } from "../../common/utility/request_builder/RequestBuilder";
@@ -13,8 +12,9 @@ import { assertExternalConfigSchema, IExternalConfig } from "../IExternalConfig"
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IExternalApiAdapter } from "./IExternalApiAdapter";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
-import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 import { IHttpErrorObj } from "../../http_api/filters/IHttpErrorResponseObj";
+import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
+import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 
 /**
  * Abstract class for external API adapters.
@@ -26,6 +26,7 @@ import { IHttpErrorObj } from "../../http_api/filters/IHttpErrorResponseObj";
  */
 @Injectable()
 export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter {
+	private readonly consumers = new Map<string, IExternalEventConsumer>();
 	private loginEndpoint: string | null = null;
 	private credentials: object | null = null;
 	private accessToken: string | null = null;
@@ -35,15 +36,14 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 
 	constructor(
 		protected readonly logAdapter: WinstonAdapter,
-		protected readonly requestBuilder: IRequestBuilder,
+		protected readonly requestBuilder: RequestBuilder,
 		protected readonly configService: ConfigService<IServerConfig>,
-		protected readonly eventConsumer: IExternalEventConsumer,
+		protected readonly eventConsumerFactory: IExternalEventConsumerFactory,
 	) {
 		this.name = this.constructor.name;
 		this.logger = logAdapter.getPrefixedLogger(this.name);
 
-		const config = this.configService.get(this.configString());
-		this.safeSetConfig(config);
+		this.safeSetConfig();
 	}
 
 	/**
@@ -57,8 +57,6 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	public async subscribeToSSE(eventsEndpoint: string, callback: (data: unknown) => Promise<void>): Promise<void> {
 		this.logger.log(`Subscribing to SSE stream at ${eventsEndpoint}`);
 
-		this.eventConsumer.registerCallback(callback);
-
 		const headers: Record<string, string> = {
 			Accept: "text/event-stream",
 			"Cache-Control": "no-cache",
@@ -66,8 +64,11 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 		if (this.accessToken) headers["Authorization"] = `Bearer ${this.accessToken}`;
 
 		const fullUrl = new URL(eventsEndpoint, this.getExternalApiUrl());
-		await this.eventConsumer.connect(fullUrl, headers)
-			.then(() => this.logger.info(`Successfully connected to ${eventsEndpoint}`));
+
+		const consumer = this.registerConsumer(eventsEndpoint, callback);
+		await consumer.connect(fullUrl, headers).then(() => this.logger.info(`Successfully connected to ${eventsEndpoint}`));
+
+		this.consumers.set(eventsEndpoint, consumer);
 	}
 
 	/**
@@ -297,6 +298,23 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
+	 * Registers a new event consumer for the specified events endpoint.
+	 * This method creates a new event consumer, connects it to the specified events URL,
+	 * and stores it in the consumers map.
+	 * @param eventsEndpoint The key to identify the event consumer.
+	 * @returns The registered event consumer instance.
+	 */
+	protected registerConsumer(eventsEndpoint: string, callback: (data: unknown) => Promise<void>): IExternalEventConsumer {
+		this.logger.info(`Registering event consumer for ${eventsEndpoint}`);
+
+		const consumer = this.eventConsumerFactory();
+		consumer.registerCallback(callback);
+
+		this.consumers.set(eventsEndpoint, consumer);
+		return consumer;
+	}
+
+	/**
 	 * This method checks if the response is an object with a status or message indicating an unauthorized
 	 * response, or if the response is a string matching the unauthorized message.
 	 * @param response The response to check.
@@ -372,20 +390,32 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	/**
 	 * Safely sets the configuration object for this adapter.
 	 * It validates the configuration against the external configuration schema.
-	 * @param config - The configuration object to set.
+	 * @param configs - The configuration object to set.
 	 * @throws Error if the configuration does not fit the external configuration JSON schema.
 	 */
-	private safeSetConfig(config: IExternalConfig) {
-		try {
-			assertExternalConfigSchema(config);
-			this.config = config;
-		} catch (error) {
-			throw new Error(`${this.name}: Configuration object did not fit the external configuration JSON schema: ${error}`);
+	private safeSetConfig() {
+		const externalConfigurations = this.configService.get<IServerConfig["external"]>("external");
+
+		for (let i = 0; i < externalConfigurations.length; i++) {
+			const maybeConfig = externalConfigurations[i];
+			if (maybeConfig.key !== this.externalConfigKey()) continue;
+
+			try {
+				assertExternalConfigSchema(maybeConfig);
+				this.config = maybeConfig;
+
+				break;
+			} catch (error) {
+				throw new Error(`${this.name}: Configuration object did not fit the external configuration JSON schema: ${error}`);
+			}
 		}
 	}
 
 	/**
-	 * Returns the key of the server configuration object that this adapter uses.
+	 * The string returned from this function must exactly match a key from the external_config.json file's array.
+	 * If the external_config.json file contains an object with a key "foo.bar.baz",
+	 * then this function could return "foo.bar.baz" as its configuration key.
+	 * @returns The key of the external configuration object to use for this adapter.
 	 */
-	public abstract configString(): keyof IServerConfig;
+	public abstract externalConfigKey(): string;
 }

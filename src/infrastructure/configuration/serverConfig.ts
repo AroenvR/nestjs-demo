@@ -62,6 +62,15 @@ const defaultConfig: IServerConfig = {
 			nonBlocking: true,
 		},
 	},
+	external: [
+		{
+			key: "foo.bar.baz",
+			ssl: true,
+			domain: "foo.bar.baz",
+			port: 443,
+			events: [],
+		},
+	],
 };
 
 /**
@@ -116,6 +125,16 @@ export const serverConfig = (): IServerConfig => {
 		config.misc = misc;
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load miscellanous configuration, using fallback configuration: ${error}`);
+	}
+
+	// External configuration
+	try {
+		const externalConfigPath = path.resolve(process.env.EXTERNAL_CONFIG);
+		const externalConfig = fs.readFileSync(externalConfigPath, "utf8");
+		const external = JSON.parse(externalConfig);
+		config.external = external;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load external configuration, using fallback configuration: ${error}`);
 	}
 
 	// JSON Schema validate the complete server configuration object

@@ -3,6 +3,7 @@ import { TDatabaseConfig } from "../database/TDatabaseConfig";
 import { ILoggerConfig } from "../logging/ILoggerConfig";
 import { TSupportedAesAlgorithms } from "../../common/utility/aes/TSupportedAesAlgorithms";
 import { Algorithm } from "jsonwebtoken";
+import { IExternalConfig } from "src/external/IExternalConfig";
 
 /**
  * The server's cookie configuration interface.
@@ -123,4 +124,5 @@ export interface IServerConfig {
 	logging: ILoggerConfig;
 	database: TDatabaseConfig;
 	misc: IMiscellaneousConfig;
+	external: IExternalConfig[]; // TODO: CREATE ARRAY, DYNAMIC JSON SCHEMA AND LOADING
 }

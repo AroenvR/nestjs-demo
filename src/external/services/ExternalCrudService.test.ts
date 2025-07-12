@@ -10,10 +10,11 @@ describe("ExternalCrudService", () => {
 	let loggerMock: any;
 	let buildReturn: any;
 	const config: IExternalConfig = {
+		key: "test",
 		ssl: true,
 		domain: "api.test",
 		port: 1234,
-		events: false,
+		events: [],
 	};
 
 	beforeEach(() => {

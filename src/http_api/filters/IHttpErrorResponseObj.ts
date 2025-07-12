@@ -1,5 +1,7 @@
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 
+// TOOD: Make a ResponseDto for this error IHttpErrorObj, since the request builder always returns it
+
 /**
  * An interface which should match most of the minimally standardized error HTTP error response objects.
  * @property status - The HTTP status code of the error response.

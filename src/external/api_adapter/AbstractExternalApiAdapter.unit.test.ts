@@ -4,7 +4,7 @@ import { mockILogger, mockWinstonAdapter } from "../../__tests__/mocks/mockLogAd
 import { MockConfigService } from "../../__tests__/mocks/service/MockConfigService";
 import { IExternalConfig } from "../IExternalConfig";
 import { mockAndSpyFetchRequest, mapFetchRequestResponse } from "../../__tests__/helpers/mockAndSpyFetchRequest";
-import { IRequestBuilder, RequestBuilder, TRequestBuilderMethods } from "../../common/utility/request_builder/RequestBuilder";
+import { RequestBuilder, TRequestBuilderMethods } from "../../common/utility/request_builder/RequestBuilder";
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";
 import { ConfigService } from "@nestjs/config";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
@@ -12,32 +12,31 @@ import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockEx
 import { HttpStatus } from "@nestjs/common";
 import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
+import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
 
 /**
  * A Mock implementation of the {@link AbstractExternalApiAdapter} for testing purposes.
  */
 class TestApiAdapter extends AbstractExternalApiAdapter {
-	public configString(): keyof IServerConfig {
-		// This is a wrong configuration getter on purpose
-		// The config object is overwritten in most tests, but this way a faulty getter is also tested.
-
-		// @ts-expect-error: Yolo
-		return "externallApiConfig";
+	public externalConfigKey() {
+		return "test_api";
 	}
 }
 
 describe("AbstractExternalApiAdapter.Unit", () => {
 	let adapter: TestApiAdapter;
-	let requestBuilder: IRequestBuilder;
+	let requestBuilder: RequestBuilder;
 	let configService: ConfigService<IServerConfig>;
 	let eventConsumer: IExternalEventConsumer;
+	let eventConsumerFactory: IExternalEventConsumerFactory;
 	let logger: jest.Mocked<IPrefixedLogger>;
 
 	const CONFIG: IExternalConfig = {
+		key: "test_api",
 		ssl: false,
 		domain: "foo.be",
 		port: 69,
-		events: true,
+		events: [],
 	};
 
 	const MOCK_RESPONSE = {
@@ -63,10 +62,11 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 		logger = mockILogger;
 
 		requestBuilder = new RequestBuilder(mockWinstonAdapter);
-		configService = new MockConfigService(CONFIG);
+		configService = new MockConfigService([CONFIG]);
 		eventConsumer = new MockExternalEventConsumer(mockWinstonAdapter);
+		eventConsumerFactory = () => eventConsumer;
 
-		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, configService, eventConsumer);
+		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, configService, eventConsumerFactory);
 
 		mockAndSpyFetchRequest(MOCK_RESPONSE);
 	});
@@ -353,12 +353,13 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 	});
 
 	// --------------------------------------------------
+	// TODO: Fix flaky configuration loading, this is a good place to handle those.
 
 	describe("Errors", () => {
 		it("Should throw when no configuration object is set", async () => {
 			try {
 				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService(), eventConsumer);
+				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService(), eventConsumerFactory);
 
 				fail("Did not throw");
 			} catch (error) {
@@ -373,7 +374,7 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 		it("Should throw when an invalid configuration object is set", async () => {
 			try {
 				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService({ badConfig: true }), eventConsumer);
+				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService([{ badConfig: true }]), eventConsumerFactory);
 
 				fail("Did not throw");
 			} catch (error) {
