@@ -205,6 +205,7 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	 * Checks the response against known error statuses & messages.
 	 * @param response The response to check.
 	 * @throws Error if the response fits a known error response.
+	 * TODO: add a parameter for a JSON schema to validate. If that could result in a typed return, awesome.
 	 */
 	public throwIfUnsuccessful(response: string | object | IHttpErrorObj) {
 		this.logger.debug(`Checking response against error response messages.`);

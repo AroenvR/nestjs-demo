@@ -185,7 +185,7 @@ Paths found inside the TokenService:
 			it("Handles an empty payload", async () => {
 				const response = await request(app.getHttpServer()).post(PATH).expect(HttpStatus.BAD_REQUEST);
 
-				expect(response.body.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body.message).toEqual(HttpExceptionMessages.BAD_REQUEST);
 			});
 
@@ -196,7 +196,7 @@ Paths found inside the TokenService:
 
 				const response = await request(app.getHttpServer()).post(PATH).send(loginDto).expect(HttpStatus.BAD_REQUEST);
 
-				expect(response.body.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body.message).toEqual(HttpExceptionMessages.BAD_REQUEST);
 			});
 
@@ -208,7 +208,7 @@ Paths found inside the TokenService:
 
 				const response = await request(app.getHttpServer()).post(PATH).send(loginDto).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 
-				expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+				expect(response.body.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 				expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
 			});
 
@@ -220,7 +220,7 @@ Paths found inside the TokenService:
 
 				const response = await request(app.getHttpServer()).post(PATH).send(loginDto).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 
-				expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+				expect(response.body.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 				expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
 			});
 
@@ -232,7 +232,7 @@ Paths found inside the TokenService:
 
 				const response = await request(app.getHttpServer()).post(PATH).send(loginDto).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 
-				expect(response.body.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+				expect(response.body.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 				expect(response.body.message).toEqual(HttpExceptionMessages.INTERNAL_SERVER_ERROR);
 			});
 		});

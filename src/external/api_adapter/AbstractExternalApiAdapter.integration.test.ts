@@ -19,6 +19,10 @@ import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockEx
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 import { ConfigService } from "@nestjs/config";
 
+/*
+	Just about to start implementing the ExternalEventConsumer's functionality into the ExternalApiAdapter.
+*/
+
 /**
  * A Mock implementation of the {@link AbstractExternalApiAdapter} for testing purposes.
  */
