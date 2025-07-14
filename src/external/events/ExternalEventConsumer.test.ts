@@ -3,6 +3,7 @@ import { ILogger } from "../../infrastructure/logging/ILogger";
 import { ExternalEventConsumer } from "./ExternalEventConsumer";
 import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
+import { TProcessSSECallback } from "./IExternalEventConsumer";
 
 /* eslint-disable no-var */
 // The no-var ESLint rule is disabled here to fix these variables being stuck in the TDZ.
@@ -44,6 +45,9 @@ describe("AbstractExternalEventConsumer", () => {
 	let logger: ILogger;
 
 	const url = new URL("/yolo", "http://www.somewhere.com");
+	const cleanUrl = url.hostname + url.pathname;
+	const callback: TProcessSSECallback = async (_: unknown) => {};
+
 	let messageEvent: EventSourceMessage;
 
 	beforeEach(async () => {
@@ -85,32 +89,20 @@ describe("AbstractExternalEventConsumer", () => {
 	// --------------------------------------------------
 
 	describe("Happy flow", () => {
-		it("Can be initialized", async () => {
-			const callback = async (_: unknown) => {};
-
-			consumer.registerCallback(callback);
-
-			expect(consumer["processEventCallback"]).toEqual(callback);
-			expect(logger.info).toHaveBeenCalledWith(`Registering callback.`);
-		});
-
-		// --------------------------------------------------
-
-		it("Can connect", async () => {
+		it("Can be initialized and connect to an external SSE stream", async () => {
 			const connectToEventSourceSpy = jest.spyOn(consumer, "connectToEventSource");
 			const processMessageStreamSpy = jest.spyOn(consumer, "processMessageStream");
 
-			const callback = async (_: unknown) => {};
-			consumer.registerCallback(callback);
-
-			await consumer.connect(url);
+			await consumer.connect(url, callback);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(consumer["sseClient"]).toBeDefined();
-			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url, undefined);
+			expect(connectToEventSourceSpy).toHaveBeenCalledTimes(1);
 			expect(processMessageStreamSpy).toHaveBeenCalledTimes(1);
 
-			expect(logger.info).toHaveBeenCalledWith(`Initializing event consuming.`);
+			expect(logger.log).toHaveBeenCalledWith(`Initializing event consuming for ${cleanUrl}`);
+			expect(logger.info).toHaveBeenCalledWith(`Attempting to connect to external event source: ${cleanUrl}`);
+			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing for ${cleanUrl}`);
 		});
 
 		// --------------------------------------------------
@@ -119,28 +111,27 @@ describe("AbstractExternalEventConsumer", () => {
 			const connectToEventSourceSpy = jest.spyOn(consumer, "connectToEventSource");
 			const processMessageStreamSpy = jest.spyOn(consumer, "processMessageStream");
 
-			const callback = async (_: unknown) => {};
-			consumer.registerCallback(callback);
-
 			const headers: Record<string, string> = {
 				Accept: "text/event-stream",
 				"Cache-Control": "no-cache",
 				Authorization: `Bearer access_token`,
 			};
-			await consumer.connect(url, headers);
+			await consumer.connect(url, callback, headers);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(consumer["sseClient"]).toBeDefined();
-			expect(connectToEventSourceSpy).toHaveBeenCalledWith(url, headers);
+			expect(connectToEventSourceSpy).toHaveBeenCalledWith(headers);
 			expect(processMessageStreamSpy).toHaveBeenCalledTimes(1);
 
-			expect(logger.info).toHaveBeenCalledWith(`Initializing event consuming.`);
+			expect(logger.log).toHaveBeenCalledWith(`Initializing event consuming for ${cleanUrl}`);
+			expect(logger.info).toHaveBeenCalledWith(`Attempting to connect to external event source: ${cleanUrl}`);
+			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing for ${cleanUrl}`);
 		});
 
 		// --------------------------------------------------
 
 		it("Can connect to event source", async () => {
-			await consumer.connectToEventSource(url);
+			await consumer.connect(url, callback);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(mockCreateEventSourceImplementation).toHaveBeenCalledWith({
@@ -149,8 +140,6 @@ describe("AbstractExternalEventConsumer", () => {
 				fetch: expect.any(Function),
 			});
 			expect(lastCreatedMockSseClient).toBeDefined();
-
-			expect(logger.info).toHaveBeenCalledWith(`Attempting to connect to external event source: ${url}`);
 		});
 
 		// --------------------------------------------------
@@ -162,20 +151,20 @@ describe("AbstractExternalEventConsumer", () => {
 				.mockResolvedValueOnce({ done: false, value: messageEvent })
 				.mockResolvedValueOnce({ done: true, value: undefined });
 
-			await consumer.connectToEventSource(url);
+			await consumer.connect(url, callback);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(handleMessageSpy).toHaveBeenCalledWith(messageEvent);
 			expect(logger.correlationManager.runWithCorrelationId).toHaveBeenCalled();
 
-			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing.`);
-			expect(logger.debug).toHaveBeenCalledWith(`Received an event of type ${messageEvent.event} with ID ${messageEvent.id}.`);
+			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing for ${cleanUrl}`);
+			expect(logger.debug).toHaveBeenCalledWith(`Received an event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}`);
 		});
 
 		// --------------------------------------------------
 
 		it("Can disconnect from event source", async () => {
-			await consumer.connectToEventSource(url);
+			await consumer.connect(url, callback);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			consumer.disconnect();
@@ -183,40 +172,34 @@ describe("AbstractExternalEventConsumer", () => {
 			expect(mockSseClientCloseFunction).toHaveBeenCalled();
 			expect((consumer as any).sseClient).toBeNull();
 
-			expect(logger.info).toHaveBeenCalledWith(`Disconnecting from event source & closing SSE client.`);
-		});
-
-		// --------------------------------------------------
-
-		it("Should log and call disconnect on module destroy", () => {
-			const disconnectSpy = jest.spyOn(consumer, "disconnect");
-
-			consumer.onModuleDestroy();
-			expect(disconnectSpy).toHaveBeenCalled();
-
-			expect(logger.log).toHaveBeenCalledWith(`Destroying event consuming.`);
+			expect(logger.info).toHaveBeenCalledWith(`Disconnecting from event source ${cleanUrl} & closing SSE client.`);
 		});
 	});
 
 	// --------------------------------------------------
 
 	describe("Error flow", () => {
-		it("Should log critical and call disconnect if createEventSource throws", async () => {
+		it("Should log critical and call disconnect if connecting fails", async () => {
 			const errorMessage = "stream error";
 			const disconnectSpy = jest.spyOn(consumer, "disconnect");
 
-			// Stub createEventSource to throw on its first call:
+			// Stub createEventSource to throw on its setup connection call:
 			mockCreateEventSourceImplementation.mockImplementationOnce(() => {
 				throw new Error(errorMessage);
 			});
 
-			await consumer.connectToEventSource(url);
+			await expect(consumer.connect(url, callback)).rejects.toThrow(
+				`Error caught during stream setup / processing for ${cleanUrl}: ${errorMessage}`,
+			);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(disconnectSpy).toHaveBeenCalled();
 
-			expect(logger.info).toHaveBeenCalledWith(`Attempting to connect to external event source: ${url}`);
-			expect(logger.critical).toHaveBeenCalledWith(`Error caught during stream setup / processing: ${errorMessage}`);
+			expect(logger.info).toHaveBeenCalledWith(`Attempting to connect to external event source: ${cleanUrl}`);
+			expect(logger.critical).toHaveBeenCalledWith(
+				`Failed to log in to external service at ${cleanUrl}. Event source connection will not be established.`,
+				expect.any(Error),
+			);
 		});
 
 		// --------------------------------------------------
@@ -227,11 +210,11 @@ describe("AbstractExternalEventConsumer", () => {
 
 			jest.spyOn(consumer, "processMessageStream").mockRejectedValueOnce(new Error(errorMessage));
 
-			await consumer.connectToEventSource(url);
+			await consumer.connect(url, callback);
 			await new Promise<void>((resolve) => setImmediate(resolve));
 
 			expect(disconnectSpy).toHaveBeenCalled();
-			expect(logger.critical).toHaveBeenCalledWith(`Error in message stream: ${errorMessage}`);
+			expect(logger.critical).toHaveBeenCalledWith(`Error in message stream for ${cleanUrl}: ${errorMessage}`);
 		});
 
 		// --------------------------------------------------
@@ -241,12 +224,12 @@ describe("AbstractExternalEventConsumer", () => {
 			expect((consumer as any).sseClient).toBeNull();
 
 			await expect(consumer.processMessageStream()).rejects.toThrow(
-				`${consumer.constructor.name}: SSE client not initialized for message stream processing.`,
+				`${consumer.constructor.name}: SSE client not initialized for ${undefined} message stream processing.`,
 			);
 
 			expect(handleMessageSpy).not.toHaveBeenCalled();
 
-			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing.`);
+			expect(logger.info).toHaveBeenCalledWith(`Starting message stream processing for ${undefined}`);
 		});
 
 		// --------------------------------------------------
@@ -258,8 +241,8 @@ describe("AbstractExternalEventConsumer", () => {
 
 			expect(mockSseClientCloseFunction).not.toHaveBeenCalled();
 
-			expect(logger.info).toHaveBeenCalledWith(`Disconnecting from event source & closing SSE client.`);
-			expect(logger.warn).toHaveBeenCalledWith(`No active SSE client to disconnect.`);
+			expect(logger.info).toHaveBeenCalledWith(`Disconnecting from event source ${undefined} & closing SSE client.`);
+			expect(logger.warn).toHaveBeenCalledWith(`No active SSE client to disconnect for ${undefined}`);
 		});
 
 		// --------------------------------------------------
@@ -269,8 +252,12 @@ describe("AbstractExternalEventConsumer", () => {
 
 			beforeEach(() => {
 				const fakeCallback = jest.fn();
-				consumer.registerCallback(fakeCallback);
+				consumer.connect(url, fakeCallback);
 				handleEventSpy = jest.spyOn(consumer as any, "processEventCallback");
+			});
+
+			afterEach(() => {
+				consumer.disconnect();
 			});
 
 			// --------------------------------------------------
@@ -283,7 +270,7 @@ describe("AbstractExternalEventConsumer", () => {
 				expect(handleEventSpy).not.toHaveBeenCalled();
 
 				expect(logger.warn).toHaveBeenCalledWith(
-					`Received an unimplemented event of type ${messageEvent.event} with ID ${messageEvent.id}. Skipping.`,
+					`Received an unimplemented event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}. Skipping.`,
 				);
 			});
 
@@ -296,7 +283,7 @@ describe("AbstractExternalEventConsumer", () => {
 				expect(handleEventSpy).not.toHaveBeenCalled();
 
 				expect(logger.error).toHaveBeenCalledWith(
-					`Received an invalid event of type ${messageEvent.event} with ID ${messageEvent.id}. Empty or non-string data. Skipping.`,
+					`Received an invalid event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}. Empty or non-string data. Skipping.`,
 				);
 			});
 
@@ -309,7 +296,7 @@ describe("AbstractExternalEventConsumer", () => {
 				expect(handleEventSpy).not.toHaveBeenCalled();
 
 				expect(logger.error).toHaveBeenCalledWith(
-					`Received an invalid event of type ${messageEvent.event} with ID ${messageEvent.id}. Empty or non-string data. Skipping.`,
+					`Received an invalid event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}. Empty or non-string data. Skipping.`,
 				);
 			});
 
@@ -321,9 +308,13 @@ describe("AbstractExternalEventConsumer", () => {
 				consumer.handleMessage(messageEvent);
 				expect(handleEventSpy).not.toHaveBeenCalled();
 
-				expect(logger.debug).toHaveBeenCalledWith(`Received an event of type ${messageEvent.event} with ID ${messageEvent.id}.`);
+				expect(logger.debug).toHaveBeenCalledWith(
+					`Received an event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}`,
+				);
 				expect(logger.error).toHaveBeenCalledWith(
-					expect.stringContaining(`Error parsing JSON for event of of type ${messageEvent.event} with ID ${messageEvent.id}:`),
+					expect.stringContaining(
+						`Error parsing JSON for event of type ${messageEvent.event} with ID ${messageEvent.id} from ${cleanUrl}:`,
+					),
 					expect.any(SyntaxError),
 				);
 			});

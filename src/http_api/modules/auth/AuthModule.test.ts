@@ -15,7 +15,7 @@ import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
 import { MockCreateLoginDto } from "../../../__tests__/mocks/dto/MockLoginDto";
 import { IBearerToken, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
 import { parseSetCookie } from "../../../__tests__/helpers/parseSetCookie";
-import { IBearerAuthConfig, ICookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import { ICookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 import { AuthService } from "../../../application/services/auth/AuthService";
@@ -32,8 +32,6 @@ describe(TEST_NAME, () => {
 	let authService: AuthService;
 
 	let configService: ConfigService;
-	let serverConfig: IServerConfig;
-	let accessTokenConfig: IBearerAuthConfig;
 	let cookieConfig: ICookieAuthConfig;
 
 	let repository: Repository<RefreshTokenEntity>;
@@ -53,7 +51,6 @@ describe(TEST_NAME, () => {
 		userRepo = app.get(getRepositoryToken(UserEntity));
 
 		configService = app.get(ConfigService);
-		accessTokenConfig = configService.get<IServerConfig["security"]>("security").bearer;
 		cookieConfig = configService.get<IServerConfig["security"]>("security").cookie;
 	});
 

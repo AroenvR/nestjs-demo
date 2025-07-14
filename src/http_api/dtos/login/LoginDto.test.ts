@@ -1,13 +1,16 @@
+import { MockCreateLoginDto } from "../../../__tests__/mocks/dto/MockLoginDto";
+import { CreateLoginDto } from "./CreateLoginDto";
+
 describe("LoginDTO", () => {
-	beforeAll(async () => {});
+	let createDto: CreateLoginDto;
 
-	beforeEach(async () => {});
+	beforeEach(() => {
+		createDto = MockCreateLoginDto.get();
+	});
 
-	afterEach(async () => {});
+	// --------------------------------------------------
 
-	afterAll(async () => {});
-
-	it("Can yolo", () => {
-		expect("WIP").toEqual(true);
+	it("Has a password field", () => {
+		expect(createDto.password).toBeDefined();
 	});
 });

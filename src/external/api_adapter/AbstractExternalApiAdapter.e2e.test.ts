@@ -58,7 +58,6 @@ describe(TEST_NAME, () => {
 			ssl: false,
 			domain: "localhost",
 			port: app.getHttpServer().address().port,
-			events: [],
 		};
 	});
 
@@ -426,6 +425,8 @@ describe(TEST_NAME, () => {
 			eventConsumer.disconnect();
 		});
 
+		// --------------------------------------------------
+
 		it("Subscribes to an unauthenticated SSE stream with correct callback and headers", async () => {
 			const callback = jest.fn().mockResolvedValue(undefined);
 
@@ -485,7 +486,6 @@ describe(TEST_NAME, () => {
 			ssl: true,
 			domain: "jsonplaceholder.typicode.com",
 			port: 443,
-			events: [],
 		};
 
 		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService([externalConfig]), eventConsumerFactory);

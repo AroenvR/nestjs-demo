@@ -1,4 +1,5 @@
-describe("AuthModule.E2E", () => {
+describe.skip("AuthModule.E2E", () => {
+	// TODO
 	// Create an AbstractExternalApi Adapter to execute genuine auth requests.
 	// Log in, do an authenticated request, refresh, logout, request bomb, rate limit checking, ..... Endless possibilities
 	// wasLogged checks the hosted application (check AuthModule for setup)

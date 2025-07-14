@@ -62,8 +62,8 @@ export class RefreshTokenEntity extends AbstractEntity {
 		const refreshThrottle = Date.now() - this.lastRefreshedAt < tokenExpiry;
 		if (refreshThrottle) throw new BadRequestException("Refreshing too soon.");
 
-		this.jti = jti;
-		this.hash = hash;
+		this.jti = jti; // TODO: Assert this is a valid JTI?
+		this.hash = hash; // TODO: Assert this is a valid checksum?
 		this.lastRefreshedAt = Date.now();
 
 		this.validate(this);

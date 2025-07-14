@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, OnModuleDestroy } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
 	TRequestBuilderResponse,
@@ -25,14 +25,14 @@ import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
  * - Implements the {@link IExternalApiAdapter} interface.
  */
 @Injectable()
-export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter {
-	private readonly consumers = new Map<string, IExternalEventConsumer>();
+export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter, OnModuleDestroy {
 	private loginEndpoint: string | null = null;
 	private credentials: object | null = null;
 	private accessToken: string | null = null;
 	protected readonly logger: ILogger;
 	protected config: IExternalConfig;
 	public readonly name: string;
+	public readonly consumers = new Map<string, IExternalEventConsumer>();
 
 	constructor(
 		protected readonly logAdapter: WinstonAdapter,
@@ -47,6 +47,59 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
+	 * Logs in to the external API using the provided endpoint and credentials.
+	 * This method sets the login endpoint and credentials for future requests.
+	 * It sends a POST request to the specified endpoint with the provided credentials.
+	 * If the request is successful, it sets the access token for authenticated requests.
+	 * @param endpoint - The endpoint to send the login request to.
+	 * @param credentials - The credentials to use for logging in.
+	 * @throws Error if the login request does not return a response.
+	 */
+	public async login(endpoint: string, credentials: object) {
+		this.logger.log(`Logging in to ${this.config.domain}`);
+
+		if (!this.loginEndpoint) this.loginEndpoint = endpoint;
+		if (!this.credentials) this.credentials = credentials;
+
+		const request = this.requestBuilder
+			.setMethod("POST")
+			.setUseSsl(this.config.ssl)
+			.setDomain(this.config.domain)
+			.setPort(this.config.port)
+			.setEndpoint(endpoint)
+			.setBody(credentials)
+			.setHeaders(this.defaultRequestHeaders())
+			.setResponseType("text")
+			.build();
+
+		const response = await request.execute();
+
+		if (!response) throw new Error(`${this.name}: Login request did not return a response.`);
+		if (typeof response === "string") this.setAccessToken(response);
+	}
+
+	/**
+	 * Logs out from the external API by clearing the access token.
+	 * @param endpoint The endpoint to send the logout request to.
+	 */
+	public async logout(endpoint: string, requestType: TRequestBuilderMethods = "DELETE") {
+		this.logger.log(`Logging out of ${this.config.domain}`);
+
+		const request = this.requestBuilder
+			.setMethod(requestType)
+			.setUseSsl(this.config.ssl)
+			.setDomain(this.config.domain)
+			.setPort(this.config.port)
+			.setEndpoint(endpoint)
+			.setHeaders(this.getAuthenticatedHeaders())
+			.setResponseType("json")
+			.build();
+
+		await request.execute();
+		this.setAccessToken(null);
+	}
+
+	/**
 	 * Subscribes to an SSE stream at the specified URL.
 	 * This method registers a callback function to process incoming events
 	 * and establishes a connection to the event source.
@@ -57,6 +110,8 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	public async subscribeToSSE(eventsEndpoint: string, callback: (data: unknown) => Promise<void>): Promise<void> {
 		this.logger.log(`Subscribing to SSE stream at ${eventsEndpoint}`);
 
+		if (this.consumers.get(eventsEndpoint)) throw new Error(`Consumer for ${eventsEndpoint} already registered.`);
+
 		const headers: Record<string, string> = {
 			Accept: "text/event-stream",
 			"Cache-Control": "no-cache",
@@ -65,10 +120,28 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 
 		const fullUrl = new URL(eventsEndpoint, this.getExternalApiUrl());
 
-		const consumer = this.registerConsumer(eventsEndpoint, callback);
-		await consumer.connect(fullUrl, headers).then(() => this.logger.info(`Successfully connected to ${eventsEndpoint}`));
+		const consumer = this.registerConsumer(eventsEndpoint);
 
-		this.consumers.set(eventsEndpoint, consumer);
+		try {
+			// TODO: Test edge case
+			await consumer.connect(fullUrl, callback, headers).then(() => this.logger.info(`Successfully connected to ${eventsEndpoint}`));
+			this.consumers.set(eventsEndpoint, consumer);
+		} catch (err) {
+			this.logger.critical(`${this.name}: Failed to set up SSE consuming for ${eventsEndpoint}`, err);
+		}
+	}
+
+	/**
+	 * Lifecycle hook that is called when the module is destroyed.
+	 * This method disconnects all registered event consumers.
+	 *
+	 */
+	public onModuleDestroy() {
+		this.logger.log(`Disconnecting from event streams.`);
+
+		this.consumers.forEach((consumer) => {
+			consumer.disconnect();
+		});
 	}
 
 	/**
@@ -165,59 +238,6 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	}
 
 	/**
-	 * Logs in to the external API using the provided endpoint and credentials.
-	 * This method sets the login endpoint and credentials for future requests.
-	 * It sends a POST request to the specified endpoint with the provided credentials.
-	 * If the request is successful, it sets the access token for authenticated requests.
-	 * @param endpoint - The endpoint to send the login request to.
-	 * @param credentials - The credentials to use for logging in.
-	 * @throws Error if the login request does not return a response.
-	 */
-	public async login(endpoint: string, credentials: object) {
-		this.logger.log(`Logging in to ${this.config.domain}`);
-
-		if (!this.loginEndpoint) this.loginEndpoint = endpoint;
-		if (!this.credentials) this.credentials = credentials;
-
-		const request = this.requestBuilder
-			.setMethod("POST")
-			.setUseSsl(this.config.ssl)
-			.setDomain(this.config.domain)
-			.setPort(this.config.port)
-			.setEndpoint(endpoint)
-			.setBody(credentials)
-			.setHeaders(this.defaultRequestHeaders())
-			.setResponseType("text")
-			.build();
-
-		const response = await request.execute();
-
-		if (!response) throw new Error(`${this.name}: Login request did not return a response.`);
-		if (typeof response === "string") this.setAccessToken(response);
-	}
-
-	/**
-	 * Logs out from the external API by clearing the access token.
-	 * @param endpoint The endpoint to send the logout request to.
-	 */
-	public async logout(endpoint: string, requestType: TRequestBuilderMethods = "DELETE") {
-		this.logger.log(`Logging out of ${this.config.domain}`);
-
-		const request = this.requestBuilder
-			.setMethod(requestType)
-			.setUseSsl(this.config.ssl)
-			.setDomain(this.config.domain)
-			.setPort(this.config.port)
-			.setEndpoint(endpoint)
-			.setHeaders(this.getAuthenticatedHeaders())
-			.setResponseType("json")
-			.build();
-
-		await request.execute();
-		this.setAccessToken(null);
-	}
-
-	/**
 	 * Get the external API's base URL.
 	 * This method constructs the URL based on the configuration settings.
 	 * @returns The base URL of the external API. Example: `https://www.example.com:443/`
@@ -304,11 +324,10 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 	 * @param eventsEndpoint The key to identify the event consumer.
 	 * @returns The registered event consumer instance.
 	 */
-	protected registerConsumer(eventsEndpoint: string, callback: (data: unknown) => Promise<void>): IExternalEventConsumer {
+	protected registerConsumer(eventsEndpoint: string): IExternalEventConsumer {
 		this.logger.info(`Registering event consumer for ${eventsEndpoint}`);
 
 		const consumer = this.eventConsumerFactory();
-		consumer.registerCallback(callback);
 
 		this.consumers.set(eventsEndpoint, consumer);
 		return consumer;
@@ -409,6 +428,8 @@ export abstract class AbstractExternalApiAdapter implements IExternalApiAdapter 
 				throw new Error(`${this.name}: Configuration object did not fit the external configuration JSON schema: ${error}`);
 			}
 		}
+
+		if (!this.config) throw new Error(`${this.name}: Did not find a valid configuration.`);
 	}
 
 	/**

@@ -15,7 +15,7 @@ export class MockRefreshTokenEntity {
 			jti: mockPlainTextBearerToken.jti,
 			sub: mockPlainTextBearerToken.sub,
 			hash: "c98c24b677eff44860afea6f493bbaec5bb1c4cbb209c6fc2bbb47f66ff2ad31",
-			lastRefreshedAt: Date.now() - 10 * 60 * 1000, // 10 minutes ago
+			lastRefreshedAt: Date.now() - 15 * 60 * 1000, // 15 minutes ago
 		});
 	}
 }

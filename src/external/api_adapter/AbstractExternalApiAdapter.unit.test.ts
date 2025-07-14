@@ -1,3 +1,6 @@
+import { fail } from "assert";
+import { HttpStatus } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { AbstractExternalApiAdapter } from "./AbstractExternalApiAdapter";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { mockILogger, mockWinstonAdapter } from "../../__tests__/mocks/mockLogAdapter";
@@ -6,10 +9,8 @@ import { IExternalConfig } from "../IExternalConfig";
 import { mockAndSpyFetchRequest, mapFetchRequestResponse } from "../../__tests__/helpers/mockAndSpyFetchRequest";
 import { RequestBuilder, TRequestBuilderMethods } from "../../common/utility/request_builder/RequestBuilder";
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";
-import { ConfigService } from "@nestjs/config";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
-import { HttpStatus } from "@nestjs/common";
 import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
@@ -36,7 +37,6 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 		ssl: false,
 		domain: "foo.be",
 		port: 69,
-		events: [],
 	};
 
 	const MOCK_RESPONSE = {
@@ -44,19 +44,6 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 	};
 
 	const ENDPOINT = "/v1/testing";
-
-	beforeAll(() => {
-		jest.spyOn(RequestBuilder.prototype, "setMethod");
-		jest.spyOn(RequestBuilder.prototype, "setUseSsl");
-		jest.spyOn(RequestBuilder.prototype, "setPort");
-		jest.spyOn(RequestBuilder.prototype, "setDomain");
-		jest.spyOn(RequestBuilder.prototype, "setEndpoint");
-		jest.spyOn(RequestBuilder.prototype, "setBody");
-		jest.spyOn(RequestBuilder.prototype, "setHeaders");
-		jest.spyOn(RequestBuilder.prototype, "setResponseType");
-		jest.spyOn(RequestBuilder.prototype, "build");
-		jest.spyOn(RequestBuilder.prototype, "execute");
-	});
 
 	beforeEach(() => {
 		logger = mockILogger;
@@ -69,10 +56,23 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 		adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, configService, eventConsumerFactory);
 
 		mockAndSpyFetchRequest(MOCK_RESPONSE);
+
+		jest.spyOn(RequestBuilder.prototype, "setMethod");
+		jest.spyOn(RequestBuilder.prototype, "setUseSsl");
+		jest.spyOn(RequestBuilder.prototype, "setPort");
+		jest.spyOn(RequestBuilder.prototype, "setDomain");
+		jest.spyOn(RequestBuilder.prototype, "setEndpoint");
+		jest.spyOn(RequestBuilder.prototype, "setBody");
+		jest.spyOn(RequestBuilder.prototype, "setHeaders");
+		jest.spyOn(RequestBuilder.prototype, "setResponseType");
+		jest.spyOn(RequestBuilder.prototype, "build");
+		jest.spyOn(RequestBuilder.prototype, "execute");
 	});
 
 	afterEach(() => {
 		eventConsumer.disconnect();
+
+		jest.restoreAllMocks();
 	});
 
 	// --------------------------------------------------
@@ -315,7 +315,6 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 	describe("Server Sent Events", () => {
 		it("Subscribes to an unauthenticated SSE stream with correct callback and headers", async () => {
 			const mockConnect = jest.spyOn(eventConsumer, "connect");
-			const mockRegisterCallback = jest.spyOn(eventConsumer, "registerCallback");
 			const callback = jest.fn().mockResolvedValue(undefined);
 
 			const testEndpoint = "/v1/events";
@@ -323,8 +322,7 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 
 			await adapter.subscribeToSSE(testEndpoint, callback);
 
-			expect(mockRegisterCallback).toHaveBeenCalledWith(callback);
-			expect(mockConnect).toHaveBeenCalledWith(mockUrl, {
+			expect(mockConnect).toHaveBeenCalledWith(mockUrl, callback, {
 				Accept: "text/event-stream",
 				"Cache-Control": "no-cache",
 			});
@@ -334,7 +332,6 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 
 		it("Subscribes to an authenticated SSE stream with correct callback and headers", async () => {
 			const mockConnect = jest.spyOn(eventConsumer, "connect");
-			const mockRegisterCallback = jest.spyOn(eventConsumer, "registerCallback");
 			const callback = jest.fn().mockResolvedValue(undefined);
 
 			const testEndpoint = "/v1/events";
@@ -343,8 +340,7 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 			adapter.setAccessToken("mock-token");
 			await adapter.subscribeToSSE(testEndpoint, callback);
 
-			expect(mockRegisterCallback).toHaveBeenCalledWith(callback);
-			expect(mockConnect).toHaveBeenCalledWith(mockUrl, {
+			expect(mockConnect).toHaveBeenCalledWith(mockUrl, callback, {
 				Accept: "text/event-stream",
 				"Cache-Control": "no-cache",
 				Authorization: expect.stringContaining("Bearer "),
@@ -353,19 +349,16 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 	});
 
 	// --------------------------------------------------
-	// TODO: Fix flaky configuration loading, this is a good place to handle those.
 
 	describe("Errors", () => {
 		it("Should throw when no configuration object is set", async () => {
 			try {
 				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService(), eventConsumerFactory);
+				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService([{}]), eventConsumerFactory);
 
 				fail("Did not throw");
 			} catch (error) {
-				expect(error.message).toEqual(
-					`${adapter.constructor.name}: Configuration object did not fit the external configuration JSON schema: Error: JSON schema: ValidationError: config is not an object`,
-				);
+				expect(error.message).toEqual(`${adapter.constructor.name}: Did not find a valid configuration.`);
 			}
 		});
 
@@ -373,13 +366,17 @@ describe("AbstractExternalApiAdapter.Unit", () => {
 
 		it("Should throw when an invalid configuration object is set", async () => {
 			try {
-				// Remember that the MockConfigService now gets "misc" because that's what was set in the TestApiAdapter object at the top.
-				adapter = new TestApiAdapter(mockWinstonAdapter, requestBuilder, new MockConfigService([{ badConfig: true }]), eventConsumerFactory);
+				adapter = new TestApiAdapter(
+					mockWinstonAdapter,
+					requestBuilder,
+					new MockConfigService([{ key: "test_api", badConfig: true }]),
+					eventConsumerFactory,
+				);
 
 				fail("Did not throw");
 			} catch (error) {
 				expect(error.message).toEqual(
-					`${adapter.constructor.name}: Configuration object did not fit the external configuration JSON schema: ValidationError: \"ssl\" is required. \"domain\" is required. \"port\" is required. \"events\" is required. \"badConfig\" is not allowed`,
+					`${adapter.constructor.name}: Configuration object did not fit the external configuration JSON schema: ValidationError: \"domain\" is required. \"badConfig\" is not allowed`,
 				);
 			}
 		});

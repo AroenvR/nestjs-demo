@@ -68,7 +68,6 @@ const defaultConfig: IServerConfig = {
 			ssl: true,
 			domain: "foo.bar.baz",
 			port: 443,
-			events: [],
 		},
 	],
 };

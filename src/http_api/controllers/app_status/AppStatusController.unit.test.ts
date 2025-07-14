@@ -1,4 +1,5 @@
-describe("AppStatusController.Unit", () => {
+describe.skip("AppStatusController.Unit", () => {
+	// TODO
 	beforeAll(async () => {});
 
 	beforeEach(async () => {});

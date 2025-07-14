@@ -17,6 +17,8 @@ describe("UserDTO", () => {
 		updateDto = MockUpdateUserDto.get();
 	});
 
+	// --------------------------------------------------
+
 	describe("Create DTO", () => {
 		it("Can be used to create the entity", async () => {
 			const errors = await validate(createDto);

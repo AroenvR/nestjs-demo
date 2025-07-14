@@ -12,7 +12,6 @@ export interface IExternalConfig extends Record<string, unknown> {
 	ssl: boolean;
 	domain: string;
 	port: number;
-	events: string[];
 }
 
 /**
@@ -24,7 +23,6 @@ export const externalApiAdapterConfigSchema = Joi.object({
 	ssl: Joi.boolean().default(true).optional(),
 	domain: Joi.string().required(),
 	port: Joi.number().integer().positive().default(443).optional(),
-	events: Joi.array().items(Joi.string().optional()).optional(),
 });
 
 /**

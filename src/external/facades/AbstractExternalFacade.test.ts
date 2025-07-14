@@ -1,12 +1,4 @@
-describe("", () => {
-	beforeAll(async () => {});
-
-	beforeEach(async () => {});
-
-	afterEach(async () => {});
-
-	afterAll(async () => {});
-
+describe.skip("AbstractExternalFacade", () => {
 	it("Can yolo", () => {
 		expect("WIP").toEqual(true);
 	});

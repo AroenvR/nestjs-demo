@@ -2,7 +2,7 @@ import { MockUpdateUserDto } from "../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "./UserEntity";
 
-describe("UserEntity.unit", () => {
+describe("UserEntity.Unit", () => {
 	let data: UserEntity;
 
 	beforeEach(() => {
