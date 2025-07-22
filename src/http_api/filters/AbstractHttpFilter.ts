@@ -4,12 +4,11 @@ import { Request, Response } from "express";
 import { GuardedController } from "../controllers/GuardedController"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
-import { IHttpErrorResponseObj } from "./IHttpErrorResponseObj";
 import { ErrorResponseDto } from "../dtos/ErrorResponseDto";
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
- * @returns An object fitting the {@link IHttpErrorResponseObj} interface.
+ * @returns An {@link ErrorResponseDto}.
  * @devnote When creating a new filter, remember to add it to the necessary controllers (such as the {@link GuardedController})
  * Using the UseFilters decorator.
  */
