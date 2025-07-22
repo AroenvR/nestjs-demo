@@ -7,7 +7,10 @@ import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
 /**
  * Represents a refresh token entity in the database.
- * TODO: test
+ * @Column jti TEXT NOT NULL UNIQUE
+ * @Column sub TEXT NOT NULL
+ * @Column hash TEXT NOT NULL UNIQUE
+ * @Column last_refreshed_at INTEGER NOT NULL
  */
 @Entity(ApplicationEntities.REFRESH_TOKEN)
 export class RefreshTokenEntity extends AbstractEntity {

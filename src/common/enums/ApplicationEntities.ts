@@ -3,7 +3,6 @@
  * This enum should be used in a new entity's @Entity decorator.
  */
 export enum ApplicationEntities {
-	USER = "user",
-	SESSION = "session",
-	REFRESH_TOKEN = "refresh_token",
+	USER = "user_entity",
+	REFRESH_TOKEN = "refresh_token_entity",
 }

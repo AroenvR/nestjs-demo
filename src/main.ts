@@ -36,10 +36,6 @@ async function bootstrap() {
 		-- Fits a the IHttpErrorResponseObj interface
 
 		Create automated dependency documentation https://www.youtube.com/watch?v=EtTrgv1ww8o
-
-		Fix:
-		- Login scripts (scripts dir)
-		- Bash scripts for /session endpoints (scripts dir)
 	*/
 
 	// !!! IF ANY CHANGES ARE MADE HERE !!!

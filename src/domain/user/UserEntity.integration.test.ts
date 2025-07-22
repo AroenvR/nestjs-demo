@@ -6,6 +6,7 @@ import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
 import { UserModule } from "../../http_api/modules/user/UserModule";
 import { INestApplication } from "@nestjs/common";
+import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
 describe("UserEntity.Integration", () => {
 	let app: INestApplication;
@@ -74,7 +75,7 @@ describe("UserEntity.Integration", () => {
 			const saved = await repository.save(entity);
 			const copy = copyEntity(saved);
 
-			await expect(repository.save(copy)).rejects.toThrow(/UNIQUE constraint failed: user.username/);
+			await expect(repository.save(copy)).rejects.toThrow(`UNIQUE constraint failed: ${ApplicationEntities.USER}.username`);
 		});
 	});
 });

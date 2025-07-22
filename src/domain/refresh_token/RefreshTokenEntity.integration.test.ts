@@ -1,11 +1,12 @@
+import { randomUUID } from "crypto";
 import { Repository } from "typeorm";
-import { RefreshTokenEntity } from "./RefreshTokenEntity";
+import { INestApplication } from "@nestjs/common";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { RefreshTokenEntity } from "./RefreshTokenEntity";
 import { MockRefreshTokenEntity } from "../../__tests__/mocks/entity/MockRefreshTokenEntity";
 import { copyEntity } from "../../__tests__/mocks/entity/copyEntity";
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
-import { INestApplication } from "@nestjs/common";
-import { randomUUID } from "crypto";
+import { ApplicationEntities } from "../../common/enums/ApplicationEntities";
 
 describe("RefreshTokenEntity.Integration", () => {
 	let app: INestApplication;
@@ -77,7 +78,7 @@ describe("RefreshTokenEntity.Integration", () => {
 			const copy = copyEntity(saved);
 			copy.hash = "z".repeat(44);
 
-			await expect(repository.save(copy)).rejects.toThrow(/UNIQUE constraint failed: refresh_token.jti/);
+			await expect(repository.save(copy)).rejects.toThrow(`UNIQUE constraint failed: ${ApplicationEntities.REFRESH_TOKEN}.jti`);
 		});
 
 		// --------------------------------------------------
@@ -101,7 +102,7 @@ describe("RefreshTokenEntity.Integration", () => {
 			const copy = copyEntity(saved);
 			copy.jti = randomUUID();
 
-			await expect(repository.save(copy)).rejects.toThrow(/UNIQUE constraint failed: refresh_token.hash/);
+			await expect(repository.save(copy)).rejects.toThrow(`UNIQUE constraint failed: ${ApplicationEntities.REFRESH_TOKEN}.hash`);
 		});
 
 		// --------------------------------------------------

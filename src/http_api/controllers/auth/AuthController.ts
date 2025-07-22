@@ -41,7 +41,7 @@ const ENDPOINT = "auth";
 /**
  * This controller is responsible for handling authentication-related endpoints.
  * It provides methods for user login, retrieving user information,
- * refreshing sessions, and logging out users.
+ * refreshing tokens, and logging out users.
  */
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
