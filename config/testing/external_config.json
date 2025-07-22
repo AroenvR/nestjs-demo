@@ -1,0 +1,8 @@
+[
+    {
+        "key": "test_api",
+        "ssl": false,
+        "domain": "localhost",
+        "port": 29868
+    }
+]

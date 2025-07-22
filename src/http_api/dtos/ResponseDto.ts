@@ -27,6 +27,9 @@ export class ResponseDto {
 	})
 	createdAt: number;
 
+	@ApiProperty({ description: "Indicates that this is a DTO" })
+	isDto = true;
+
 	protected constructor(entity: Partial<AbstractEntity>) {
 		this.id = entity.id;
 		this.uuid = entity.uuid;

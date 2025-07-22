@@ -8,4 +8,5 @@ export enum HttpExceptionMessages {
 	NOT_IMPLEMENTED = "not_implemented",
 	UNAUTHORIZED = "unauthorized",
 	CONFLICT = "conflict",
+	UNKNOWN = "unknown",
 }

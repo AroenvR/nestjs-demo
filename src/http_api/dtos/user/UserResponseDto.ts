@@ -10,13 +10,9 @@ export class UserResponseDto extends ResponseDto {
 	@ApiProperty({ description: "The unique username of the user entity" })
 	username: string;
 
-	@ApiProperty({ description: "The password of the user entity" })
-	password: string;
-
 	constructor(entity: UserEntity) {
 		super(entity);
 		this.username = entity.username;
-		this.password = entity.password;
 	}
 
 	/**

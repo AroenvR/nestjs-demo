@@ -1,15 +1,18 @@
+import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
 import { LoggerModule } from "./logging/LoggerModule";
 import { DatabaseModule } from "./database/DatabaseModule";
 import { AuthModule } from "../http_api/modules/auth/AuthModule";
-import { ConfigModule } from "@nestjs/config";
 import { serverConfig } from "./configuration/serverConfig";
 import { UserModule } from "../http_api/modules/user/UserModule";
 import { UtilityModule } from "../common/utility/UtilityModule";
-import { SessionModule } from "../http_api/modules/session/SessionModule";
+import { AppStatusModule } from "../http_api/modules/app_status/AppStatusModule";
+import { TransformResponseInterceptor } from "../http_api/interceptors/TransformResponseInterceptor";
 
-const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule];
+const ENDPOINT_MODULES = [UserModule, AppStatusModule];
 
 @Module({
 	imports: [
@@ -17,16 +20,22 @@ const ENDPOINT_MODULES = [AuthModule, UserModule, SessionModule];
 			isGlobal: true,
 			load: [serverConfig],
 		}),
+		ScheduleModule.forRoot(),
 		LoggerModule,
 		DatabaseModule,
+		AuthModule,
 		UtilityModule,
 		...ENDPOINT_MODULES,
+	],
+	providers: [
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: TransformResponseInterceptor,
+		},
 	],
 })
 /**
  * The root application module.
- * - Applies global middlewares.
- * - Exposes Configuration, Logging and Database modules to the other modules.
  */
 export class AppModule implements NestModule {
 	/**

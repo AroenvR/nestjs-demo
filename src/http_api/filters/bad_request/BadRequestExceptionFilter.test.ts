@@ -47,7 +47,7 @@ describe("BadRequestExceptionFilter", () => {
 			.expect(HttpStatus.BAD_REQUEST)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.BAD_REQUEST,
+					status: HttpStatus.BAD_REQUEST,
 					timestamp: expect.any(Number),
 					path: "/test",
 					message: HttpExceptionMessages.BAD_REQUEST,

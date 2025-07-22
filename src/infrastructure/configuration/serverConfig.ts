@@ -11,16 +11,26 @@ import { DatabaseDrivers } from "../database/TDatabaseConfig";
 const defaultConfig: IServerConfig = {
 	security: {
 		cookie: {
+			enabled: false,
 			version: 1,
 			secure: false,
-			expiry: 3600000,
+			expiry: 57600000, // 16 hours in milliseconds
+		},
+		bearer: {
+			enabled: false,
+			header: "Authorization",
+			encryption: "aes-256-gcm",
+			expiry: 900000, // 15 minutes in milliseconds
+		},
+		swagger: {
+			enabled: false,
 		},
 		cors: {
 			origin: ["http://localhost:3000"],
 			allowedHeaders: ["Content-Type", "Authorization", "User-Agent", "X-Correlation-ID"],
 			methods: ["GET"],
 			credentials: true,
-			maxAge: 3600, // Cache preflight response for 3600 seconds
+			maxAge: 600, // Cache preflight response for 10 minutes (in seconds)
 		},
 	},
 	logging: {
@@ -44,6 +54,22 @@ const defaultConfig: IServerConfig = {
 		database: ":memory:",
 		synchronize: false,
 	},
+	misc: {
+		appStatusInterval: 10 * 1000, // Default to 10 seconds
+		cache: {
+			ttl: 5 * 60 * 1000, // Default to 5 minutes
+			refreshThreshold: 30 * 1000, // Default to 30 seconds
+			nonBlocking: true,
+		},
+	},
+	external: [
+		{
+			key: "foo.bar.baz",
+			ssl: true,
+			domain: "foo.bar.baz",
+			port: 443,
+		},
+	],
 };
 
 /**
@@ -85,8 +111,29 @@ export const serverConfig = (): IServerConfig => {
 		const securityConfig = fs.readFileSync(securityConfigPath, "utf8");
 		const security = JSON.parse(securityConfig);
 		config.security = security;
+		if (!config.security.bearer.enabled && !config.security.cookie.enabled) throw new Error("serverConfig: No authentication scheme is enabled.");
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);
+	}
+
+	// Miscellaneous configuration
+	try {
+		const miscConfigPath = path.resolve(process.env.MISC_CONFIG);
+		const miscConfig = fs.readFileSync(miscConfigPath, "utf8");
+		const misc = JSON.parse(miscConfig);
+		config.misc = misc;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load miscellanous configuration, using fallback configuration: ${error}`);
+	}
+
+	// External configuration
+	try {
+		const externalConfigPath = path.resolve(process.env.EXTERNAL_CONFIG);
+		const externalConfig = fs.readFileSync(externalConfigPath, "utf8");
+		const external = JSON.parse(externalConfig);
+		config.external = external;
+	} catch (error: Error | unknown) {
+		console.error(`serverConfig: Could not load external configuration, using fallback configuration: ${error}`);
 	}
 
 	// JSON Schema validate the complete server configuration object

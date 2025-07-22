@@ -1,9 +1,6 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from "typeorm";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { AbstractService } from "../services/AbstractService";
-import { CreateDto } from "../../http_api/dtos/CreateDto";
-import { UpdateDto } from "../../http_api/dtos/UpdateDto";
-import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 
 /**
@@ -16,7 +13,7 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	constructor(
 		protected readonly logAdapter: IPrefixedLogger,
 		protected readonly dataSource: DataSource,
-		protected readonly service: AbstractService<CreateDto, UpdateDto, ResponseDto>,
+		protected readonly service: AbstractService<Entity>,
 	) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 		dataSource.subscribers.push(this);

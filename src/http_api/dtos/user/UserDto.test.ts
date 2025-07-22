@@ -17,6 +17,8 @@ describe("UserDTO", () => {
 		updateDto = MockUpdateUserDto.get();
 	});
 
+	// --------------------------------------------------
+
 	describe("Create DTO", () => {
 		it("Can be used to create the entity", async () => {
 			const errors = await validate(createDto);
@@ -103,7 +105,6 @@ describe("UserDTO", () => {
 			expect(dto.createdAt).toEqual(entity.createdAt);
 
 			expect(dto.username).toEqual(entity.username);
-			expect(dto.password).toEqual(entity.password);
 		});
 	});
 });

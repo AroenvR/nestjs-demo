@@ -22,7 +22,7 @@ export class EncryptionUtils {
 	protected logger: ILogger;
 	private readonly aesStrategies: Map<TSupportedAesAlgorithms, IAesEncryptionStrategy> = new Map();
 
-	constructor(logAdapter: WinstonAdapter) {
+	constructor(protected readonly logAdapter: WinstonAdapter) {
 		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
 		this.registerAesStrategies();
 	}
@@ -44,7 +44,7 @@ export class EncryptionUtils {
 	 * @returns All of the required data to decrypt the ciphertext adhering to the {@link IAesCipherData} interface.
 	 */
 	public aesEncrypt(data: string, algorithm: TSupportedAesAlgorithms): IAesCipherData {
-		this.logger.info(`Encrypting data using ${algorithm}`);
+		this.logger.debug(`Encrypting data using ${algorithm}`);
 
 		const strategy = this.aesStrategies.get(algorithm);
 		if (!strategy) throw new InternalServerErrorException(`No encryption strategy found for ${algorithm}`);
@@ -61,7 +61,7 @@ export class EncryptionUtils {
 	 * @returns the decrypted plain-text string.
 	 */
 	public aesDecrypt(data: IAesCipherData): string {
-		this.logger.info(`Decrypting data using ${data.algorithm}`);
+		this.logger.debug(`Decrypting data using ${data.algorithm}`);
 
 		const strategy = this.aesStrategies.get(data.algorithm);
 		if (!strategy) throw new InternalServerErrorException(`No decryption strategy found for ${data.algorithm}`);
@@ -70,6 +70,16 @@ export class EncryptionUtils {
 
 		this.logger.debug(`Successfully decrypted data using ${data.algorithm}`);
 		return decrypted;
+	}
+
+	/**
+	 * Hash data using SHA-256 and return the base64 encoded result.
+	 * @param data To hash.
+	 * @returns The base64 encoded SHA-256 hash of the data.
+	 */
+	public sha256(data: string): string {
+		this.logger.debug(`Hashing data using SHA-256`);
+		return crypto.createHash("sha256").update(data, "utf8").digest("base64");
 	}
 
 	/**

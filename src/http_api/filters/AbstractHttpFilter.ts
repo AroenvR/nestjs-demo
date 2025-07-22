@@ -3,9 +3,12 @@ import { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { Request, Response } from "express";
 import { GuardedController } from "../controllers/GuardedController"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
+import { ErrorResponseDto } from "../dtos/ErrorResponseDto";
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
+ * @returns An {@link ErrorResponseDto}.
  * @devnote When creating a new filter, remember to add it to the necessary controllers (such as the {@link GuardedController})
  * Using the UseFilters decorator.
  */
@@ -15,7 +18,7 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 	protected request: Request;
 	protected logger: ILogger;
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;
-	protected message = "internal_server_error";
+	protected message = HttpExceptionMessages.INTERNAL_SERVER_ERROR;
 
 	constructor(private readonly logAdapter: IPrefixedLogger) {
 		this.logger = this.logAdapter.getPrefixedLogger(this.name);
@@ -29,15 +32,15 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 
 		this.logger.error(`${error instanceof Error ? error.message : "Unknown issue."}`, error);
 
-		const responseObj = {
-			statusCode: this.status,
+		const dto = new ErrorResponseDto({
+			status: this.status,
 			timestamp: Date.now(),
 			path: this.request.url,
 			message: this.message,
-		};
+		});
 
 		// Send the response
-		this.response.status(this.status).json(responseObj);
+		this.response.status(this.status).json(dto);
 	}
 
 	/* Getters & Setters */

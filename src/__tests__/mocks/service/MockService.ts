@@ -11,7 +11,7 @@ import { ISseMessage } from "../../../application/events/ISseMessage";
 export class MockService {
 	events: Observable<ISseMessage<ResponseDto>> = of({} as ISseMessage<ResponseDto>); // Mocked Observable emitting ISseMessage<R>
 
-	constructor(protected createResponseDto: () => ResponseDto) {}
+	constructor(protected createResponseDto: () => AbstractEntity | ResponseDto) {}
 
 	create = jest.fn().mockImplementation((_: CreateDto) => {
 		return Promise.resolve(this.createResponseDto()); // Mocks returning a created entity as ResponseDto
@@ -19,7 +19,7 @@ export class MockService {
 
 	findAll = jest.fn().mockResolvedValue([this.createResponseDto()]); // Mocks finding multiple entities
 
-	findOne = jest.fn().mockImplementation((criteria: Partial<ResponseDto>) => {
+	findOne = jest.fn().mockImplementation((criteria: Partial<AbstractEntity | ResponseDto>) => {
 		if (criteria.id === 69) return null; // To test the error handling
 
 		return this.createResponseDto();

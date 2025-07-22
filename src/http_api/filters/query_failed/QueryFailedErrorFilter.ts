@@ -4,6 +4,8 @@ import { AbstractHttpFilter } from "../AbstractHttpFilter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 
+// !!! Remember to add it to the UseErrorFilters decorator at src/http_api/decorators/UseErrorFilters.ts !!!
+
 @Catch(QueryFailedError)
 export class QueryFailedErrorFilter extends AbstractHttpFilter {
 	protected status = HttpStatus.INTERNAL_SERVER_ERROR;

@@ -7,6 +7,10 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { HttpErrorFilter } from "./http_api/filters/http_error/HttpErrorFilter";
 import { WinstonAdapter } from "./infrastructure/logging/adapters/WinstonAdapter";
 import { serverConfig } from "./infrastructure/configuration/serverConfig";
+import { securityConstants } from "./common/constants/securityConstants";
+
+// Left off at Auth schemes. Next step is implementing a Keycloak guard.
+// Testing still needs to happen as well.
 
 async function bootstrap() {
 	// TODO's:
@@ -25,11 +29,13 @@ async function bootstrap() {
 		Implement a Queue manager
 		Implement a validator utility
 		Implement worker threads
-		Implement a custom session storage
 
-		Fix:
-		- Login scripts (scripts dir)
-		- Bash scripts for /session endpoints (scripts dir)
+		Create a middleware that looks at all of the application's responses and asserts:
+		- It either:
+		-- Fits a DTO scheme and has the `isDto` value set to true
+		-- Fits a the IHttpErrorResponseObj interface
+
+		Create automated dependency documentation https://www.youtube.com/watch?v=EtTrgv1ww8o
 	*/
 
 	// !!! IF ANY CHANGES ARE MADE HERE !!!
@@ -67,15 +73,19 @@ async function bootstrap() {
 
 	const swaggerConfig = new DocumentBuilder() // By default located at http://localhost:3000/api
 		.setTitle("NestJS Template API")
-		.setDescription("The NestJS template API Swagger documentation")
+		.setDescription("The NestJS template API's Swagger documentation")
 		.setVersion("1.0")
-		// .addBearerAuth() // TODO
-		// .addCookieAuth('jwt', {
-		//     type: 'http',
-		//     in: 'Header',
-		//     scheme: 'Bearer'
-		// })
+		.addApiKey(
+			{
+				type: "apiKey",
+				name: securityConstants.swaggerHeader,
+				in: "header",
+				description: "API Key for authentication",
+			},
+			securityConstants.swaggerAuthGuardBinding,
+		)
 		.build();
+
 	const document = SwaggerModule.createDocument(app, swaggerConfig);
 	SwaggerModule.setup("api", app, document, {
 		swaggerOptions: {
@@ -86,6 +96,28 @@ async function bootstrap() {
 		},
 	});
 
-	await app.listen(process.env.NEST_PORT || 3069); // Config object?
+	const PORT = process.env.NEST_PORT || 3069;
+	await app.listen(PORT);
+	logger.log("main", `API listening on port ${PORT}`);
+
+	/* 
+		Listen for shutdown signals to gracefully close the application
+	*/
+
+	process.on("SIGINT", async () => {
+		logger.log("main", "Received SIGINT. Shutting down gracefully...");
+		await app.close();
+
+		logger.log("main", "Application has been shut down.");
+		process.exit(0);
+	});
+
+	process.on("SIGTERM", async () => {
+		logger.log("main", "Received SIGTERM. Shutting down gracefully...");
+		await app.close();
+
+		logger.log("main", "Application has been shut down.");
+		process.exit(0);
+	});
 }
 bootstrap();

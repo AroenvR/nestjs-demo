@@ -10,5 +10,6 @@ import { TypeOrmEntityModule } from "../../../infrastructure/database/TypeOrmEnt
 	imports: [TypeOrmEntityModule],
 	controllers: [UserController],
 	providers: [UserService, UserSubscriber],
+	exports: [UserService],
 })
 export class UserModule {}

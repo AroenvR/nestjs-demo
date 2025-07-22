@@ -58,4 +58,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 *.db
 
 # Cookies
-scripts/**/cookies.txt
+scripts/cookies.txt
+scripts/jwt.txt

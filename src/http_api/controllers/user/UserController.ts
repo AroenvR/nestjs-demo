@@ -10,16 +10,19 @@ import { PostEndpoint } from "../../decorators/PostEndpoint";
 import { CreateUserDto } from "../../dtos/user/CreateUserDto";
 import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
-import { UserService } from "../../../application/services/user/UserService";
 import { GuardedController } from "../GuardedController";
+import { UserEntity } from "../../../domain/user/UserEntity";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { UserService } from "../../../application/services/user/UserService";
+import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
 
 const ENDPOINT = "user"; // Just finished the unit test, on to the integration and the module tests.
 
 // NOTE: Endpoint ordering is important for NestJS to correctly resolve the routes
 @Controller(ENDPOINT)
 @ApiTags(ENDPOINT)
-export class UserController extends GuardedController {
+@TransformResponseDto(UserResponseDto)
+export class UserController extends GuardedController<UserEntity> {
 	constructor(
 		protected readonly logAdapter: WinstonAdapter,
 		protected readonly service: UserService,

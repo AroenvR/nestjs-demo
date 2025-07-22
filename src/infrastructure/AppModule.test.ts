@@ -1,5 +1,5 @@
 import request from "supertest";
-import { Controller, Get, HttpStatus } from "@nestjs/common";
+import { Controller, Get, HttpStatus, INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "./AppModule";
 import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
@@ -7,6 +7,7 @@ import { HttpErrorFilter } from "../http_api/filters/http_error/HttpErrorFilter"
 import { HttpExceptionMessages } from "../common/enums/HttpExceptionMessages";
 import { WinstonAdapter } from "./logging/adapters/WinstonAdapter";
 import { mockILogger } from "../__tests__/mocks/mockLogAdapter";
+import { createMockAppModule } from "../__tests__/mocks/module/createMockAppModule";
 
 @Controller("mock")
 export class MockController {
@@ -22,14 +23,16 @@ export class MockController {
 }
 
 describe("AppModule", () => {
+	let app: INestApplication;
 	let appModule: AppModule;
 
 	beforeEach(async () => {
-		const nestApp: TestingModule = await Test.createTestingModule({
-			imports: [AppModule],
-		}).compile();
+		app = await createMockAppModule();
+		appModule = app.get<AppModule>(AppModule);
+	});
 
-		appModule = nestApp.get<AppModule>(AppModule);
+	afterEach(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------
@@ -93,7 +96,7 @@ describe("AppModule", () => {
 			.expect(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expect((res) => {
 				expect(res.body).toEqual({
-					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+					status: HttpStatus.INTERNAL_SERVER_ERROR,
 					timestamp: expect.any(Number),
 					path: "/mock/error",
 					message: HttpExceptionMessages.INTERNAL_SERVER_ERROR,

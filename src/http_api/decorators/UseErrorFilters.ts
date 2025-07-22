@@ -5,6 +5,7 @@ import { NotFoundExceptionFilter } from "../filters/not_found/NotFoundExceptionF
 import { NotImplementedExceptionFilter } from "../filters/not_implemented/NotImplementedExceptionFilter";
 import { QueryFailedErrorFilter } from "../filters/query_failed/QueryFailedErrorFilter";
 import { UnauthorizedExceptionFilter } from "../filters/unauthorized/UnauthorizedExceptionFilter";
+import { InternalServerExceptionFilter } from "../filters/internal_server_exception/InternalServerExceptionFilter";
 
 /**
  * Decorator for applying error filters to a controller or method.
@@ -15,6 +16,7 @@ import { UnauthorizedExceptionFilter } from "../filters/unauthorized/Unauthorize
  * - NotImplementedExceptionFilter
  * - QueryFailedErrorFilter
  * - UnauthorizedExceptionFilter
+ * - InternalServerExceptionFilter
  * @devnote Remember to add an ApiResponse decorator when adding new response codes at src/decorators/DefaultErrorDecorators.ts
  */
 export function UseErrorFilters() {
@@ -26,6 +28,7 @@ export function UseErrorFilters() {
 			NotImplementedExceptionFilter,
 			QueryFailedErrorFilter,
 			UnauthorizedExceptionFilter,
+			InternalServerExceptionFilter,
 		),
 	);
 }

@@ -1,24 +1,29 @@
 import { UUID } from "crypto";
 import { EntityManager, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { NotFoundException } from "@nestjs/common";
+import { Inject, NotFoundException } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
 import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
 import { AbstractService } from "../AbstractService";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
+import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
  * Extends the {@link AbstractService} class and implements the required CRUD operations.
  */
-export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, UserResponseDto> {
+export class UserService extends AbstractService<UserEntity> {
 	constructor(
 		@InjectRepository(UserEntity)
 		protected readonly repository: Repository<UserEntity>,
 		protected readonly entityManager: EntityManager,
 		protected readonly logAdapter: WinstonAdapter,
+		@Inject(CacheManagerAdapter)
+		protected readonly cache: CacheManagerAdapter,
 	) {
 		super(repository, entityManager, logAdapter);
 	}
@@ -29,13 +34,15 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public async create(createDto: CreateUserDto) {
 		this.logger.info(`Creating a new entity`);
 
-		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const entity = UserEntity.create(createDto);
+		// TODO: Hash the password before saving it
+		const entity = UserEntity.create(createDto);
 
+		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.create(transaction);
+		await this.cache.set(CacheKeys.USER_UUID + transaction.uuid, transaction.uuid, 5 * 60 * 1000);
+		return UserEntity.create(transaction);
 	}
 
 	/**
@@ -48,8 +55,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 			relations: [],
 		});
 
-		const entities = data.map((entity) => UserEntity.create(entity)); // Validate the data
-		return entities.map((entity) => UserResponseDto.create(entity));
+		return data.map((entity) => UserEntity.create(entity));
 	}
 
 	/**
@@ -64,9 +70,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		});
 
 		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
-		const entity = UserEntity.create(data); // Validate the data
-
-		return UserResponseDto.create(entity);
+		return UserEntity.create(data);
 	}
 
 	/**
@@ -75,20 +79,20 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 	public async update(uuid: UUID, updateDto: UpdateUserDto) {
 		this.logger.info(`Updating entity by uuid ${uuid}`);
 
+		const data = await this.repository.findOne({
+			where: { uuid: uuid },
+			relations: [],
+		});
+		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
+
+		const entity = UserEntity.create(data); // Validate the data
+		entity.update(updateDto);
+
 		const transaction = await this.entityManager.transaction(async (entityManager: EntityManager) => {
-			const data = await this.repository.findOne({
-				where: { uuid: uuid },
-				relations: [],
-			});
-			if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
-
-			const entity = UserEntity.create(data); // Validate the data
-			entity.update(updateDto);
-
 			return entityManager.save(entity);
 		});
 
-		return UserResponseDto.create(transaction);
+		return UserEntity.create(transaction);
 	}
 
 	/**
@@ -100,6 +104,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		const data = await this.repository.findOneBy({ uuid: uuid });
 		if (!data) throw new NotFoundException(`Entity by uuid ${uuid} not found`);
 
+		await this.cache.del(CacheKeys.USER_UUID + data.uuid);
 		await this.repository.remove(data);
 	}
 
@@ -134,6 +139,7 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 		const seedRequirement = (await this.repository.count()) === 0;
 		if (!seedRequirement) {
 			this.logger.info(`Seed data exists. Not seeding data.`);
+			await this.hydrateUserUuidsCache(); // TODO: improve
 			return;
 		}
 
@@ -141,6 +147,29 @@ export class UserService extends AbstractService<CreateUserDto, UpdateUserDto, U
 
 		this.logger.info(`Created ${dataToSeed.length} seeds.`);
 		await this.repository.save(dataToSeed);
+
+		await this.hydrateUserUuidsCache();
+	}
+
+	/**
+	 * Every 5 minutes, hydrate cache with all user UUIDs.
+	 */
+	@Cron(CronExpression.EVERY_5_MINUTES)
+	public async hydrateUserUuidsCache() {
+		this.logger.log("Hydrating user UUIDs cache");
+
+		const existingUuids = await this.repository.find({
+			select: ["uuid"],
+		});
+
+		const entries = existingUuids.map((user) => ({
+			key: CacheKeys.USER_UUID + user.uuid,
+			value: user.uuid,
+			ttl: 5 * 60 * 1000, // 5 minutes
+		}));
+		await this.cache.setMultiple(entries);
+
+		this.logger.log(`Hydrated ${entries.length} user UUIDs into cache`);
 	}
 
 	/**

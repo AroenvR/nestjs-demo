@@ -1,38 +1,82 @@
+import { randomUUID } from "crypto";
 import * as jwt from "jsonwebtoken";
 import { MockUserEntity } from "./entity/MockUserEntity";
-import { randomUUID } from "crypto";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
-import { TJwtCookie } from "../../http_api/types/TJwtCookie";
+import { securityConstants } from "../../common/constants/securityConstants";
+import { IBearerToken, IHttpOnlyCookie } from "../../common/interfaces/JwtInterfaces";
 
-const jwtSecret = process.env.JASON_WEB_TOKEN_SECRET || "jwt_testing_secret";
-const tokenExpiry = serverConfig().security.cookie.expiry;
+const bearerSecret = process.env[securityConstants.bearerAccessTokenEnvVar] || "token_testing_secret";
+const cookieSecret = process.env[securityConstants.httpOnlyCookieEnvVar] || "cookie_testing_secret";
+
+const tokenExpiry = serverConfig().security.bearer.expiry;
+const cookieExpiry = serverConfig().security.cookie.expiry;
 
 const user = MockUserEntity.get();
 
-const cookie: TJwtCookie = {
-	uuid: user.uuid,
-	username: user.username,
-	uniquefier: randomUUID(),
+/* ------------------------------ */
+/* Mock Bearer access token JWT's */
+/* ------------------------------ */
+
+const bearerToken: IBearerToken = {
+	sub: user.uuid,
+	roles: [],
+	jti: randomUUID(),
 	iat: Math.floor(Date.now() / 1000),
 	exp: Math.floor(Date.now() / 1000) + tokenExpiry,
 };
 
-export const mockPlainTextJwt = cookie;
-export const mockJwt = jwt.sign(cookie, jwtSecret);
-
-// @ts-expect-error: Setting the `iat` and `exp` values bricks the JWT signing.
-const expiredCookie: TJwtCookie = {
-	uuid: user.uuid,
-	username: user.username,
-	uniquefier: randomUUID(),
+const expiredBearerToken: IBearerToken = {
+	sub: user.uuid,
+	roles: [],
+	jti: randomUUID(),
+	iat: Math.floor(Date.now() / 1000) - (tokenExpiry + 10000),
+	exp: Math.floor(Date.now() / 1000) - tokenExpiry,
 };
-export const expiredJwt = jwt.sign(expiredCookie, jwtSecret, { expiresIn: "-1h" });
 
-const faultyCookie: TJwtCookie = {
-	uuid: randomUUID(),
-	username: randomUUID().toString(),
-	uniquefier: randomUUID(),
+const faultyBearerToken: IBearerToken = {
+	sub: randomUUID(),
+	roles: [],
+	jti: randomUUID(),
 	iat: Math.floor(Date.now() / 1000),
 	exp: Math.floor(Date.now() / 1000) + tokenExpiry,
 };
-export const faultyJwt = jwt.sign(faultyCookie, jwtSecret);
+
+/**
+ * A mock plain text (unsigned) Bearer token for testing purposes.
+ */
+export const mockPlainTextBearerToken = bearerToken;
+
+/**
+ * A mock (signed) Bearer token for testing purposes.
+ */
+export const mockBearerToken = jwt.sign(bearerToken, bearerSecret);
+
+/**
+ * A mock expired (but signed) Bearer token for testing purposes.
+ */
+export const mockExpiredBearerToken = jwt.sign(expiredBearerToken, bearerSecret);
+
+/**
+ * A mock faulty (but signed) Bearer token for testing purposes.
+ */
+export const mockFaultyBearerToken = jwt.sign(faultyBearerToken, bearerSecret);
+
+/* --------------------------- */
+/* Mock HTTP-Only Cookie JWT's */
+/* --------------------------- */
+
+const httpOnlyCookie: IHttpOnlyCookie = {
+	jti: randomUUID(),
+	iat: Math.floor(Date.now() / 1000),
+	exp: Math.floor(Date.now() / 1000) + cookieExpiry,
+};
+
+/**
+ * A mock plain text (unsigned) HTTP-Only Cookie for testing purposes.
+ */
+export const mockPlainTextHttpOnlyJwtCookie = httpOnlyCookie;
+
+/**
+ * A mock (signed) HTTP-Only Cookie for testing purposes.
+ */
+export const mockHttpOnlyCookie = jwt.sign(httpOnlyCookie, cookieSecret);

@@ -1,27 +1,32 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 ENDPOINT="user"
 ID="$1"
 
 # Check if the necessary values were provided
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 <id> <username> <password | null>"
+  echo "Usage: $0 <id> <username>"
   exit 1
 fi
 
 shift # Skip the first value
-DATA="{\"username\":\"$1\",\"password\":\"$2\"}" # Use $* if you need to pass multiple values
+DATA="{\"username\":\"$1\"}" # Use $* if you need to pass multiple values
 
-# Get the directory where the script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Locate the JWT
+JWT_FILE="$PWD/jwt.txt"
 
-# Set the cookie jar path relative to the script's location
-COOKIE_JAR="$SCRIPT_DIR/cookies.txt"
+# Read the JWT from the file
+JWT=$(< "$JWT_FILE" )
+
+# Ensure the JWT was read successfully
+if [[ -z "$JWT" ]]; then
+  echo "ERROR: jwt.txt is empty!" >&2
+  exit 1
+fi
 
 # Send a PATCH by ID request to the endpoint
 curl -X PATCH http://localhost:3000/v1/$ENDPOINT/$ID \
-    -b $COOKIE_JAR \
+    -H "Authorization: Bearer $JWT" \
     -H "Content-Type: application/json" \
     -d "$DATA" | jq
-
-echo ""
