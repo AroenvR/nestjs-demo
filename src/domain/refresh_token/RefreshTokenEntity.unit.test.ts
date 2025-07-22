@@ -69,7 +69,7 @@ describe("RefreshTokenEntity.Unit", () => {
 		const cookieExpiry = config.security.cookie.expiry;
 		const tokenExpiry = config.security.bearer.expiry;
 
-		data.lastRefreshedAt = Date.now() - tokenExpiry + 5; // 5 milliseconds too early.
+		data.lastRefreshedAt = Date.now() - tokenExpiry + 100; // 100 milliseconds too early.
 		const entity = RefreshTokenEntity.create(data);
 
 		const newJti = randomUUID();

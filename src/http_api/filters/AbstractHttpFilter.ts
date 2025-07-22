@@ -5,6 +5,7 @@ import { GuardedController } from "../controllers/GuardedController"; // eslint-
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IHttpErrorResponseObj } from "./IHttpErrorResponseObj";
+import { ErrorResponseDto } from "../dtos/ErrorResponseDto";
 
 /**
  * Abstract class for creating custom exception filters for HTTP requests.
@@ -32,15 +33,15 @@ export abstract class AbstractHttpFilter implements ExceptionFilter {
 
 		this.logger.error(`${error instanceof Error ? error.message : "Unknown issue."}`, error);
 
-		const responseObj: IHttpErrorResponseObj = {
+		const dto = new ErrorResponseDto({
 			status: this.status,
 			timestamp: Date.now(),
 			path: this.request.url,
 			message: this.message,
-		};
+		});
 
 		// Send the response
-		this.response.status(this.status).json(responseObj);
+		this.response.status(this.status).json(dto);
 	}
 
 	/* Getters & Setters */

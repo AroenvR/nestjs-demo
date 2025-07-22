@@ -1,3 +1,4 @@
+import { HttpStatus } from "@nestjs/common";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 
 // TOOD: Make a ResponseDto for this error IHttpErrorObj, since the request builder always returns it
@@ -8,7 +9,7 @@ import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages"
  * @property message - A {@link HttpExceptionMessages} enum value representing the error message (set by us).
  */
 export interface IHttpErrorObj {
-	status: number;
+	status: HttpStatus;
 	message: HttpExceptionMessages;
 }
 

@@ -9,11 +9,10 @@ import { AuthModule } from "../http_api/modules/auth/AuthModule";
 import { serverConfig } from "./configuration/serverConfig";
 import { UserModule } from "../http_api/modules/user/UserModule";
 import { UtilityModule } from "../common/utility/UtilityModule";
-import { SessionModule } from "../http_api/modules/session/SessionModule";
 import { AppStatusModule } from "../http_api/modules/app_status/AppStatusModule";
 import { TransformResponseInterceptor } from "../http_api/interceptors/TransformResponseInterceptor";
 
-const ENDPOINT_MODULES = [UserModule, SessionModule, AppStatusModule];
+const ENDPOINT_MODULES = [UserModule, AppStatusModule];
 
 @Module({
 	imports: [

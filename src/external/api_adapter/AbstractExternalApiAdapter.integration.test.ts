@@ -55,10 +55,7 @@ class ExampleExternalApiAdapter extends AbstractExternalApiAdapter {
 })
 class ExampleExternalApiAdapterModule {} // The module to import if you want to use the adapter
 
-/*
-	This works, and config is now an array so we can create multiple Adapters.
-	The events variable has been made into an array, so that should be used for creating new event listeners.
-*/
+/* --- TEST STARTS HERE --- */
 
 const TEST_NAME = "AbstractExternalApiAdapter.Integration";
 describe(TEST_NAME, () => {

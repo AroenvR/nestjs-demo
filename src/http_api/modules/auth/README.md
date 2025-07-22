@@ -20,11 +20,9 @@ This document describes the authentication flow, token handling, and route prote
 - On success:
   1. Issues an encrypted **JWT access token** (short-lived).  
   2. Sets a **`refresh_token`** as an HttpOnly, Secure, SameSite cookie.  
-  3. Returns JSON payload:
-```json
-    {
-      "accessToken": "<jwt>"
-    }
+  3. Returns text payload:
+```text
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 ---
 
@@ -37,9 +35,7 @@ This document describes the authentication flow, token handling, and route prote
   2. Issues a fresh **access token**.  
   3. Returns JSON payload:
 ```json
-    {
-      "accessToken": "<new-jwt>"
-    }
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 - On missing/invalid cookie: responds `401 Unauthorized`.
@@ -72,7 +68,7 @@ This document describes the authentication flow, token handling, and route prote
 1. **Login** (`POST /auth/login`)  
    - Client calls with credentials.  
    - Server responds with:
-     - JSON `{ "accessToken": "<jwt>" }`  
+     - TEXT `ey...`  
      - HttpOnly cookie `refresh_token=<token>; Secure; SameSite=Strict; Max-Age=7d`
 
 2. **Using the API**  
@@ -84,22 +80,3 @@ This document describes the authentication flow, token handling, and route prote
 3. **Logout** (`POST /auth/logout`)  
    - Client calls (no tokens required).  
    - Server revokes refresh tokens (if present) and clears the cookie.
-
----
-
-## 6. Security Notes
-
-- **Access Tokens**  
-  - Signed & encrypted using an environment variable set on startup.  
-  - Short-lived (e.g. 15 minutes) to minimize risk if leaked.
-
-- **Refresh Tokens**  
-  - Stored as HttpOnly cookie.  
-  - Rotated on each use and persisted (hashed) in the database for revocation.
-
-- **Swagger API Key**  
-  - Required for all protected routes to enable secure testing via Swagger UI.  
-  - Sent in the `X-Swagger-API-Key` header.
-
-- **Cookie Settings**  
-  - `HttpOnly`, `Secure`, `SameSite=Strict` to prevent XSS/CSRF attacks.
