@@ -110,14 +110,14 @@ describe("TokenService.Unit", () => {
 			sub: randomUUID(),
 			roles: [],
 		};
-		const cookie = await service.createHttpOnlyCookie(cookieData);
+		const cookie = await service.createRefreshCookie(cookieData);
 
 		expect(typeof cookie).toEqual("string");
 		expect(cookie.length).toBeGreaterThan(1);
 
 		expect(createTokenInfoSpy).toHaveBeenCalled();
 		expect(createTokenSpy).toHaveBeenCalledWith(cookieData, expect.any(Object));
-		expect(jwtSignSpy).toHaveBeenCalledWith(expect.any(Object), { secret: process.env[securityConstants.httpOnlyCookieEnvVar] });
+		expect(jwtSignSpy).toHaveBeenCalledWith(expect.any(Object), { secret: process.env[securityConstants.refreshCookieEnvVar] });
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Creating HTTP-only cookie.`);
 	});
@@ -143,7 +143,7 @@ describe("TokenService.Unit", () => {
 		expect(cookie.length).toBeGreaterThan(1);
 
 		expect(refreshSpy).toHaveBeenCalledWith(expect.any(String), expect.any(String), expect.any(Number), expect.any(Number));
-		expect(jwtSignSpy).toHaveBeenCalledWith(expect.any(Object), { secret: process.env[securityConstants.httpOnlyCookieEnvVar] });
+		expect(jwtSignSpy).toHaveBeenCalledWith(expect.any(Object), { secret: process.env[securityConstants.refreshCookieEnvVar] });
 
 		expect(mockILogger.info).toHaveBeenCalledWith(`Refreshing token ${mockPlainTextHttpOnlyJwtCookie.jti}`);
 	});

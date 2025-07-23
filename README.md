@@ -79,26 +79,32 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-# This project's file structure adheres to Domain Driven Design.
+# Project directory structure
+This project's file structure adheres to Domain Driven Design as much as possible.
 ```plaintext
 src/
+├── __tests__/          # Doesn't contain tests. Contains test configurations, setups, helpers, mocks, ...
+│   ├── helpers/        # Helper functions for the test files spread throughout the server.
+│   └── mocks/          # Mocks for the test files spread throughout the server.
+│
 ├── application/        # Coordinates use cases of the application without direct business logic.
 │   ├── events/         # Application services which emit events triggered by database operations.
 │   └── services/       # Application services orchestrating domain services and repository interactions.
 │
 ├── common/             # Contains values that are used accross layers.
 │   ├── constants/      # Constants that are used by multiple layers.
-│   └── enums/          # Enums that are used by multiple layers.
+│   ├── enums/          # Enums that are used by multiple layers.
+│   ├── interfaces/     # Interfaces that are used by multiple layers.
+│   ├── types/          # Types that are used by multiple layers.
+│   └── utility/        # Contains the server's Utility Module and utility objects.
 │
 ├── domain/             # Encapsulates core business logic, the domain model and its entities.
 │   └── AbstractEntity  # The parent class for all entities in the application.
-│
-├── infrastructure/     # Provides technical capabilities to support application and domain layers.
-│   ├── configuration/  # Manages application configuration and environment variables.
-│   ├── database/       # Responsible for the application's database access.
-│   ├── logging/        # The application's logging mechanisms.
-│   └── AppModule       # The application's primary module, and IOC container.
 |
+├── external/           # External integrations and adapters for third-party services or API's.
+│   ├── api_adapter/    # Adapters for external APIs, such as OpenAI or other third-party services.
+│   └── events/         # Event handlers for external SSE's or notifications.
+│
 ├── http_api/           # Encapsulates the application's HTTP interface.
 │   ├── controllers/    # HTTP request handlers routing requests to the application's services.
 │   ├── decorators/     # Custom decorators for Swagger documentation and request routing for Controllers.
@@ -107,11 +113,93 @@ src/
 │   ├── guards/         # Guards to enforce authorization and endpoint protection.
 │   ├── interceptors/   # Interceptors for transforming data or handling response customization.
 │   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
-│   ├── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
-│   └── strategies/     # Passport strategies for encapsulating user authentication.
+│   └── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
+│
+├── infrastructure/     # Provides technical capabilities to support application and domain layers.
+│   ├── configuration/  # Manages application configuration and environment variables.
+│   ├── database/       # Responsible for the application's database access.
+│   ├── logging/        # The application's logging mechanisms.
+│   └── AppModule       # The application's primary module, and IOC container.
 │
 └── main.ts             # The application's entry point where the NestJS app is bootstrapped.
 ```
+
+# API Authentication & Token Management
+This segment describes the authentication flow, token handling, and route protection policies for the API.
+
+## Routes Overview
+| Route                 | Public / Protected | Authentication Mechanism                                     |
+| --------------------- | ------------------ | ------------------------------------------------------------ |
+| **POST /auth/login**   | Public             | None. Validates credentials and issues tokens.               |
+| **POST /auth/refresh** | Protected          | Requires valid `refresh_token` HttpOnly cookie.             |
+| **POST /auth/logout**  | Public             | Always clears cookies; parses & revokes token if present.   |
+| **All other routes**   | Protected          | Requires `Authorization: Bearer <accessToken>` **or** `X-Swagger-API-Key` header **or** HTTP-Only `access_cookie` JWT. |
+
+---
+
+## 1. POST /auth/login
+- **Public endpoint**; no token or cookie required.
+
+- On success:
+  1. Issues an encrypted **JWT access token** (short-lived).  
+  2. Sets a **`refresh_token`** as an HttpOnly, Secure, SameSite cookie.  
+  3. Returns text payload:
+```text
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+---
+
+## 2. POST /auth/refresh
+- **Protected endpoint**; no `Authorization` header.  
+- Reads **only** the `refresh_token` cookie.  
+- On valid & unexpired cookie:
+  1. Rotates the refresh token (invalidate old, set new cookie).  
+  2. Issues a fresh **access token**.  
+  3. Returns JSON payload:
+```json
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+- On missing/invalid cookie: responds `401 Unauthorized`.
+
+---
+
+## 3. POST /auth/logout
+- **Public endpoint**; no guard.  
+- Always clears the `refresh_token` cookie.  
+- If a valid refresh token (or expired one) is present in the cookie:
+  1. Parses it (ignoring expiration).  
+  2. Revokes all server-side refresh-token records for that user.  
+- Returns NO_CONTENT
+---
+
+## 4. All Other Routes
+- **Protected endpoints**.  
+- Require **one of three** on every request:  
+  1. `Authorization: Bearer <accessToken>`  
+  2. `access_cookie`  
+  3. `X-Swagger-API-Key: <your-swagger-api-key>`  
+- Returns `401 Unauthorized` if a header is missing, invalid, or expired.
+
+---
+
+## 5. Token & Cookie Lifecycle
+1. **Login** (`POST /auth/login`)  
+   - Client calls with credentials.  
+   - Server responds with:
+     - TEXT `ey...`  
+     - HttpOnly cookie `refresh_token=<token>; Secure; SameSite=Strict; Max-Age=`
+     - HttpOnly cookie `access_cookie=<token>; Secure; SameSite=Strict; Max-Age=`
+
+2. **Using the API**  
+   - Client includes `Authorization: Bearer <accessToken>` OR `X-Swagger-API-Key` OR `access_cookie` on every request.  
+   - If a request returns `401 Unauthorized` (access token expired):
+     1. Client immediately calls **`POST /auth/refresh`**.  
+     2. On success, client replaces `accessToken` & `access_cookie` and retries the original request.
+
+3. **Logout** (`POST /auth/logout`)  
+   - Client calls (no tokens required).  
+   - Server revokes all cookies that are present.
 
 ## My development setup
 ```bash
@@ -122,7 +210,7 @@ npm run start:dev
 npm run test:watch
 ```
 [Bash scripts](./scripts/) to manually test the API's endpoints.  
-[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.  
+[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents (when not using SQLCipher, otherwise just use the sqlcipher CLI).  
 [Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
 
 ## NestJS dataflow
@@ -220,7 +308,7 @@ Filters in NestJS, specifically Exception Filters, handle and manage exceptions 
 - **Integration with Logging**: Combine with logging mechanisms to record error details for debugging.
 
 ## SQLCipher
-Quick guide on getting SQLCipher to work with this API on a Linux system.
+Quick guide on getting SQLCipher to work with this API on an Ubuntu system.
 
 #### Commands:
 ```

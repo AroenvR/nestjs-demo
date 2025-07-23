@@ -12,6 +12,7 @@ import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/d
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { MockCacheManagerAdapter } from "../../../__tests__/mocks/service/MockCacheAdapter";
+import { mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
 
 describe("UserService.Unit", () => {
 	let mockedResponse: UserEntity;
@@ -139,7 +140,7 @@ describe("UserService.Unit", () => {
 	// --------------------------------------------------
 
 	it("Can observe events", async () => {
-		const observable = await service.observe();
+		const observable = await service.observe(mockPlainTextBearerToken);
 
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty("subscribe");
@@ -155,7 +156,7 @@ describe("UserService.Unit", () => {
 
 		await service.emit(mockedResponse);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(mockedResponse) });
+		expect(spy).toHaveBeenCalledWith({ authenticated: false, receiverUuid: mockedResponse.uuid, data: UserResponseDto.create(mockedResponse) });
 		expect(mockILogger.info).toHaveBeenCalledWith(`Emitting entity by uuid: ${mockedResponse.uuid}`);
 	});
 });

@@ -10,15 +10,18 @@ import { AuthService } from "../../../application/services/auth/AuthService";
 import { TokenService } from "../../../application/services/auth/TokenService";
 import { TypeOrmEntityModule } from "../../../infrastructure/database/TypeOrmEntityModule";
 import { UserModule } from "../user/UserModule";
-import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
-import { HttpOnlyCookieStrategy } from "../../../http_api/guards/strategies/HttpOnlyCookieStrategy";
+import { RefreshCookieAuthGuard } from "../../guards/RefreshCookieAuthGuard";
 import { BearerTokenStrategy } from "../../../http_api/guards/strategies/BearerTokenStrategy";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 import { JwksStrategy } from "../../../http_api/guards/strategies/JwksStrategy";
 import { JwksAuthGuard } from "../../../http_api/guards/JwksAuthGuard";
+import { AccessCookieAuthGuard } from "../../guards/AccessCookieAuthGuard";
+import { AccessCookieStrategy } from "../../guards/strategies/AccessCookieStrategy";
+import { RefreshCookieStrategy } from "../../../http_api/guards/strategies/RefreshCookieStrategy";
 // TODO: test
-if (!process.env[securityConstants.httpOnlyCookieEnvVar]) throw new Error("HTTP-Only Cookie secret is not defined");
+if (!process.env[securityConstants.refreshCookieEnvVar]) throw new Error("HTTP-Only Cookie secret is not defined");
 if (!process.env[securityConstants.bearerAccessTokenEnvVar]) throw new Error("Bearer Token secret is not defined");
+if (!process.env[securityConstants.accessCookieEnvVar]) throw new Error("SSE Cookie secret is not defined");
 if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API key is not defined");
 
 @Module({
@@ -35,12 +38,14 @@ if (!process.env[securityConstants.swaggerEnvVar]) throw new Error("Swagger API 
 		AuthService,
 		TokenService,
 		BearerTokenStrategy,
-		HttpOnlyCookieStrategy,
-		JwksStrategy,
-		SwaggerApiKeyStrategy,
 		BearerTokenAuthGuard,
-		HttpOnlyCookieAuthGuard,
+		RefreshCookieStrategy,
+		RefreshCookieAuthGuard,
+		AccessCookieStrategy,
+		AccessCookieAuthGuard,
+		JwksStrategy,
 		JwksAuthGuard,
+		SwaggerApiKeyStrategy,
 		SwaggerApiKeyAuthGuard,
 		CompositeAuthGuard,
 	],

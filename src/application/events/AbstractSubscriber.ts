@@ -2,6 +2,7 @@ import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, Up
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { AbstractService } from "../services/AbstractService";
 import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { InternalServerErrorException } from "@nestjs/common";
 
 /**
  * An abstract class to Subscribe to, and publish, events from the database's INSERT and UPDATE actions.
@@ -9,13 +10,15 @@ import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
 @EventSubscriber()
 export abstract class AbstractSubscriber<Entity extends AbstractEntity> implements EntitySubscriberInterface<Entity> {
 	protected logger: ILogger;
+	public readonly name: string;
 
 	constructor(
 		protected readonly logAdapter: IPrefixedLogger,
 		protected readonly dataSource: DataSource,
 		protected readonly service: AbstractService<Entity>,
 	) {
-		this.logger = logAdapter.getPrefixedLogger(this.constructor.name);
+		this.name = this.constructor.name;
+		this.logger = logAdapter.getPrefixedLogger(this.name);
 		dataSource.subscribers.push(this);
 	}
 
@@ -29,9 +32,10 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	 */
 	afterInsert(event: InsertEvent<Entity>) {
 		if (!event) return;
+		if (!event.entity.uuid) throw new InternalServerErrorException(`${this.name}: Inserted entity did not have a UUID.`);
 
 		this.logger.debug(`Entity by uuid ${event.entity.uuid} was inserted`);
-		this.service.emit(event.entity);
+		this.service.emitInsert(event.entity);
 	}
 
 	/**
@@ -39,8 +43,9 @@ export abstract class AbstractSubscriber<Entity extends AbstractEntity> implemen
 	 */
 	afterUpdate(event: UpdateEvent<Entity>) {
 		if (!event) return;
+		if (!event.entity.uuid) throw new InternalServerErrorException(`${this.name}: Updated entity did not have a UUID.`);
 
 		this.logger.debug(`Entity by uuid ${event.entity.uuid} was updated`);
-		this.service.emit(event.entity as Entity);
+		this.service.emitUpdate(event.entity as Entity);
 	}
 }

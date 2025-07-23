@@ -30,10 +30,22 @@ export interface ICreateAuthTokenData {
 export interface IHttpOnlyCookie extends IJwtData {}
 
 /**
- * This interface represents the structure of a Bearer JWT.
- * Extends the {@link IJwtData} interface to include the basic JWT properties.
+ * This interface represents the structure of an access token JWT.
+ * Extends the {@link IJwtData} and {@link ICreateAuthTokenData} interfaces.
  */
-export interface IBearerToken extends IJwtData, ICreateAuthTokenData {}
+export interface IAccessToken extends IJwtData, ICreateAuthTokenData {}
+
+/**
+ * This interface represents the structure of a Bearer JWT.
+ * Extends the {@link IAccessToken} interface.
+ */
+export interface IBearerToken extends IAccessToken {}
+
+/**
+ * This interface represents an HTTP-Only Cookie that's equal to a bearer access token.
+ * Extends the {@link IAccessToken} interface.
+ */
+export interface IAccessCookie extends IAccessToken {}
 
 /**
  * This interface represents the structure of an access token JWT used in NestJS applications.

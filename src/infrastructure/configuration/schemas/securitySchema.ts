@@ -5,7 +5,7 @@ import { SUPPORTED_AES_ALGORITHMS } from "../../../common/utility/aes/TSupported
  * Joi schema for the server's miscellaneous configuration.
  */
 export const securitySchema = Joi.object({
-	cookie: Joi.object({
+	refresh_cookie: Joi.object({
 		enabled: Joi.boolean().default(false).optional(),
 		version: Joi.number().default(1).optional(),
 		secure: Joi.boolean().default(true).optional(),
@@ -15,6 +15,18 @@ export const securitySchema = Joi.object({
 			.min(1000 * 60 * 60 * 4) // 4 hours in milliseconds
 			.max(1000 * 60 * 60 * 24 * 7) // 7 days in milliseconds
 			.default(1000 * 60 * 60 * 16) // 16 hours in milliseconds
+			.optional(),
+	}).required(),
+	access_cookie: Joi.object({
+		enabled: Joi.boolean().default(false).optional(),
+		version: Joi.number().default(1).optional(),
+		secure: Joi.boolean().default(true).optional(),
+		expiry: Joi.number()
+			.integer()
+			.positive()
+			.min(60 * 1000) // 1 minute in milliseconds
+			.max(60 * 60 * 1000) // 1 hour in milliseconds
+			.default(60 * 15 * 1000) // 15 minutes in milliseconds
 			.optional(),
 	}).required(),
 	bearer: Joi.object({

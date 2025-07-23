@@ -1,9 +1,15 @@
 {
-    "cookie": {
+    "refresh_cookie": {
         "enabled": true,
         "version": 1,
         "secure": false,
         "expiry": 57600000
+    },
+    "access_cookie": {
+        "enabled": true,
+        "version": 1,
+        "secure": false,
+        "expiry": 900000
     },
     "bearer": {
         "enabled": true,

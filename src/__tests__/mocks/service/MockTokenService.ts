@@ -1,5 +1,5 @@
 import { ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
-import { mockBearerToken, mockHttpOnlyCookie } from "../mockJwt";
+import { mockBearerToken, mockHttpOnlyCookie, mockAccessHttpCookie } from "../mockJwt";
 
 /**
  * Mocks a service that provides methods for creating and managing authentication tokens.
@@ -9,8 +9,12 @@ export class MockTokenService {
 		return mockBearerToken;
 	});
 
-	createHttpOnlyCookie = jest.fn().mockImplementation((_: ICreateAuthTokenData) => {
+	createRefreshCookie = jest.fn().mockImplementation((_: ICreateAuthTokenData) => {
 		return mockHttpOnlyCookie;
+	});
+
+	createAccessCookie = jest.fn().mockImplementation((_: ICreateAuthTokenData) => {
+		return mockAccessHttpCookie;
 	});
 
 	rotateRefreshToken = jest.fn().mockImplementation((_: IHttpOnlyCookie) => {

@@ -36,4 +36,12 @@ export class MockService {
 	emit = jest.fn().mockImplementation((_: AbstractEntity) => {
 		// Simulates emitting an event with the given entity
 	});
+
+	emitInsert = jest.fn().mockImplementation((_: AbstractEntity) => {
+		this.emit(_);
+	});
+
+	emitUpdate = jest.fn().mockImplementation((_: AbstractEntity) => {
+		this.emit(_);
+	});
 }

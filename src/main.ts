@@ -33,9 +33,12 @@ async function bootstrap() {
 		Create a middleware that looks at all of the application's responses and asserts:
 		- It either:
 		-- Fits a DTO scheme and has the `isDto` value set to true
-		-- Fits a the IHttpErrorResponseObj interface
+		-- Fits a the ErrorResponseDto scheme
 
 		Create automated dependency documentation https://www.youtube.com/watch?v=EtTrgv1ww8o
+
+		Create a global auth guard with specific exclusions (such as login / refresh / logout)
+		Create a global error filter so controllers don't need to implement it anymore.
 	*/
 
 	// !!! IF ANY CHANGES ARE MADE HERE !!!

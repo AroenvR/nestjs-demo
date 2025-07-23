@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { filter } from "rxjs/operators";
 import { EntityManager, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Inject, NotFoundException } from "@nestjs/common";
@@ -11,6 +12,7 @@ import { AbstractService } from "../AbstractService";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
+import { IAccessCookie, IBearerToken } from "../../../common/interfaces/JwtInterfaces";
 
 /**
  * A service class that provides basic CRUD operations for the UserEntity.
@@ -111,9 +113,23 @@ export class UserService extends AbstractService<UserEntity> {
 	/**
 	 *
 	 */
-	public async observe() {
+	public async observe(jwt: IBearerToken | IAccessCookie) {
 		this.logger.info(`Observing events`);
-		return this.events.asObservable();
+
+		return this.events.pipe(
+			filter((message) => {
+				const { authenticated, receiverUuid } = message;
+
+				// Event doesn't need authentication
+				if (!authenticated) return true;
+
+				// Message is intended for a specific user
+				if (receiverUuid) return jwt.sub === receiverUuid;
+
+				// No target = don't broadcast
+				return false;
+			}),
+		);
 	}
 
 	/**
@@ -124,7 +140,11 @@ export class UserService extends AbstractService<UserEntity> {
 
 		try {
 			const entity = UserEntity.create(data); // Validate the data
-			this.events.next({ data: UserResponseDto.create(entity) });
+			this.events.next({
+				authenticated: false, // !!! REMEMBER TO CHANGE THIS WHEN NECESSARY !!!
+				receiverUuid: entity.uuid,
+				data: UserResponseDto.create(entity),
+			});
 		} catch (err) {
 			this.logger.error(`Failed to emit entity.`, err);
 		}
