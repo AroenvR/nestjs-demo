@@ -11,7 +11,7 @@ import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { mockPlainTextBearerToken, mockPlainTextHttpOnlyJwtCookie } from "../../../__tests__/mocks/mockJwt";
-import { IBearerAuthConfig, ICookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import { IBearerAuthConfig, IRefreshCookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { IHttpOnlyCookie, INestJSBearerJwt, INestJSCookieJwt } from "../../../common/interfaces/JwtInterfaces";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
@@ -25,7 +25,7 @@ describe(TEST_NAME, () => {
 	let ptsBearerToken: INestJSBearerJwt;
 
 	let app: INestApplication;
-	let cookieConfig: ICookieAuthConfig;
+	let cookieConfig: IRefreshCookieAuthConfig;
 	let bearerConfig: IBearerAuthConfig;
 
 	let className: string;
@@ -46,7 +46,7 @@ describe(TEST_NAME, () => {
 		repository = app.get(getRepositoryToken(RefreshTokenEntity));
 
 		const configService = app.get<ConfigService>(ConfigService);
-		cookieConfig = configService.get<IServerConfig["security"]>("security").cookie;
+		cookieConfig = configService.get<IServerConfig["security"]>("security").refresh_cookie;
 		bearerConfig = configService.get<IServerConfig["security"]>("security").bearer;
 
 		className = controller.constructor.name;

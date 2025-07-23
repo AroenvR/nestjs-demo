@@ -6,14 +6,13 @@ import { Algorithm } from "jsonwebtoken";
 import { IExternalConfig } from "src/external/IExternalConfig";
 
 /**
- * The server's cookie configuration interface.
+ * The server's refresh cookie configuration interface.
  * @property enabled - Whether this auth scheme should be enabled or not.
  * @property version - The version of the cookie configuration.
  * @property secure - A boolean flag indicating whether the cookie is secure (only sent over HTTPS).
  * @property expiry - The expiry time of the cookie in milliseconds.
- * @property maxAge - The maximum age a HTTP-Only Cookie is allowed to have.
  */
-export interface ICookieAuthConfig {
+export interface IRefreshCookieAuthConfig {
 	enabled: boolean;
 	version: number;
 	secure: boolean;
@@ -33,7 +32,23 @@ export interface IBearerAuthConfig {
 	enabled: boolean;
 	header: string;
 	encryption: TSupportedAesAlgorithms;
-	expiry: number; // in seconds
+	expiry: number; // in milliseconds
+}
+
+/**
+ * The server's HTTP-Only Cookie interface for a cookie that's equal to a bearer access token.
+ * @property enabled - Whether this auth scheme should be enabled or not.
+ * @property version - The version of the cookie configuration.
+ * @property secure - A boolean flag indicating whether the cookie is secure (only sent over HTTPS).
+ * @property expiry - The expiry time of the cookie in milliseconds.
+ */
+export interface IAccessCookieAuthConfig {
+	enabled: boolean;
+	version: number;
+	secure: boolean;
+	expiry: number; // in milliseconds
+	// http-only is always true
+	// sameSite is always "strict"
 }
 
 /**
@@ -83,7 +98,8 @@ export interface ISwaggerAuthConfig {
  * @property cors - The server's {@link https://docs.nestjs.com/security/cors} config.
  */
 export interface ISecurityConfig {
-	cookie: ICookieAuthConfig;
+	refresh_cookie: IRefreshCookieAuthConfig;
+	access_cookie: IAccessCookieAuthConfig;
 	bearer: IBearerAuthConfig;
 	jwks?: IJwksAuthConfig;
 	swagger: ISwaggerAuthConfig;

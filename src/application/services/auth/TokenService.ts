@@ -4,10 +4,15 @@ import { BadRequestException, Injectable, InternalServerErrorException } from "@
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { IBearerToken, ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
+import { IAccessCookie, IAccessToken, IBearerToken, ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../infrastructure/logging/ILogger";
-import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import {
+	IBearerAuthConfig,
+	IAccessCookieAuthConfig,
+	IRefreshCookieAuthConfig,
+	IServerConfig,
+} from "../../../infrastructure/configuration/IServerConfig";
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { securityConstants } from "../../../common/constants/securityConstants";
@@ -45,18 +50,26 @@ export class TokenService {
 		this.logger.info(`Creating access token.`);
 
 		const config = this.configService.getOrThrow<IServerConfig["security"]>("security").bearer;
-		const iat = Math.floor(Date.now() / 1000);
-		const exp = iat + config.expiry / 1000;
 
-		const tokenInfo: IBearerToken = {
-			jti: randomUUID(),
-			sub: data.sub,
-			roles: data.roles || [],
-			iat: iat,
-			exp: exp,
-		};
+		const tokenInfo = this.createAccessTokenInfo(data, config);
 
-		return this.signToken(tokenInfo);
+		const secret = this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar);
+		return this.signToken(tokenInfo, config, secret);
+	}
+
+	/**
+	 * Creates a new HTTP-only cookie equal to a bearer access token.
+	 * @param data The data required to create the HTTP-only cookie, including the subject.
+	 * @returns A signed JWT string representing the HTTP-only cookie.
+	 */
+	public async createAccessCookie(data: ICreateAuthTokenData): Promise<string> {
+		this.logger.info(`Creating HTTP-only cookie for SSE endpoints.`);
+
+		const config = this.configService.get<IServerConfig["security"]>("security").access_cookie;
+		const tokenInfo = this.createAccessTokenInfo(data, config);
+
+		const secret = this.configService.get<string>(securityConstants.accessCookieEnvVar);
+		return this.signToken(tokenInfo, config, secret);
 	}
 
 	/**
@@ -64,12 +77,16 @@ export class TokenService {
 	 * @param data The data required to create the HTTP-only cookie, including the subject.
 	 * @returns A signed JWT string representing the HTTP-only cookie.
 	 */
-	public async createHttpOnlyCookie(data: ICreateAuthTokenData): Promise<string> {
+	public async createRefreshCookie(data: ICreateAuthTokenData): Promise<string> {
 		this.logger.info(`Creating HTTP-only cookie.`);
 
-		const tokenInfo = await this.createHttpOnlyCookieInfo();
+		const config = this.configService.get<IServerConfig["security"]>("security").refresh_cookie;
+
+		const tokenInfo = await this.createHttpOnlyCookieInfo(config);
 		await this.createRefreshTokenEntity(data, tokenInfo);
-		return this.signToken(tokenInfo);
+
+		const secret = this.configService.get<string>(securityConstants.refreshCookieEnvVar);
+		return this.signToken(tokenInfo, config, secret);
 	}
 
 	/**
@@ -90,15 +107,16 @@ export class TokenService {
 
 		const config = this.configService.get<IServerConfig["security"]>("security");
 
-		const refreshData = await this.createHttpOnlyCookieInfo();
+		const refreshData = await this.createHttpOnlyCookieInfo(config.refresh_cookie);
 		const newTokenHash = this.encryptionUtils.sha256(JSON.stringify(refreshData));
-		tokenEntity.refresh(refreshData.jti, newTokenHash, config.cookie.expiry, config.bearer.expiry);
+		tokenEntity.refresh(refreshData.jti, newTokenHash, config.refresh_cookie.expiry, config.bearer.expiry);
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			return entityManager.save(tokenEntity);
 		});
 
-		return this.signToken(refreshData);
+		const secret = this.configService.get<string>(securityConstants.refreshCookieEnvVar);
+		return this.signToken(refreshData, config.refresh_cookie, secret);
 	}
 
 	/**
@@ -144,11 +162,31 @@ export class TokenService {
 	}
 
 	/**
+	 * Creates the access token information with a unique identifier, issued at time, and expiration time.
+	 * @param data The data required to create the access token, including the subject and roles.
+	 * @param config The configuration for the access token, including expiry.
+	 * @returns An object adhering to the {@link IAccessToken} interface.
+	 */
+	private createAccessTokenInfo(data: ICreateAuthTokenData, config: IBearerAuthConfig | IAccessCookieAuthConfig): IAccessToken {
+		const iat = Math.floor(Date.now() / 1000);
+		const exp = iat + config.expiry / 1000;
+
+		const tokenInfo: IAccessToken = {
+			jti: randomUUID(),
+			sub: data.sub,
+			roles: data.roles || [],
+			iat: iat,
+			exp: exp,
+		};
+
+		return tokenInfo;
+	}
+
+	/**
 	 * Creates the HTTP-only cookie information with a unique identifier, issued at time, and expiration time.
 	 * @returns An object containing the JTI, issued at time (iat), and expiration
 	 */
-	private async createHttpOnlyCookieInfo(): Promise<IHttpOnlyCookie> {
-		const config = this.configService.get<IServerConfig["security"]>("security").cookie;
+	private async createHttpOnlyCookieInfo(config: IRefreshCookieAuthConfig): Promise<IHttpOnlyCookie> {
 		const iat = Math.floor(Date.now() / 1000);
 		const exp = iat + config.expiry / 1000;
 
@@ -162,26 +200,20 @@ export class TokenService {
 	/**
 	 * Signs the token with the JWT service.
 	 * @param data The data to be signed into a JWT.
+	 * @param config The configuration for the JWT, including expiry and secure settings.
+	 * @param secret The secret key used to sign the JWT.
 	 * @returns A signed JWT string.
 	 */
-	private async signToken(data: IBearerToken | IHttpOnlyCookie): Promise<string> {
+	private async signToken(
+		data: IBearerToken | IAccessCookie | IHttpOnlyCookie,
+		config: IRefreshCookieAuthConfig | IBearerAuthConfig,
+		secret: string,
+	): Promise<string> {
 		this.logger.debug(`Signing JWT: ${data.jti}`);
 
-		// Cache value is set for the Security Guards.
-		const config = this.configService.get<IServerConfig["security"]>("security");
-
-		// Bearer Access Token
-		if ("sub" in data && data.sub) {
-			await this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.bearer.expiry);
-			return this.jwtService.signAsync(data, {
-				secret: this.configService.get<string>(securityConstants.bearerAccessTokenEnvVar),
-			});
-		}
-
-		// HTTP-Only Cookie
-		await this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.cookie.expiry);
+		await this.cache.set<boolean>(CacheKeys.JWT_JTI + data.jti, true, config.expiry);
 		return this.jwtService.signAsync(data, {
-			secret: this.configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
+			secret: secret,
 		});
 	}
 

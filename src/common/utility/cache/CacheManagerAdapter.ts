@@ -5,7 +5,7 @@ import { IServerConfig } from "../../../infrastructure/configuration/IServerConf
 import { ILogger } from "../../../infrastructure/logging/ILogger";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
-import { mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
+import { mockPlainTextAccessCookie, mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
 
 /**
  * Adapter for `cache-manager`, providing a shared in-memory cache
@@ -127,6 +127,7 @@ export class CacheManagerAdapter implements OnModuleDestroy {
 
 		// seed the "JWT_JTI" entry for your bearer mocks
 		this.cache.set<boolean>(CacheKeys.JWT_JTI + mockPlainTextBearerToken.jti, true);
+		this.cache.set<boolean>(CacheKeys.JWT_JTI + mockPlainTextAccessCookie.jti, true);
 
 		// seed the "USER_UUID" entry for your bearer mocks
 		this.cache.set<boolean>(CacheKeys.USER_UUID + mockPlainTextBearerToken.sub, true);

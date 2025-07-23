@@ -6,6 +6,7 @@ import { SwaggerApiKeyAuthGuard } from "./SwaggerApiKeyAuthGuard";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { BearerTokenAuthGuard } from "./BearerTokenAuthGuard";
 import { JwksAuthGuard } from "./JwksAuthGuard";
+import { AccessCookieAuthGuard } from "./AccessCookieAuthGuard";
 
 /**
  * A guard that chains multiple authentication strategies.
@@ -59,10 +60,16 @@ export class CompositeAuthGuard implements CanActivate {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		if (!config) throw new Error("Security configuration is not defined");
 
+		if (!config.bearer.enabled && !config.access_cookie.enabled) {
+			throw new Error(`${this.constructor.name}: Either Bearer Tokens or Access Cookies need to be enabled.`);
+		}
+
 		const enabledGuards = [
-			// HTTP-Only guard isn't added as only the auth/refresh route is allowed to use it.
-			this.moduleRef.get(BearerTokenAuthGuard, { strict: false }),
+			// Refresh cookie guard isn't added as only the auth/refresh route is allowed to use it.
 		];
+
+		if (config.bearer.enabled) enabledGuards.push(this.moduleRef.get(BearerTokenAuthGuard, { strict: false }));
+		if (config.access_cookie.enabled) enabledGuards.push(this.moduleRef.get(AccessCookieAuthGuard, { strict: false }));
 
 		if (config.jwks.enabled) enabledGuards.push(this.moduleRef.get(JwksAuthGuard, { strict: false }));
 		if (config.swagger.enabled) enabledGuards.push(this.moduleRef.get(SwaggerApiKeyAuthGuard, { strict: false }));

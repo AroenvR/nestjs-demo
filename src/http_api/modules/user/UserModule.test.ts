@@ -7,13 +7,21 @@ import { UserModule } from "./UserModule";
 import { CreateUserDto } from "../../dtos/user/CreateUserDto";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { wasLogged } from "../../../__tests__/helpers/wasLogged";
-import { mockBearerToken, mockExpiredBearerToken, mockFaultyBearerToken } from "../../../__tests__/mocks/mockJwt";
+import {
+	mockAccessHttpCookie,
+	mockBearerToken,
+	mockExpiredAccessToken,
+	mockExpiredBearerToken,
+	mockFaultyAccessHttpCookie,
+	mockFaultyBearerToken,
+} from "../../../__tests__/mocks/mockJwt";
 import { createMockAppModule } from "../../../__tests__/mocks/module/createMockAppModule";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { copyEntity } from "../../../__tests__/mocks/entity/copyEntity";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
+import { securityConstants } from "../../../common/constants/securityConstants";
 
 const TEST_NAME = "UserModule";
 describe(TEST_NAME, () => {
@@ -116,7 +124,7 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
-		it.only("Should return an error when using an expired JWT", async () => {
+		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer())
 				.post(ENDPOINT)
 				.send(createDto)
@@ -138,7 +146,7 @@ describe(TEST_NAME, () => {
 	// -------------------------------------------------- \\
 
 	describe("GET /user", () => {
-		it("Finds all entities", async () => {
+		it("Finds all entities using a Bearer Token", async () => {
 			const response = await request(app.getHttpServer()).get(ENDPOINT).set("Authorization", `Bearer ${mockBearerToken}`).expect(HttpStatus.OK);
 
 			const found = response.body.find((data: UserResponseDto) => data.id === entity.id);
@@ -159,6 +167,15 @@ describe(TEST_NAME, () => {
 
 		// --------------------------------------------------
 
+		it("Finds all entities using an Access Cookie", async () => {
+			await request(app.getHttpServer())
+				.get(ENDPOINT)
+				.set("Cookie", `${securityConstants.accessCookieString}=${mockAccessHttpCookie}`)
+				.expect(HttpStatus.OK);
+		});
+
+		// --------------------------------------------------
+
 		it("Should return an error when missing a JWT", async () => {
 			await request(app.getHttpServer()).get(ENDPOINT).expect(HttpStatus.UNAUTHORIZED);
 		});
@@ -167,6 +184,22 @@ describe(TEST_NAME, () => {
 
 		it("Should return an error when using an expired JWT", async () => {
 			await request(app.getHttpServer()).get(ENDPOINT).set("Authorization", `Bearer ${mockExpiredBearerToken}`).expect(HttpStatus.UNAUTHORIZED);
+
+			await request(app.getHttpServer())
+				.get(ENDPOINT)
+				.set("Cookie", `${securityConstants.accessCookieString}=${mockExpiredAccessToken}`)
+				.expect(HttpStatus.UNAUTHORIZED);
+		});
+
+		// --------------------------------------------------
+
+		it("Should return an error when using a faulty JWT", async () => {
+			await request(app.getHttpServer()).get(ENDPOINT).set("Authorization", `Bearer ${mockFaultyBearerToken}`).expect(HttpStatus.UNAUTHORIZED);
+
+			await request(app.getHttpServer())
+				.get(ENDPOINT)
+				.set("Cookie", `${securityConstants.accessCookieString}=${mockFaultyAccessHttpCookie}`)
+				.expect(HttpStatus.UNAUTHORIZED);
 		});
 	});
 

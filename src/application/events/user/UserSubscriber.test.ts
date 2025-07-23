@@ -4,6 +4,8 @@ import { UserService } from "../../services/user/UserService";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
+import { MockService } from "../../../__tests__/mocks/service/MockService";
+import { mockWinstonAdapter } from "../../../__tests__/mocks/mockLogAdapter";
 
 describe("UserSubscriber", () => {
 	let userSubscriber: UserSubscriber;
@@ -12,22 +14,13 @@ describe("UserSubscriber", () => {
 	let userService: UserService;
 
 	beforeEach(() => {
-		// Mock dependencies
-		logAdapter = {
-			getPrefixedLogger: jest.fn().mockReturnValue({
-				debug: jest.fn(),
-			}),
-		} as unknown as WinstonAdapter;
+		logAdapter = mockWinstonAdapter;
 
 		dataSource = {
 			subscribers: [],
 		} as unknown as DataSource;
 
-		userService = {
-			emit: jest.fn(),
-		} as unknown as UserService;
-
-		// Instantiate UserSubscriber with mocked dependencies
+		userService = new MockService(() => MockUserEntity.get()) as unknown as UserService;
 		userSubscriber = new UserSubscriber(logAdapter, dataSource, userService);
 	});
 

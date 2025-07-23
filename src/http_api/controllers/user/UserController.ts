@@ -15,6 +15,7 @@ import { UserEntity } from "../../../domain/user/UserEntity";
 import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
 import { UserService } from "../../../application/services/user/UserService";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
+import { INestJSBearerJwt, INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";
 
 const ENDPOINT = "user"; // Just finished the unit test, on to the integration and the module tests.
 
@@ -41,8 +42,8 @@ export class UserController extends GuardedController<UserEntity> {
 	}
 
 	@SseEndpoint(ENDPOINT, UserResponseDto)
-	public events() {
-		return super.events();
+	public events(request: INestJSBearerJwt | INestJSCookieJwt) {
+		return super.events(request);
 	}
 
 	@GetByUuidEndpoint(ENDPOINT, UserResponseDto)

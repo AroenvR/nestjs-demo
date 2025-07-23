@@ -10,6 +10,7 @@ import { GetEndpoint } from "../../../http_api/decorators/GetEndpoint";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
 import { CompositeAuthGuard } from "../../guards/CompositeAuthGuard";
 import { securityConstants } from "../../../common/constants/securityConstants";
+import { AccessCookieAuthGuard } from "../../guards/AccessCookieAuthGuard";
 
 const ENDPOINT = "app_status";
 

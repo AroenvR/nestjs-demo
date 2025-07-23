@@ -4,6 +4,7 @@ import { CreateDto } from "../../http_api/dtos/CreateDto";
 import { UpdateDto } from "../../http_api/dtos/UpdateDto";
 import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 import { ISseMessage } from "../events/ISseMessage";
+import { IAccessCookie, IBearerToken } from "../../common/interfaces/JwtInterfaces";
 
 /**
  * Interface representing the minimum requirements for a CRUD service.
@@ -44,10 +45,11 @@ export interface ICrudService<T> {
 	remove(_: UUID): Promise<void>;
 
 	/**
-	 * Allow constrollers to subscribe to database events.
+	 * Allow controllers to subscribe to database events.
+	 * @param jwt The JWT token used for authentication.
 	 * @returns An Observable that emits ISseMessage objects containing ResponseDto's.
 	 */
-	observe(): Promise<Observable<ISseMessage<ResponseDto>>>;
+	observe(jwt: IBearerToken | IAccessCookie): Promise<Observable<ISseMessage<ResponseDto>>>;
 
 	/**
 	 * Emit an event to all subscribers.

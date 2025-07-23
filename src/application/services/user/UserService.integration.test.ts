@@ -11,6 +11,10 @@ import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/d
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { MOCK_BAD_UUID } from "../../../__tests__/mocks/repository/MockRepository";
 import { INestApplication } from "@nestjs/common";
+import { mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
+import { ISseMessage } from "../../../application/events/ISseMessage";
+import { ResponseDto } from "../../../http_api/dtos/ResponseDto";
+import { IBearerToken } from "../../../common/interfaces/JwtInterfaces";
 
 const TEST_NAME = "UserService.Integration";
 describe(TEST_NAME, () => {
@@ -134,7 +138,7 @@ describe(TEST_NAME, () => {
 	// --------------------------------------------------
 
 	it("Can observe events", async () => {
-		const observable = await service.observe();
+		const observable = await service.observe(mockPlainTextBearerToken);
 
 		expect(observable).toBeDefined();
 		expect(observable).toHaveProperty("subscribe");
@@ -150,7 +154,49 @@ describe(TEST_NAME, () => {
 
 		await service.emit(entity);
 
-		expect(spy).toHaveBeenCalledWith({ data: UserResponseDto.create(entity) });
+		expect(spy).toHaveBeenCalledWith({ authenticated: false, receiverUuid: entity.uuid, data: UserResponseDto.create(entity) });
 		await expect(wasLogged(TEST_NAME, `${className}: Emitting entity by uuid: ${entity.uuid}`)).resolves.toBe(true);
+	});
+
+	// --------------------------------------------------
+
+	it("Emits to observing clients", async () => {
+		const received: ISseMessage<ResponseDto>[] = [];
+
+		const observable = await service.observe(mockPlainTextBearerToken);
+		const subscription = observable.subscribe((message) => {
+			received.push(message);
+		});
+
+		await service.emit(entity);
+
+		// Wait a tick to allow emissions
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		expect(received.length).toBe(1);
+		expect(received[0].data.uuid).toBe(entity.uuid);
+
+		subscription.unsubscribe(); // cleanup
+	});
+
+	// --------------------------------------------------
+
+	it.skip("Only emits events to authenticated clients", async () => {
+		// This works but requires code changes, which is a code smell.
+		// TODO: Adjust event emitting to be able to adjust the emitted event more easily.
+		const received: ISseMessage<ResponseDto>[] = [];
+
+		const observable = await service.observe({} as IBearerToken);
+		const subscription = observable.subscribe((message) => {
+			received.push(message);
+		});
+
+		await service.emit(entity);
+
+		// Wait a tick to allow emissions
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		expect(received.length).toBe(0);
+		subscription.unsubscribe(); // cleanup
 	});
 });

@@ -10,20 +10,20 @@ import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerA
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 
 /**
- * Passport strategy for authenticating users using JWTs stored in HTTP-Only cookies or Bearer tokens.
+ * Passport strategy refresh HTTP-Only cookies.
  * This strategy extracts the JWT from the request headers or cookies and validates it.
  * If the JWT is valid, it returns the payload; otherwise, it throws an UnauthorizedException.
  */
 @Injectable()
-export class HttpOnlyCookieStrategy extends PassportStrategy(Strategy, securityConstants.httpOnlyCookieGuardBinding) {
+export class RefreshCookieStrategy extends PassportStrategy(Strategy, securityConstants.refreshCookieGuardBinding) {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly cache: CacheManagerAdapter,
 	) {
 		super({
-			jwtFromRequest: ExtractJwt.fromExtractors([HttpOnlyCookieStrategy.extractFromCookie]),
+			jwtFromRequest: ExtractJwt.fromExtractors([RefreshCookieStrategy.extractFromCookie]),
 			ignoreExpiration: false,
-			secretOrKey: configService.get<string>(securityConstants.httpOnlyCookieEnvVar),
+			secretOrKey: configService.get<string>(securityConstants.refreshCookieEnvVar),
 		});
 	}
 

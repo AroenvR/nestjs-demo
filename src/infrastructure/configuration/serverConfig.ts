@@ -10,11 +10,17 @@ import { DatabaseDrivers } from "../database/TDatabaseConfig";
  */
 const defaultConfig: IServerConfig = {
 	security: {
-		cookie: {
+		refresh_cookie: {
 			enabled: false,
 			version: 1,
 			secure: false,
 			expiry: 57600000, // 16 hours in milliseconds
+		},
+		access_cookie: {
+			enabled: false,
+			version: 1,
+			secure: false,
+			expiry: 120000, // 2 minutes in milliseconds
 		},
 		bearer: {
 			enabled: false,
@@ -111,7 +117,8 @@ export const serverConfig = (): IServerConfig => {
 		const securityConfig = fs.readFileSync(securityConfigPath, "utf8");
 		const security = JSON.parse(securityConfig);
 		config.security = security;
-		if (!config.security.bearer.enabled && !config.security.cookie.enabled) throw new Error("serverConfig: No authentication scheme is enabled.");
+		if (!config.security.bearer.enabled && !config.security.refresh_cookie.enabled)
+			throw new Error("serverConfig: No authentication scheme is enabled.");
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);
 	}

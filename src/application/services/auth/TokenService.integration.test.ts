@@ -72,7 +72,7 @@ describe(TEST_NAME, () => {
 			roles: [],
 		};
 
-		const token = await service.createHttpOnlyCookie(tokenData);
+		const token = await service.createRefreshCookie(tokenData);
 		expect(typeof token).toEqual("string");
 
 		const decoded = decode(token) as IHttpOnlyCookie;
@@ -97,7 +97,7 @@ describe(TEST_NAME, () => {
 			sub: randomUUID(),
 			roles: [],
 		};
-		const initialToken = await service.createHttpOnlyCookie(tokenData);
+		const initialToken = await service.createRefreshCookie(tokenData);
 		const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
 		const initialTokenEntity = await repository.findOne({
 			where: { jti: decodedInitialToken.jti },
@@ -139,7 +139,7 @@ describe(TEST_NAME, () => {
 		const token = await service.createAccessToken(tokenData);
 		const decodedToken = decode(token) as IBearerToken;
 
-		const cookie = await service.createHttpOnlyCookie(tokenData);
+		const cookie = await service.createRefreshCookie(tokenData);
 		const decodedCookie = decode(cookie) as IHttpOnlyCookie;
 
 		const refreshTokenEntity = await repository.findOne({
@@ -170,7 +170,7 @@ describe(TEST_NAME, () => {
 				sub: randomUUID(),
 				roles: [],
 			};
-			const initialToken = await service.createHttpOnlyCookie(tokenData);
+			const initialToken = await service.createRefreshCookie(tokenData);
 			const decodedInitialToken = decode(initialToken) as IHttpOnlyCookie;
 
 			await expect(service.rotateRefreshToken(decodedInitialToken)).rejects.toThrow("Refreshing too soon.");

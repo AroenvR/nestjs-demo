@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { BadRequestException, Body, Param, ParseUUIDPipe, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Param, ParseUUIDPipe, Request, UseGuards } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { ApiSecurity } from "@nestjs/swagger";
 import { isTruthy } from "ts-istruthy";
@@ -13,6 +13,7 @@ import { UseErrorFilters } from "../decorators/UseErrorFilters";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { CompositeAuthGuard } from "../guards/CompositeAuthGuard";
 import { securityConstants } from "../../common/constants/securityConstants";
+import { INestJSBearerJwt, INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";
 
 /**
  * An abstract controller class that provides basic CRUD operations.
@@ -63,9 +64,14 @@ export class GuardedController<Entity extends AbstractEntity> {
 	 * @returns An Observable that emits {@link ISseMessage} objects containing {@link ResponseDto}'s.
 	 * @devnote Remember to decorate with the {@link SseEndpoint} decorator.
 	 */
-	public async events(): Promise<Observable<ISseMessage<ResponseDto>>> {
+	public async events(@Request() request: INestJSBearerJwt | INestJSCookieJwt): Promise<Observable<ISseMessage<ResponseDto>>> {
 		this.logger.log(`Client subscribed to events publishing`);
-		return this.service.observe();
+		if (!request?.user) throw new Error(`${this.constructor.name}: No authentication token was found.`);
+
+		const token = request.user;
+		if (!("sub" in token) || !token.sub) throw new BadRequestException(`Wrong token was given.`);
+
+		return this.service.observe(token);
 	}
 
 	/**

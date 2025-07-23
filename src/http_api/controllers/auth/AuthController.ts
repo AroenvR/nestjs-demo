@@ -33,7 +33,7 @@ import { TransformResponseDto } from "../../../http_api/decorators/TransformResp
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
-import { HttpOnlyCookieAuthGuard } from "../../../http_api/guards/HttpOnlyCookieAuthGuard";
+import { RefreshCookieAuthGuard } from "../../guards/RefreshCookieAuthGuard";
 import { CompositeAuthGuard } from "../../../http_api/guards/CompositeAuthGuard";
 
 const ENDPOINT = "auth";
@@ -79,7 +79,9 @@ export class AuthController {
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
 
 		const config = this.configService.getOrThrow<IServerConfig["security"]>("security");
-		if (!config.bearer?.enabled) throw new InternalServerErrorException(`${this.name}: Bearer tokens must be configured.`);
+		if (!config.bearer?.enabled && !config.access_cookie?.enabled) {
+			throw new InternalServerErrorException(`${this.name}: Bearer tokens OR Bearer cookies must be configured.`);
+		}
 
 		const user = await this.authService.authenticate(data);
 		const tokenData: ICreateAuthTokenData = {
@@ -87,17 +89,28 @@ export class AuthController {
 			roles: [], // TODO: Set user roles if applicable
 		};
 
-		if (config.cookie?.enabled) {
-			const httpOnlyCookie = await this.tokenService.createHttpOnlyCookie(tokenData);
+		if (config.refresh_cookie?.enabled) {
+			const httpOnlyCookie = await this.tokenService.createRefreshCookie(tokenData);
 			response.cookie(securityConstants.refreshCookieString, httpOnlyCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.cookie.secure,
-				maxAge: config.cookie.expiry,
+				secure: config.refresh_cookie.secure,
+				maxAge: config.refresh_cookie.expiry,
 			});
 		}
 
-		return this.tokenService.createAccessToken(tokenData);
+		if (config.access_cookie?.enabled) {
+			const accessCookie = await this.tokenService.createAccessCookie(tokenData);
+			response.cookie(securityConstants.accessCookieString, accessCookie, {
+				httpOnly: true,
+				sameSite: "strict",
+				secure: config.access_cookie.secure,
+				maxAge: config.access_cookie.expiry,
+			});
+		}
+
+		if (config.bearer?.enabled) return this.tokenService.createAccessToken(tokenData);
+		return "success";
 	}
 
 	/**
@@ -135,7 +148,7 @@ export class AuthController {
 	@ApiResponse({ status: HttpStatus.OK, description: "Request handled successfully.", type: String })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: HttpExceptionMessages.NOT_FOUND })
 	@DefaultErrorDecorators()
-	@UseGuards(HttpOnlyCookieAuthGuard)
+	@UseGuards(RefreshCookieAuthGuard)
 	public async refresh(@Request() request: INestJSCookieJwt, @Res({ passthrough: true }) response: Response) {
 		if (!isTruthy(request?.user)) throw new UnauthorizedException(`${this.name}: Missing JWT information for refresh request.`);
 
@@ -144,13 +157,13 @@ export class AuthController {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		const user = await this.authService.findUserByCookie(request.user);
 
-		if (config.cookie.enabled) {
+		if (config.refresh_cookie.enabled) {
 			const refreshedCookie = await this.tokenService.rotateRefreshToken(request.user);
 			response.cookie(securityConstants.refreshCookieString, refreshedCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.cookie.secure,
-				maxAge: config.cookie.expiry,
+				secure: config.refresh_cookie.secure,
+				maxAge: config.refresh_cookie.expiry,
 			});
 		}
 
@@ -179,8 +192,7 @@ export class AuthController {
 	// Public route
 	public async logout(@Request() request: INestJSBearerJwt, @Res({ passthrough: true }) response: Response) {
 		response.clearCookie(securityConstants.refreshCookieString);
-
-		// Handle jwks logout?
+		response.clearCookie(securityConstants.accessCookieString);
 
 		if (!isTruthy(request?.user?.sub)) throw new BadRequestException(`${this.name}: Missing JWT information for logout request.`);
 		this.logger.log(`Revoking token and cookie for user ${request.user.sub}`);
