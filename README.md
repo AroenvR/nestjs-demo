@@ -79,7 +79,8 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-# This project's file structure adheres to Domain Driven Design as much as possible.
+# Project directory structure
+This project's file structure adheres to Domain Driven Design as much as possible.
 ```plaintext
 src/
 ├── __tests__/          # Doesn't contain tests. Contains test configurations, setups, helpers, mocks, ...
@@ -124,11 +125,9 @@ src/
 ```
 
 # API Authentication & Token Management
-
-This document describes the authentication flow, token handling, and route protection policies for our API.
+This segment describes the authentication flow, token handling, and route protection policies for the API.
 
 ## Routes Overview
-
 | Route                 | Public / Protected | Authentication Mechanism                                     |
 | --------------------- | ------------------ | ------------------------------------------------------------ |
 | **POST /auth/login**   | Public             | None. Validates credentials and issues tokens.               |
@@ -211,7 +210,7 @@ npm run start:dev
 npm run test:watch
 ```
 [Bash scripts](./scripts/) to manually test the API's endpoints.  
-[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents (when not using SQLCipher, otherwise just use sqlcipher).  
+[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents (when not using SQLCipher, otherwise just use the sqlcipher CLI).  
 [Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
 
 ## NestJS dataflow
@@ -309,7 +308,7 @@ Filters in NestJS, specifically Exception Filters, handle and manage exceptions 
 - **Integration with Logging**: Combine with logging mechanisms to record error details for debugging.
 
 ## SQLCipher
-Quick guide on getting SQLCipher to work with this API on a Linux system.
+Quick guide on getting SQLCipher to work with this API on an Ubuntu system.
 
 #### Commands:
 ```
