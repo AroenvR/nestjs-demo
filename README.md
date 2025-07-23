@@ -79,7 +79,7 @@ Check out a few resources that may come in handy when working with NestJS:
 - To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
 - Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-# This project's file structure adheres to Domain Driven Design.
+# This project's file structure adheres to Domain Driven Design as much as possible.
 ```plaintext
 src/
 ├── application/        # Coordinates use cases of the application without direct business logic.
@@ -109,6 +109,10 @@ src/
 │   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
 │   ├── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
 │   └── strategies/     # Passport strategies for encapsulating user authentication.
+│
+├── external/           # External integrations and adapters for third-party services or API's.
+│   ├── api_adapter/    # Adapters for external APIs, such as OpenAI or other third-party services.
+│   └── events/         # Event handlers for external SSE's or notifications.
 │
 └── main.ts             # The application's entry point where the NestJS app is bootstrapped.
 ```
@@ -201,7 +205,7 @@ npm run start:dev
 npm run test:watch
 ```
 [Bash scripts](./scripts/) to manually test the API's endpoints.  
-[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents.  
+[SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) to manually check the database's contents (when not using SQLCipher, otherwise just use sqlcipher).  
 [Simple Browser](https://github.com/microsoft/vscode/pull/109276) to review the OpenAPI document (Ctrl + Shift + P > Simple Browser: Show)
 
 ## NestJS dataflow
