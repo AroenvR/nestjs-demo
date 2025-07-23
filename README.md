@@ -82,23 +82,28 @@ Check out a few resources that may come in handy when working with NestJS:
 # This project's file structure adheres to Domain Driven Design as much as possible.
 ```plaintext
 src/
+├── __tests__/          # Doesn't contain tests. Contains test configurations, setups, helpers, mocks, ...
+│   ├── helpers/        # Helper functions for the test files spread throughout the server.
+│   └── mocks/          # Mocks for the test files spread throughout the server.
+│
 ├── application/        # Coordinates use cases of the application without direct business logic.
 │   ├── events/         # Application services which emit events triggered by database operations.
 │   └── services/       # Application services orchestrating domain services and repository interactions.
 │
 ├── common/             # Contains values that are used accross layers.
 │   ├── constants/      # Constants that are used by multiple layers.
-│   └── enums/          # Enums that are used by multiple layers.
+│   ├── enums/          # Enums that are used by multiple layers.
+│   ├── interfaces/     # Interfaces that are used by multiple layers.
+│   ├── types/          # Types that are used by multiple layers.
+│   └── utility/        # Contains the server's Utility Module and utility objects.
 │
 ├── domain/             # Encapsulates core business logic, the domain model and its entities.
 │   └── AbstractEntity  # The parent class for all entities in the application.
-│
-├── infrastructure/     # Provides technical capabilities to support application and domain layers.
-│   ├── configuration/  # Manages application configuration and environment variables.
-│   ├── database/       # Responsible for the application's database access.
-│   ├── logging/        # The application's logging mechanisms.
-│   └── AppModule       # The application's primary module, and IOC container.
 |
+├── external/           # External integrations and adapters for third-party services or API's.
+│   ├── api_adapter/    # Adapters for external APIs, such as OpenAI or other third-party services.
+│   └── events/         # Event handlers for external SSE's or notifications.
+│
 ├── http_api/           # Encapsulates the application's HTTP interface.
 │   ├── controllers/    # HTTP request handlers routing requests to the application's services.
 │   ├── decorators/     # Custom decorators for Swagger documentation and request routing for Controllers.
@@ -107,12 +112,13 @@ src/
 │   ├── guards/         # Guards to enforce authorization and endpoint protection.
 │   ├── interceptors/   # Interceptors for transforming data or handling response customization.
 │   ├── middleware/     # Middleware for request processing (logging, timing, etc.).
-│   ├── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
-│   └── strategies/     # Passport strategies for encapsulating user authentication.
+│   └── modules/        # Modules handle Denpendency Injection and expose their respective Controllers.
 │
-├── external/           # External integrations and adapters for third-party services or API's.
-│   ├── api_adapter/    # Adapters for external APIs, such as OpenAI or other third-party services.
-│   └── events/         # Event handlers for external SSE's or notifications.
+├── infrastructure/     # Provides technical capabilities to support application and domain layers.
+│   ├── configuration/  # Manages application configuration and environment variables.
+│   ├── database/       # Responsible for the application's database access.
+│   ├── logging/        # The application's logging mechanisms.
+│   └── AppModule       # The application's primary module, and IOC container.
 │
 └── main.ts             # The application's entry point where the NestJS app is bootstrapped.
 ```
