@@ -1,7 +1,6 @@
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
 import { DatabaseModule } from "../domain/database/DatabaseModule";
 import { AuthModule } from "../http_api/modules/auth/AuthModule";
@@ -19,7 +18,6 @@ const ENDPOINT_MODULES = [UserModule, AppStatusModule];
 			isGlobal: true,
 			load: [serverConfig],
 		}),
-		ScheduleModule.forRoot(),
 		DatabaseModule,
 		AuthModule,
 		UtilityModule,

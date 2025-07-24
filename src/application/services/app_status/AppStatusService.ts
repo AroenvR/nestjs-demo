@@ -1,13 +1,12 @@
 import { Subject } from "rxjs";
-import { CronJob } from "cron";
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TAppStatusMessage } from "../../../common/types/TAppStatusMessage";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
-import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../common/utility/logging/ILogger";
-import { SchedulerRegistry } from "@nestjs/schedule";
+import { Utilities } from "../../../common/utility/Utilities";
+import { CronJobFactory } from "../../../common/utility/Cron/CronJobFactory";
 
 /**
  * A service class that handles and publishes application status messages.
@@ -17,18 +16,18 @@ import { SchedulerRegistry } from "@nestjs/schedule";
 @Injectable()
 export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy {
 	public readonly name: string;
-	private readonly CRON_JOB_NAME = "AppStatusPublishCronJob";
-	protected logger: ILogger;
+	protected readonly logger: ILogger;
+	protected readonly configService: ConfigService;
+	protected readonly cronFactory: CronJobFactory;
 	protected readonly events = new Subject<{ data: AppStatusResponseDto }>();
 	private _status: TAppStatusMessage = "starting";
+	private readonly CRON_JOB_NAME = "AppStatusPublishing";
 
-	constructor(
-		protected readonly logAdapter: WinstonAdapter,
-		protected readonly configService: ConfigService<IServerConfig>,
-		private readonly schedulerRegistry: SchedulerRegistry,
-	) {
+	constructor(protected readonly utilities: Utilities) {
 		this.name = this.constructor.name;
-		this.logger = logAdapter.getPrefixedLogger(this.name);
+		this.logger = this.utilities.logAdapter.getPrefixedLogger(this.name);
+		this.configService = this.utilities.configService;
+		this.cronFactory = this.utilities.cronJobFactory;
 	}
 
 	/**
@@ -43,12 +42,7 @@ export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy
 		const appStatusIntervalSeconds = Math.floor(intervalMs / 1000);
 		const cronExpression = `*/${appStatusIntervalSeconds} * * * * *`; // Runs every `interval` seconds
 
-		const cronJob = new CronJob(cronExpression, () => {
-			this.emit(this.status);
-		});
-
-		this.schedulerRegistry.addCronJob(this.CRON_JOB_NAME, cronJob);
-		cronJob.start();
+		this.cronFactory.createAndRegister(this.CRON_JOB_NAME, cronExpression, () => this.emit(this.status));
 
 		await this.setStatusAndEmit("listening");
 	}
@@ -61,9 +55,7 @@ export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy
 	public async onModuleDestroy() {
 		this.logger.info("Stopping periodic status message publishing.");
 
-		const job = this.schedulerRegistry.getCronJob(this.CRON_JOB_NAME);
-		await job.stop();
-
+		await this.cronFactory.remove(this.CRON_JOB_NAME);
 		await this.setStatusAndEmit("stopping");
 	}
 

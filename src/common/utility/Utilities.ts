@@ -5,6 +5,7 @@ import { RequestBuilder } from "./request_builder/RequestBuilder";
 import { CacheManagerAdapter } from "./cache/CacheManagerAdapter";
 import { WinstonAdapter } from "./logging/adapters/WinstonAdapter";
 import { IUtilities } from "./IUtilities";
+import { CronJobFactory } from "./Cron/CronJobFactory";
 
 /**
  * UtilityService provides a collection of utility services used across the application.
@@ -12,10 +13,11 @@ import { IUtilities } from "./IUtilities";
 @Injectable()
 export class Utilities implements IUtilities {
 	constructor(
+		public readonly configService: ConfigService,
 		public readonly logAdapter: WinstonAdapter,
 		public readonly encryptionUtils: EncryptionUtils,
 		public readonly requestBuilder: RequestBuilder,
 		public readonly cache: CacheManagerAdapter,
-		public readonly configService: ConfigService,
+		public readonly cronJobFactory: CronJobFactory,
 	) {}
 }

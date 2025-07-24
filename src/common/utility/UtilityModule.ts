@@ -7,13 +7,17 @@ import { WinstonAdapter } from "./logging/adapters/WinstonAdapter";
 import { CorrelationManager } from "./logging/correlation/CorrelationManager";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { Utilities } from "./Utilities";
+import { CronJobFactory } from "./Cron/CronJobFactory";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Global()
 @Module({
+	imports: [ScheduleModule.forRoot()],
 	providers: [
 		EncryptionUtils,
 		RequestBuilder,
 		CacheManagerAdapter,
+		CronJobFactory,
 		{
 			provide: WinstonAdapter,
 			inject: [ConfigService],
@@ -39,6 +43,6 @@ import { Utilities } from "./Utilities";
 		},
 		Utilities,
 	],
-	exports: [EncryptionUtils, RequestBuilder, CacheManagerAdapter, WinstonAdapter, Utilities],
+	exports: [EncryptionUtils, RequestBuilder, CacheManagerAdapter, CronJobFactory, WinstonAdapter, Utilities],
 })
 export class UtilityModule {}

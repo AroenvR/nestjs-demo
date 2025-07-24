@@ -9,6 +9,7 @@ import { ConfigService } from "@nestjs/config";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
 import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { CronJobFactory } from "src/common/utility/Cron/CronJobFactory";
 
 class MockServerConfigService extends ConfigService {}
 
@@ -17,22 +18,27 @@ class MockServerConfigService extends ConfigService {}
  */
 export class MockUtilities implements IUtilities {
 	private readonly config: IServerConfig;
+	public readonly configService: ConfigService;
 	public readonly logAdapter: IPrefixedLogger;
 	public readonly encryptionUtils: EncryptionUtils;
 	public readonly requestBuilder: IRequestBuilder;
 	public readonly cache: CacheManagerAdapter;
-	public readonly configService: ConfigService;
+	public readonly cronFactory: CronJobFactory;
 
 	constructor(
 		_serverConfig?: IServerConfig,
+		_configService?: ConfigService,
 		_logAdapter?: IPrefixedLogger,
 		_encryptionUtils?: EncryptionUtils,
 		_requestBuilder?: IRequestBuilder,
 		_cache?: CacheManagerAdapter,
-		_configService?: ConfigService,
+		_cronFactory?: CronJobFactory,
 	) {
 		if (_serverConfig) this.config = _serverConfig;
 		else this.config = serverConfig();
+
+		if (_configService) this.configService = _configService;
+		else this.configService = new MockServerConfigService(this.config);
 
 		if (_logAdapter) this.logAdapter = _logAdapter;
 		else this.logAdapter = new MockLogAdapter(this.config.logging);
@@ -46,7 +52,7 @@ export class MockUtilities implements IUtilities {
 		if (_cache) this.cache = _cache;
 		else this.cache = {} as CacheManagerAdapter; // TODO
 
-		if (_configService) this.configService = _configService;
-		else this.configService = new MockServerConfigService(this.config);
+		if (_cronFactory) this.cronFactory = _cronFactory;
+		else this.cronFactory = {} as CronJobFactory; // TODO
 	}
 }
