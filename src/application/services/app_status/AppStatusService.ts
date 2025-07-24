@@ -54,8 +54,6 @@ export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy
 	 */
 	public async onModuleDestroy() {
 		this.logger.info("Stopping periodic status message publishing.");
-
-		await this.cronFactory.remove(this.CRON_JOB_NAME);
 		await this.setStatusAndEmit("stopping");
 	}
 

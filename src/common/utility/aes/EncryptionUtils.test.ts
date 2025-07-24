@@ -3,10 +3,13 @@ import { EncryptionUtils } from "./EncryptionUtils";
 import { UtilityModule } from "../UtilityModule";
 import { wasLoggedSync } from "../../../__tests__/helpers/wasLogged";
 import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
+import { INestApplication } from "@nestjs/common";
 
 const TEST_NAME = "EncryptionUtils";
 describe(TEST_NAME, () => {
 	process.env.TEST_NAME = TEST_NAME;
+
+	let app: INestApplication;
 
 	const SECRET_LENGTH = 69;
 	const DATA = "Hello, secret!";
@@ -14,8 +17,12 @@ describe(TEST_NAME, () => {
 	let encryptionUtil: EncryptionUtils;
 
 	beforeEach(async () => {
-		const module = await createMockAppModule(UtilityModule);
-		encryptionUtil = module.get<EncryptionUtils>(EncryptionUtils);
+		app = await createMockAppModule(UtilityModule);
+		encryptionUtil = app.get<EncryptionUtils>(EncryptionUtils);
+	});
+
+	afterEach(async () => {
+		await app.close();
 	});
 
 	// --------------------------------------------------
