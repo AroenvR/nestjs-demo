@@ -21,7 +21,6 @@ export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy
 	protected readonly cronFactory: CronJobFactory;
 	protected readonly events = new Subject<{ data: AppStatusResponseDto }>();
 	private _status: TAppStatusMessage = "starting";
-	private readonly CRON_JOB_NAME = "AppStatusPublishing";
 
 	constructor(protected readonly utilities: Utilities) {
 		this.name = this.constructor.name;
@@ -38,11 +37,12 @@ export class AppStatusService implements OnApplicationBootstrap, OnModuleDestroy
 	public async onApplicationBootstrap() {
 		this.logger.info("Starting periodic status message publishing.");
 
+		const cronJobName = "AppStatusPublishing";
 		const intervalMs = this.configService.get<IServerConfig["misc"]>("misc").appStatusInterval;
 		const appStatusIntervalSeconds = Math.floor(intervalMs / 1000);
 		const cronExpression = `*/${appStatusIntervalSeconds} * * * * *`; // Runs every `interval` seconds
 
-		this.cronFactory.createAndRegister(this.CRON_JOB_NAME, cronExpression, () => this.emit(this.status));
+		this.cronFactory.createAndRegister(cronJobName, cronExpression, () => this.emit(this.status));
 
 		await this.setStatusAndEmit("listening");
 	}
