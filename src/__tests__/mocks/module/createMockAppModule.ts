@@ -2,7 +2,6 @@ import { BadRequestException, Type, ValidationError, ValidationPipe, VersioningT
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
-import { LoggerModule } from "../../../common/utility/logging/LoggerModule";
 import { DatabaseModule } from "../../../domain/database/DatabaseModule";
 import { AuthModule } from "../../../http_api/modules/auth/AuthModule";
 import { HttpErrorFilter } from "../../../http_api/filters/http_error/HttpErrorFilter";
@@ -47,7 +46,6 @@ export const createMockAppModule = async (module?: Type<any>, opts?: TCreateMock
 					isGlobal: true,
 					load: [() => config],
 				}),
-				LoggerModule,
 				DatabaseModule,
 				UtilityModule,
 				AuthModule,

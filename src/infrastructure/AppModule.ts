@@ -3,7 +3,6 @@ import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
-import { LoggerModule } from "../common/utility/logging/LoggerModule";
 import { DatabaseModule } from "../domain/database/DatabaseModule";
 import { AuthModule } from "../http_api/modules/auth/AuthModule";
 import { serverConfig } from "./configuration/serverConfig";
@@ -21,7 +20,6 @@ const ENDPOINT_MODULES = [UserModule, AppStatusModule];
 			load: [serverConfig],
 		}),
 		ScheduleModule.forRoot(),
-		LoggerModule,
 		DatabaseModule,
 		AuthModule,
 		UtilityModule,

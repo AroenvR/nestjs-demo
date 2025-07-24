@@ -1,14 +1,15 @@
-import { IAesCipherData } from "src/common/utility/aes/IAesCipherData";
+import { IAesCipherData } from "../../../common/utility/aes/IAesCipherData";
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
+import { TSupportedAesAlgorithms } from "../../../common/utility/aes/TSupportedAesAlgorithms";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { mockWinstonAdapter } from "../mockLogAdapter";
-import { TSupportedAesAlgorithms } from "src/common/utility/aes/TSupportedAesAlgorithms";
 
 /**
  * Mock implementation of the {@link EncryptionUtils} class for testing purposes.
  */
 export class MockEncryptionUtils extends EncryptionUtils {
-	constructor() {
-		super(mockWinstonAdapter);
+	constructor(logAdapter?: WinstonAdapter) {
+		super(logAdapter ?? mockWinstonAdapter);
 	}
 
 	public createRandomSecret = jest.fn((length: number) => Buffer.alloc(length));

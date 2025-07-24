@@ -1,11 +1,11 @@
 import crypto from "crypto";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
-import { ILogger } from "../logging/ILogger";
 import { IAesCipherData } from "./IAesCipherData";
 import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 import { IAesEncryptionStrategy } from "./strategies/IEncryptionStrategy";
 import { AesGcmEncryptionStrategy } from "./strategies/AesGcmStrategy";
+import { ILogger } from "../logging/ILogger";
+import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
 
 /**
  * A callback that all strategies must use to generate their random secrets.

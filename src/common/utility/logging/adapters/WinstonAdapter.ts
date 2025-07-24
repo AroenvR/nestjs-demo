@@ -16,7 +16,7 @@ export class WinstonAdapter implements IPrefixedLogger {
 	private readonly winston: Logger;
 
 	constructor(
-		protected readonly config: ILoggerConfig,
+		public readonly config: ILoggerConfig,
 		public readonly correlationManager: ICorrelationManager,
 	) {
 		const winstonTransports: winston.transport[] = [];
@@ -98,6 +98,7 @@ export class WinstonAdapter implements IPrefixedLogger {
 	 */
 	public getPrefixedLogger(context: string): ILogger {
 		const prefixedLogger: ILogger = {
+			config: this.config,
 			correlationManager: this.correlationManager,
 			verbose: async (message: string, metadata?: TLogMetadata) => this.verbose(context, message, metadata),
 			debug: async (message: string, metadata?: TLogMetadata) => this.debug(context, message, metadata),

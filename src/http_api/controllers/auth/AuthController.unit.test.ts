@@ -2,8 +2,6 @@ import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./AuthController";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
-import { mockILogger, mockWinstonAdapter } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { AuthService } from "../../../application/services/auth/AuthService";
@@ -12,12 +10,19 @@ import { UserService } from "../../../application/services/user/UserService";
 import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
 import { MockCreateLoginDto } from "../../../__tests__/mocks/dto/MockLoginDto";
 import { MockAuthService } from "../../../__tests__/mocks/service/MockAuthService";
-import { MockConfigService } from "../../../__tests__/mocks/service/MockConfigService";
 import { MockTokenService } from "../../../__tests__/mocks/service/MockTokenService";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { mockPlainTextBearerToken, mockPlainTextHttpOnlyJwtCookie } from "../../../__tests__/mocks/mockJwt";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { MockUtilities } from "../../../__tests__/mocks/common/MockUtilities";
+import { Utilities } from "../../../common/utility/Utilities";
+import { IUtilities } from "../../../common/utility/IUtilities";
+import { IPrefixedLogger } from "../../../common/utility/logging/ILogger";
 
 describe("AuthController.Unit", () => {
+	let utilities: IUtilities;
+	let logger: IPrefixedLogger;
+
 	let controller: AuthController;
 
 	let loginDto: CreateLoginDto;
@@ -26,18 +31,23 @@ describe("AuthController.Unit", () => {
 	let mockResponse: any;
 
 	beforeEach(async () => {
+		utilities = new MockUtilities();
 		mockUser = MockUserEntity.get();
 
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [AuthController],
 			providers: [
 				{
+					provide: Utilities,
+					useValue: utilities,
+				},
+				{
 					provide: WinstonAdapter,
-					useValue: mockWinstonAdapter,
+					useValue: utilities.logAdapter,
 				},
 				{
 					provide: ConfigService,
-					useValue: new MockConfigService(),
+					useValue: utilities.configService,
 				},
 				{
 					provide: AuthService,
@@ -54,6 +64,7 @@ describe("AuthController.Unit", () => {
 			],
 		}).compile();
 
+		logger = module.get<IPrefixedLogger>(WinstonAdapter);
 		controller = module.get<AuthController>(AuthController);
 
 		loginDto = MockCreateLoginDto.get();
@@ -88,7 +99,18 @@ describe("AuthController.Unit", () => {
 			}),
 		);
 
-		expect(mockILogger.log).toHaveBeenCalledWith(`User attempting to log in.`);
+		expect(mockResponse.cookie).toHaveBeenCalledWith(
+			securityConstants.accessCookieString,
+			expect.any(String), // The actual cookie value
+			expect.objectContaining({
+				httpOnly: true,
+				sameSite: "strict",
+				secure: expect.any(Boolean),
+				maxAge: expect.any(Number),
+			}),
+		);
+
+		expect(logger.log).toHaveBeenCalledWith(`User attempting to log in.`);
 	});
 
 	// --------------------------------------------------
@@ -115,11 +137,22 @@ describe("AuthController.Unit", () => {
 			}),
 		);
 
+		expect(mockResponse.cookie).toHaveBeenCalledWith(
+			securityConstants.accessCookieString,
+			expect.any(String), // The actual cookie value
+			expect.objectContaining({
+				httpOnly: true,
+				sameSite: "strict",
+				secure: expect.any(Boolean),
+				maxAge: expect.any(Number),
+			}),
+		);
+
 		expect(createTokenSpy).toHaveBeenCalled();
 		expect(refreshTokenSpy).toHaveBeenCalledWith(jwt.user);
 		expect(authServiceSpy).toHaveBeenCalledWith(jwt.user);
 
-		expect(mockILogger.log).toHaveBeenCalledWith(`Refreshing token and cookie for ${jwt.user.jti}`);
+		expect(logger.log).toHaveBeenCalledWith(`Refreshing token and cookie for ${jwt.user.jti}`);
 	});
 
 	// --------------------------------------------------
@@ -131,8 +164,9 @@ describe("AuthController.Unit", () => {
 		await controller.logout(token, mockResponse);
 
 		expect(mockResponse.clearCookie).toHaveBeenCalledWith(securityConstants.refreshCookieString);
+		expect(mockResponse.clearCookie).toHaveBeenCalledWith(securityConstants.accessCookieString);
 		expect(revokeTokenSpy).toHaveBeenCalledWith(token.user);
 
-		expect(mockILogger.log).toHaveBeenCalledWith(`Revoking token and cookie for user ${token.user.sub}`);
+		expect(logger.log).toHaveBeenCalledWith(`Revoking token and cookie for user ${token.user.sub}`);
 	});
 });

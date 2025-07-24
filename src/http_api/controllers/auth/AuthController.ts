@@ -22,7 +22,6 @@ import { AuthService } from "../../../application/services/auth/AuthService";
 import { TokenService } from "../../../application/services/auth/TokenService";
 import { DefaultErrorDecorators } from "../../../http_api/decorators/DefaultErrorDecorators";
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
-import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../common/utility/logging/ILogger";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
@@ -35,6 +34,7 @@ import { securityConstants } from "../../../common/constants/securityConstants";
 import { BearerTokenAuthGuard } from "../../../http_api/guards/BearerTokenAuthGuard";
 import { RefreshCookieAuthGuard } from "../../guards/RefreshCookieAuthGuard";
 import { CompositeAuthGuard } from "../../../http_api/guards/CompositeAuthGuard";
+import { Utilities } from "../../../common/utility/Utilities";
 
 const ENDPOINT = "auth";
 
@@ -47,18 +47,19 @@ const ENDPOINT = "auth";
 @ApiTags(ENDPOINT)
 @UseErrorFilters()
 export class AuthController {
-	private readonly name: string;
-	protected logger: ILogger;
+	public readonly name: string;
+	protected readonly logger: ILogger;
+	protected readonly configService: ConfigService;
 
 	constructor(
-		protected readonly logAdapter: WinstonAdapter,
-		protected readonly configService: ConfigService,
+		protected readonly utilities: Utilities,
 		protected readonly authService: AuthService,
 		protected readonly tokenService: TokenService,
 		protected readonly userService: UserService,
 	) {
 		this.name = this.constructor.name;
-		this.logger = this.logAdapter.getPrefixedLogger(this.name);
+		this.logger = this.utilities.logAdapter.getPrefixedLogger(this.name);
+		this.configService = this.utilities.configService;
 	}
 
 	/**
@@ -79,7 +80,7 @@ export class AuthController {
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
 
 		const config = this.configService.getOrThrow<IServerConfig["security"]>("security");
-		if (!config.bearer?.enabled && !config.access_cookie?.enabled) {
+		if (!config?.bearer?.enabled && !config?.access_cookie?.enabled) {
 			throw new InternalServerErrorException(`${this.name}: Bearer tokens OR Bearer cookies must be configured.`);
 		}
 
@@ -89,7 +90,7 @@ export class AuthController {
 			roles: [], // TODO: Set user roles if applicable
 		};
 
-		if (config.refresh_cookie?.enabled) {
+		if (config?.refresh_cookie?.enabled) {
 			const httpOnlyCookie = await this.tokenService.createRefreshCookie(tokenData);
 			response.cookie(securityConstants.refreshCookieString, httpOnlyCookie, {
 				httpOnly: true,
@@ -99,7 +100,7 @@ export class AuthController {
 			});
 		}
 
-		if (config.access_cookie?.enabled) {
+		if (config?.access_cookie?.enabled) {
 			const accessCookie = await this.tokenService.createAccessCookie(tokenData);
 			response.cookie(securityConstants.accessCookieString, accessCookie, {
 				httpOnly: true,
@@ -109,7 +110,7 @@ export class AuthController {
 			});
 		}
 
-		if (config.bearer?.enabled) return this.tokenService.createAccessToken(tokenData);
+		if (config?.bearer?.enabled) return this.tokenService.createAccessToken(tokenData);
 		return "success";
 	}
 
@@ -157,7 +158,7 @@ export class AuthController {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		const user = await this.authService.findUserByCookie(request.user);
 
-		if (config.refresh_cookie.enabled) {
+		if (config?.refresh_cookie.enabled) {
 			const refreshedCookie = await this.tokenService.rotateRefreshToken(request.user);
 			response.cookie(securityConstants.refreshCookieString, refreshedCookie, {
 				httpOnly: true,
@@ -167,13 +168,23 @@ export class AuthController {
 			});
 		}
 
-		if (!config.bearer.enabled) return "success";
-
 		const tokenData: ICreateAuthTokenData = {
 			sub: user.uuid,
 			roles: [], // TODO: Set user roles if applicable
 		};
-		return this.tokenService.createAccessToken(tokenData);
+
+		if (config?.access_cookie?.enabled) {
+			const accessCookie = await this.tokenService.createAccessCookie(tokenData);
+			response.cookie(securityConstants.accessCookieString, accessCookie, {
+				httpOnly: true,
+				sameSite: "strict",
+				secure: config.access_cookie.secure,
+				maxAge: config.access_cookie.expiry,
+			});
+		}
+
+		if (config?.bearer?.enabled) return this.tokenService.createAccessToken(tokenData);
+		return "success";
 	}
 
 	/**

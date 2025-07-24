@@ -2,11 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { LoggerMiddleware } from "./LoggerMiddleware";
 import { ConfigModule } from "@nestjs/config";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
-import { LoggerModule } from "../../common/utility/logging/LoggerModule";
 import { wasLogged } from "../../__tests__/helpers/wasLogged";
 import { randomUUID } from "crypto";
 import request from "supertest";
 import express, { Express } from "express";
+import { UtilityModule } from "../../common/utility/UtilityModule";
 
 const TEST_NAME = "LoggerMiddleware.Integration";
 
@@ -23,7 +23,7 @@ describe(TEST_NAME, () => {
 					isGlobal: true,
 					load: [serverConfig],
 				}),
-				LoggerModule,
+				UtilityModule,
 			],
 			providers: [LoggerMiddleware],
 		}).compile();

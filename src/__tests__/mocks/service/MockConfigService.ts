@@ -8,11 +8,11 @@ import { serverConfig } from "../../../infrastructure/configuration/serverConfig
  * @devnote if an override value is given, the get method will always return that value.
  */
 export class MockConfigService extends ConfigService<IServerConfig, false> {
-	private readonly forceValue: Record<string, unknown> | Record<string, unknown>[] | undefined = undefined;
+	private readonly forceValue: IServerConfig | Record<string, unknown> | Record<string, unknown>[] | undefined = undefined;
 
-	constructor(overrideValue?: Record<string, unknown> | Record<string, unknown>[]) {
+	constructor(overrideValue?: IServerConfig | Record<string, unknown> | Record<string, unknown>[]) {
 		// Call super with a default config so that parent methods still work
-		super(serverConfig());
+		super(overrideValue ?? serverConfig());
 		this.forceValue = overrideValue;
 	}
 

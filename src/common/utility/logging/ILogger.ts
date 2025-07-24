@@ -16,7 +16,7 @@ export type TLogMetadata = Record<string, unknown> | Error | unknown;
  * @extends LoggerService The {@link LoggerService} interface from the NestJS package.
  */
 export interface ILogger extends LoggerService {
-	// config: ILoggerConfig;
+	config: ILoggerConfig;
 	correlationManager: ICorrelationManager | null;
 
 	/**
@@ -79,8 +79,8 @@ export interface ILogger extends LoggerService {
  */
 export interface IPrefixedLogger extends ILogger {
 	/**
-	 *
-	 * @param context
+	 * Creates a prefixed logger instance with a specific context.
+	 * @param context The context to prefix the logger with.
 	 */
 	getPrefixedLogger(context: string): ILogger;
 }

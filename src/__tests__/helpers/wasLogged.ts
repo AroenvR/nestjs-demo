@@ -9,10 +9,15 @@ import { setTimeout as sleep } from "timers/promises";
  * @returns If the log message was logged.
  */
 export async function wasLogged(logFile: string, logMessage: string): Promise<boolean> {
-	await new Promise((resolve) => setTimeout(resolve, 25));
+	await new Promise((resolve) => setTimeout(resolve, 10));
 
 	const logFilePath = path.join(__dirname, "..", "..", "..", "logs", `${logFile}.test.log`);
-	if (!(await fs.exists(logFilePath))) return false;
+
+	// If for some reason the path doesn't exist, wait 100ms and try one more time.
+	if (!(await fs.exists(logFilePath))) {
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		if (!(await fs.exists(logFilePath))) return false;
+	}
 
 	const logContent = await fs.readFile(logFilePath, "utf-8");
 	return logContent.includes(logMessage);

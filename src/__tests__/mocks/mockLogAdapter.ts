@@ -1,3 +1,4 @@
+import { ILoggerConfig } from "../../common/utility/logging/ILoggerConfig";
 import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
 
@@ -5,6 +6,7 @@ import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
  * Mocked {@link IPrefixedLogger} for testing purposes.
  */
 export const mockILogger: jest.Mocked<IPrefixedLogger> = {
+	config: {} as ILoggerConfig,
 	correlationManager: {
 		getCorrelationId: jest.fn(),
 		runWithCorrelationId: jest.fn((_id, callback) => callback()),
