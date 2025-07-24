@@ -8,7 +8,7 @@ import { CompositeAuthGuard } from "../../../http_api/guards/CompositeAuthGuard"
 import { AuthController } from "../../../http_api/controllers/auth/AuthController";
 import { AuthService } from "../../../application/services/auth/AuthService";
 import { TokenService } from "../../../application/services/auth/TokenService";
-import { TypeOrmEntityModule } from "../../../infrastructure/database/TypeOrmEntityModule";
+import { TypeOrmEntityModule } from "../../../domain/database/TypeOrmEntityModule";
 import { UserModule } from "../user/UserModule";
 import { RefreshCookieAuthGuard } from "../../guards/RefreshCookieAuthGuard";
 import { BearerTokenStrategy } from "../../../http_api/guards/strategies/BearerTokenStrategy";

@@ -5,8 +5,8 @@ import { ConfigService } from "@nestjs/config";
 import { TAppStatusMessage } from "../../../common/types/TAppStatusMessage";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { ILogger } from "../../../common/utility/logging/ILogger";
 import { SchedulerRegistry } from "@nestjs/schedule";
 
 /**

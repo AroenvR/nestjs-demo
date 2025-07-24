@@ -3,7 +3,7 @@ import { BadRequestException, Controller, Get, HttpStatus, INestApplication, Use
 import { Test, TestingModule } from "@nestjs/testing";
 import { BadRequestExceptionFilter } from "./BadRequestExceptionFilter";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
 const error = new BadRequestException("Bad request exception test");

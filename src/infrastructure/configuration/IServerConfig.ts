@@ -1,6 +1,6 @@
 import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
-import { TDatabaseConfig } from "../database/TDatabaseConfig";
-import { ILoggerConfig } from "../logging/ILoggerConfig";
+import { TDatabaseConfig } from "../../domain/database/TDatabaseConfig";
+import { ILoggerConfig } from "../../common/utility/logging/ILoggerConfig";
 import { TSupportedAesAlgorithms } from "../../common/utility/aes/TSupportedAesAlgorithms";
 import { Algorithm } from "jsonwebtoken";
 import { IExternalConfig } from "src/external/IExternalConfig";

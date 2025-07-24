@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./AuthController";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
 import { mockILogger, mockWinstonAdapter } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { AuthService } from "../../../application/services/auth/AuthService";

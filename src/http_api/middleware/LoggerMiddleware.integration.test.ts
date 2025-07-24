@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { LoggerMiddleware } from "./LoggerMiddleware";
 import { ConfigModule } from "@nestjs/config";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
-import { LoggerModule } from "../../infrastructure/logging/LoggerModule";
+import { LoggerModule } from "../../common/utility/logging/LoggerModule";
 import { wasLogged } from "../../__tests__/helpers/wasLogged";
 import { randomUUID } from "crypto";
 import request from "supertest";

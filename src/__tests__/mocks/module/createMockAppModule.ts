@@ -2,11 +2,11 @@ import { BadRequestException, Type, ValidationError, ValidationPipe, VersioningT
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
-import { LoggerModule } from "../../../infrastructure/logging/LoggerModule";
-import { DatabaseModule } from "../../../infrastructure/database/DatabaseModule";
+import { LoggerModule } from "../../../common/utility/logging/LoggerModule";
+import { DatabaseModule } from "../../../domain/database/DatabaseModule";
 import { AuthModule } from "../../../http_api/modules/auth/AuthModule";
 import { HttpErrorFilter } from "../../../http_api/filters/http_error/HttpErrorFilter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { UtilityModule } from "../../../common/utility/UtilityModule";
 import { AppModule } from "../../../infrastructure/AppModule";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";

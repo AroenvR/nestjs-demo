@@ -5,7 +5,7 @@ import { UserEntity } from "../../../domain/user/UserEntity";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
 import { MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { AuthService } from "./AuthService";

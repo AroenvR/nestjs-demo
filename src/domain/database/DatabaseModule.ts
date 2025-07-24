@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { IServerConfig } from "../configuration/IServerConfig";
+import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmOptionsFactory } from "./TypeOrmOptionsFactory";
 

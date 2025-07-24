@@ -2,7 +2,7 @@ import { ArgumentsHost, ExceptionFilter, HttpStatus } from "@nestjs/common";
 import { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { Request, Response } from "express";
 import { GuardedController } from "../controllers/GuardedController"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { ErrorResponseDto } from "../dtos/ErrorResponseDto";
 

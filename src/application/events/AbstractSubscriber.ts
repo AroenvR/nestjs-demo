@@ -1,7 +1,7 @@
 import { DataSource, EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from "typeorm";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { AbstractService } from "../services/AbstractService";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { InternalServerErrorException } from "@nestjs/common";
 
 /**

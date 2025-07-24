@@ -4,7 +4,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { UnauthorizedExceptionFilter } from "./UnauthorizedExceptionFilter";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 
 const error = new UnauthorizedException("Unauthorized exception test");
 

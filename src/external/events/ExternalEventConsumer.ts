@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { createEventSource, EventSourceMessage } from "eventsource-client";
 import { Injectable } from "@nestjs/common";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { IExternalEventConsumer, TProcessSSECallback } from "./IExternalEventConsumer";
 
 /**

@@ -1,8 +1,8 @@
 import { EntityManager, Repository } from "typeorm";
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { ILogger } from "../../../common/utility/logging/ILogger";
 import { UserEntity } from "../../../domain/user/UserEntity";
 import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";

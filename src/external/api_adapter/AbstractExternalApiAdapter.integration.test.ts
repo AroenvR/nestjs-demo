@@ -1,5 +1,5 @@
 import { INestApplication, Inject, Module } from "@nestjs/common";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { AbstractExternalApiAdapter } from "./AbstractExternalApiAdapter";
 import { RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 import { ConfigService } from "@nestjs/config";
@@ -12,7 +12,7 @@ import {
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";
 import { mapFetchRequestResponse, mockAndSpyFetchRequest } from "../../__tests__/helpers/mockAndSpyFetchRequest";
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";
-import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
 
 /* 
 	This file serves as documentation for how to set up an External API Adapter.

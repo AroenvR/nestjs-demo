@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
+import { ILogger } from "../logging/ILogger";
 import { IAesCipherData } from "./IAesCipherData";
 import { TSupportedAesAlgorithms } from "./TSupportedAesAlgorithms";
 import { IAesEncryptionStrategy } from "./strategies/IEncryptionStrategy";

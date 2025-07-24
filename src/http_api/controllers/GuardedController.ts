@@ -8,7 +8,7 @@ import { CreateDto } from "../dtos/CreateDto";
 import { UpdateDto } from "../dtos/UpdateDto";
 import { ResponseDto } from "../dtos/ResponseDto";
 import { ISseMessage } from "../../application/events/ISseMessage";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { UseErrorFilters } from "../decorators/UseErrorFilters";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { CompositeAuthGuard } from "../guards/CompositeAuthGuard";

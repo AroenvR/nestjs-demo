@@ -1,5 +1,5 @@
 import { ExternalEventConsumer } from "../../../external/events/ExternalEventConsumer";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 
 /**
  * Mock implementation of {@link ExternalEventConsumer} for testing purposes.

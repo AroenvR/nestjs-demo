@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { UserEntity } from "../../domain/user/UserEntity";
-import { RefreshTokenEntity } from "../../domain/refresh_token/RefreshTokenEntity";
+import { UserEntity } from "../user/UserEntity";
+import { RefreshTokenEntity } from "../refresh_token/RefreshTokenEntity";
 
 @Module({
 	imports: [TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity])],

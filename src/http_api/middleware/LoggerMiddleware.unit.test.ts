@@ -3,7 +3,7 @@ import { NestMiddleware } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { LoggerMiddleware } from "./LoggerMiddleware";
 import { mockILogger } from "../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 
 describe("LoggerMiddleware.Unit", () => {
 	let middleware: NestMiddleware;

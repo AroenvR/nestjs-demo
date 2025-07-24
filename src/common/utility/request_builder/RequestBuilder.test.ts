@@ -3,8 +3,8 @@ import { RequestBuilder, IRequestBuilder, TRequestBuilderResponse, TRequestBuild
 import { UtilityModule } from "../UtilityModule";
 import { mockAndSpyFetchRequest } from "../../../__tests__/helpers/mockAndSpyFetchRequest";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { IPrefixedLogger } from "../../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { IPrefixedLogger } from "../logging/ILogger";
+import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
 function getHttpSuccessStatusCodes(): number[] {

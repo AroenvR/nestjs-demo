@@ -1,7 +1,7 @@
 import { NotImplementedException } from "@nestjs/common";
 import { serverConfig } from "../infrastructure/configuration/serverConfig";
-import { WinstonAdapter } from "../infrastructure/logging/adapters/WinstonAdapter";
-import { CorrelationManager } from "../infrastructure/logging/correlation/CorrelationManager";
+import { WinstonAdapter } from "../common/utility/logging/adapters/WinstonAdapter";
+import { CorrelationManager } from "../common/utility/logging/correlation/CorrelationManager";
 import { AbstractEntityManager } from "./AbstractEntityManager";
 
 describe("AbstractEntityManager", () => {

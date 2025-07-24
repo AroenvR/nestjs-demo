@@ -4,7 +4,7 @@ import { QueryFailedError } from "typeorm";
 import { Test, TestingModule } from "@nestjs/testing";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { QueryFailedErrorFilter } from "./QueryFailedErrorFilter";
 
 const error = new QueryFailedError("Query failed", ["param1", "param2"], new Error("Query failed error test"));

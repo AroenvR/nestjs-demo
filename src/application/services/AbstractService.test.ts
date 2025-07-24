@@ -1,8 +1,8 @@
 import { NotImplementedException } from "@nestjs/common";
 import { AbstractService } from "./AbstractService";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { serverConfig } from "../../infrastructure/configuration/serverConfig";
-import { CorrelationManager } from "../../infrastructure/logging/correlation/CorrelationManager";
+import { CorrelationManager } from "../../common/utility/logging/correlation/CorrelationManager";
 import { UserEntity } from "../../domain/user/UserEntity";
 import { mockPlainTextBearerToken } from "../../__tests__/mocks/mockJwt";
 

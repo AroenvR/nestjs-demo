@@ -6,12 +6,12 @@ import {
 	RequestBuilder,
 	TRequestBuilderMethods,
 } from "../../common/utility/request_builder/RequestBuilder";
-import { ILogger } from "../../infrastructure/logging/ILogger";
+import { ILogger } from "../../common/utility/logging/ILogger";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { assertExternalConfigSchema, IExternalConfig } from "../IExternalConfig";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IExternalApiAdapter } from "./IExternalApiAdapter";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { IHttpErrorObj } from "../../http_api/filters/IHttpErrorResponseObj";
 import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";

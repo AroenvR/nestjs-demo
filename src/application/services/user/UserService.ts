@@ -9,7 +9,7 @@ import { CreateUserDto } from "../../../http_api/dtos/user/CreateUserDto";
 import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { UpdateUserDto } from "../../../http_api/dtos/user/UpdateUserDto";
 import { AbstractService } from "../AbstractService";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 import { IAccessCookie, IBearerToken } from "../../../common/interfaces/JwtInterfaces";

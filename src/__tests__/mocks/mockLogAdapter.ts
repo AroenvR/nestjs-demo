@@ -1,5 +1,5 @@
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
-import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
+import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
 
 /**
  * Mocked {@link IPrefixedLogger} for testing purposes.

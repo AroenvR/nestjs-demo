@@ -1,7 +1,7 @@
 import { EventSourceMessage } from "eventsource-client";
-import { ILogger } from "../../infrastructure/logging/ILogger";
+import { ILogger } from "../../common/utility/logging/ILogger";
 import { ExternalEventConsumer } from "./ExternalEventConsumer";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
 import { TProcessSSECallback } from "./IExternalEventConsumer";
 

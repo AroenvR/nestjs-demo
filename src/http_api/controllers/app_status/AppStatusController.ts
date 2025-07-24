@@ -4,8 +4,8 @@ import { AppStatusService } from "../../../application/services/app_status/AppSt
 import { SseEndpoint } from "../../../http_api/decorators/SseEndpoint";
 import { UseErrorFilters } from "../../../http_api/decorators/UseErrorFilters";
 import { AppStatusResponseDto } from "../../../http_api/dtos/app_status/AppStatusResponseDto";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { ILogger } from "../../../common/utility/logging/ILogger";
 import { GetEndpoint } from "../../../http_api/decorators/GetEndpoint";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
 import { CompositeAuthGuard } from "../../guards/CompositeAuthGuard";

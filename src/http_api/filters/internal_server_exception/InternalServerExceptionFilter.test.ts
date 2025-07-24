@@ -2,7 +2,7 @@ import request from "supertest";
 import { Controller, Get, HttpStatus, INestApplication, InternalServerErrorException, UseFilters } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { InternalServerExceptionFilter } from "./InternalServerExceptionFilter";
 

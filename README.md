@@ -99,6 +99,7 @@ src/
 │   └── utility/        # Contains the server's Utility Module and utility objects.
 │
 ├── domain/             # Encapsulates core business logic, the domain model and its entities.
+│   ├── database/       # Responsible for the application's database access.
 │   └── AbstractEntity  # The parent class for all entities in the application.
 |
 ├── external/           # External integrations and adapters for third-party services or API's.
@@ -117,8 +118,6 @@ src/
 │
 ├── infrastructure/     # Provides technical capabilities to support application and domain layers.
 │   ├── configuration/  # Manages application configuration and environment variables.
-│   ├── database/       # Responsible for the application's database access.
-│   ├── logging/        # The application's logging mechanisms.
 │   └── AppModule       # The application's primary module, and IOC container.
 │
 └── main.ts             # The application's entry point where the NestJS app is bootstrapped.

@@ -2,7 +2,7 @@ import { DataSource, InsertEvent, UpdateEvent } from "typeorm";
 import { UserSubscriber } from "./UserSubscriber";
 import { UserService } from "../../services/user/UserService";
 import { UserEntity } from "../../../domain/user/UserEntity";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
 import { mockWinstonAdapter } from "../../../__tests__/mocks/mockLogAdapter";

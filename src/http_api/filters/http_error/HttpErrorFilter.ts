@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
 import { AbstractHttpFilter } from "../AbstractHttpFilter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 
 @Catch(Error)
 export class HttpErrorFilter extends AbstractHttpFilter {

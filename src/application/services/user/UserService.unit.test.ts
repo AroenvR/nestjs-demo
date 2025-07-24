@@ -7,7 +7,7 @@ import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { UserResponseDto } from "../../../http_api/dtos/user/UserResponseDto";
 import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
 import { MOCK_BAD_UUID, MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";

@@ -12,7 +12,7 @@ import { UpdateUserDto } from "../../dtos/user/UpdateUserDto";
 import { UserResponseDto } from "../../dtos/user/UserResponseDto";
 import { GuardedController } from "../GuardedController";
 import { UserEntity } from "../../../domain/user/UserEntity";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { UserService } from "../../../application/services/user/UserService";
 import { TransformResponseDto } from "../../../http_api/decorators/TransformResponseDto";
 import { INestJSBearerJwt, INestJSCookieJwt } from "src/common/interfaces/JwtInterfaces";

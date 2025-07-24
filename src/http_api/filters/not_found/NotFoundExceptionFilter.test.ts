@@ -3,7 +3,7 @@ import { Controller, Get, HttpStatus, INestApplication, NotFoundException, UseFi
 import { Test, TestingModule } from "@nestjs/testing";
 import { NotFoundExceptionFilter } from "./NotFoundExceptionFilter";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 
 const error = new NotFoundException("Not found exception test");

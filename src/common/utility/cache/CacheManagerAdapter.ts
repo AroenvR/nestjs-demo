@@ -2,8 +2,8 @@ import { Injectable, OnModuleDestroy, Scope } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Cache, createCache } from "cache-manager";
 import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { ILogger } from "../logging/ILogger";
+import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 import { mockPlainTextAccessCookie, mockPlainTextBearerToken } from "../../../__tests__/mocks/mockJwt";
 

@@ -5,7 +5,7 @@ import { AppModule } from "./AppModule";
 import { LoggerMiddleware } from "../http_api/middleware/LoggerMiddleware";
 import { HttpErrorFilter } from "../http_api/filters/http_error/HttpErrorFilter";
 import { HttpExceptionMessages } from "../common/enums/HttpExceptionMessages";
-import { WinstonAdapter } from "./logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../common/utility/logging/adapters/WinstonAdapter";
 import { mockILogger } from "../__tests__/mocks/mockLogAdapter";
 import { createMockAppModule } from "../__tests__/mocks/module/createMockAppModule";
 

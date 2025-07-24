@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import { ConfigModule } from "@nestjs/config"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { IServerConfig } from "./IServerConfig";
 import { serverJsonSchema } from "./serverJsonSchema";
-import { DatabaseDrivers } from "../database/TDatabaseConfig";
+import { DatabaseDrivers } from "../../domain/database/TDatabaseConfig";
 
 /**
  * The application's default / fallback configuration settings.

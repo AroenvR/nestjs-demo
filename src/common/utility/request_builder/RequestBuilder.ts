@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../logging/adapters/WinstonAdapter";
+import { ILogger } from "../logging/ILogger";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
 import { IHttpErrorObj } from "src/http_api/filters/IHttpErrorResponseObj";
 

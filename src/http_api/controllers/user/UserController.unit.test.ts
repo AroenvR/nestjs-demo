@@ -5,7 +5,7 @@ import { UserController } from "./UserController";
 import { MockService } from "../../../__tests__/mocks/service/MockService";
 import { UserService } from "../../../application/services/user/UserService";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { MockCreateUserDto, MockUpdateUserDto } from "../../../__tests__/mocks/dto/MockUserDto";
 import { MockUserEntity } from "../../../__tests__/mocks/entity/MockUserEntity";
 import { UserEntity } from "../../../domain/user/UserEntity";

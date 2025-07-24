@@ -11,7 +11,7 @@ import { RequestBuilder, TRequestBuilderMethods } from "../../common/utility/req
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
 import { MockExternalEventConsumer } from "../../__tests__/mocks/external/MockExternalEventConsumer";
-import { IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
 

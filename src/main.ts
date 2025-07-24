@@ -5,7 +5,7 @@ import { AppModule } from "./infrastructure/AppModule";
 import { BadRequestException, ValidationError, ValidationPipe, VersioningType } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { HttpErrorFilter } from "./http_api/filters/http_error/HttpErrorFilter";
-import { WinstonAdapter } from "./infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "./common/utility/logging/adapters/WinstonAdapter";
 import { serverConfig } from "./infrastructure/configuration/serverConfig";
 import { securityConstants } from "./common/constants/securityConstants";
 

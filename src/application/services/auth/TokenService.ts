@@ -5,8 +5,8 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { IAccessCookie, IAccessToken, IBearerToken, ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
-import { ILogger } from "../../../infrastructure/logging/ILogger";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
+import { ILogger } from "../../../common/utility/logging/ILogger";
 import {
 	IBearerAuthConfig,
 	IAccessCookieAuthConfig,

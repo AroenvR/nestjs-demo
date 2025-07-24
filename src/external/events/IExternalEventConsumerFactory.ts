@@ -1,6 +1,6 @@
 import { Provider } from "@nestjs/common";
 import { IExternalEventConsumer } from "./IExternalEventConsumer";
-import { WinstonAdapter } from "../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { ExternalEventConsumer } from "./ExternalEventConsumer";
 
 /**

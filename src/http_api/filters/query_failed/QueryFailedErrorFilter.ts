@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
 import { QueryFailedError } from "typeorm";
 import { AbstractHttpFilter } from "../AbstractHttpFilter";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 
 // !!! Remember to add it to the UseErrorFilters decorator at src/http_api/decorators/UseErrorFilters.ts !!!
 

@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from "@nestjs/common";
-import { ILogger, IPrefixedLogger } from "../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../common/utility/logging/ILogger";
 import { AbstractEntity } from "./AbstractEntity";
 
 /**

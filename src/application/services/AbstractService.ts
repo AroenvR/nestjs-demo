@@ -6,7 +6,7 @@ import { CreateDto } from "../../http_api/dtos/CreateDto";
 import { ResponseDto } from "../../http_api/dtos/ResponseDto";
 import { UpdateDto } from "../../http_api/dtos/UpdateDto";
 import { ISseMessage } from "../events/ISseMessage";
-import { ILogger, IPrefixedLogger } from "../../infrastructure/logging/ILogger";
+import { ILogger, IPrefixedLogger } from "../../common/utility/logging/ILogger";
 import { AbstractEntity } from "../../domain/AbstractEntity";
 import { ICrudService } from "./ICrudService";
 import { IAccessCookie, IBearerToken } from "../../common/interfaces/JwtInterfaces";

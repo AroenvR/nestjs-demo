@@ -5,7 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { mockILogger } from "../../../__tests__/mocks/mockLogAdapter";
 import { MockEntityManager } from "../../../__tests__/mocks/entity_manager/MockEntityManager";
 import { MockRepository } from "../../../__tests__/mocks/repository/MockRepository";
-import { WinstonAdapter } from "../../../infrastructure/logging/adapters/WinstonAdapter";
+import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { MockRefreshTokenEntity } from "../../../__tests__/mocks/entity/MockRefreshTokenEntity";
 import { TokenService } from "./TokenService";
