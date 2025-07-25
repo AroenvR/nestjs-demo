@@ -4,5 +4,18 @@
         "ttl": 300000,
         "refreshThreshold": 30000,
         "nonBlocking": true
+    },
+    "tasks": {
+        "concurrentTasks": 1,
+        "defaultTaskOptions": {
+            "timeoutMs": 1000,
+            "allowedRetries": 3,
+            "throwOnTimeout": false,
+            "throwOnFailedRetries": false
+        },
+        "shutdown": {
+            "waitForIdle": false,
+            "finishAbovePriority": 100
+        }
     }
 }

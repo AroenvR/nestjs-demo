@@ -60,7 +60,7 @@ export class CompositeAuthGuard implements CanActivate {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		if (!config) throw new Error("Security configuration is not defined");
 
-		if (!config.bearer.enabled && !config.access_cookie.enabled) {
+		if (!config.bearer.enabled && !config.accessCookie.enabled) {
 			throw new Error(`${this.constructor.name}: Either Bearer Tokens or Access Cookies need to be enabled.`);
 		}
 
@@ -69,7 +69,7 @@ export class CompositeAuthGuard implements CanActivate {
 		];
 
 		if (config.bearer.enabled) enabledGuards.push(this.moduleRef.get(BearerTokenAuthGuard, { strict: false }));
-		if (config.access_cookie.enabled) enabledGuards.push(this.moduleRef.get(AccessCookieAuthGuard, { strict: false }));
+		if (config.accessCookie.enabled) enabledGuards.push(this.moduleRef.get(AccessCookieAuthGuard, { strict: false }));
 
 		if (config.jwks.enabled) enabledGuards.push(this.moduleRef.get(JwksAuthGuard, { strict: false }));
 		if (config.swagger.enabled) enabledGuards.push(this.moduleRef.get(SwaggerApiKeyAuthGuard, { strict: false }));

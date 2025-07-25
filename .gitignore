@@ -60,3 +60,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Cookies
 scripts/cookies.txt
 scripts/jwt.txt
+
+# Personal files
+TODO.md

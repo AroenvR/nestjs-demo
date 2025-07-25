@@ -2,10 +2,10 @@ import Joi from "joi";
 import { SUPPORTED_AES_ALGORITHMS } from "../../../common/utility/aes/TSupportedAesAlgorithms";
 
 /**
- * Joi schema for the server's miscellaneous configuration.
+ * Joi schema for the server's security configuration.
  */
 export const securitySchema = Joi.object({
-	refresh_cookie: Joi.object({
+	refreshCookie: Joi.object({
 		enabled: Joi.boolean().default(false).optional(),
 		version: Joi.number().default(1).optional(),
 		secure: Joi.boolean().default(true).optional(),
@@ -17,7 +17,7 @@ export const securitySchema = Joi.object({
 			.default(1000 * 60 * 60 * 16) // 16 hours in milliseconds
 			.optional(),
 	}).required(),
-	access_cookie: Joi.object({
+	accessCookie: Joi.object({
 		enabled: Joi.boolean().default(false).optional(),
 		version: Joi.number().default(1).optional(),
 		secure: Joi.boolean().default(true).optional(),

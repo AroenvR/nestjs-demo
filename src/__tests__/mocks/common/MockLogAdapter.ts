@@ -1,8 +1,8 @@
-import { ILoggerConfig } from "../../../common/utility/logging/ILoggerConfig";
 import { IPrefixedLogger } from "../../../common/utility/logging/ILogger";
 import { ICorrelationManager } from "../../../common/utility/logging/correlation/ICorrelationManager";
 import { serverConfig } from "../../../infrastructure/configuration/serverConfig";
 import { CorrelationManager } from "../../../common/utility/logging/correlation/CorrelationManager";
+import { ILoggerConfig } from "src/infrastructure/configuration/interfaces/ILoggerConfig";
 
 /**
  * MockLogAdapter provides a mocked implementation of the {@link IPrefixedLogger} interface for testing purposes.

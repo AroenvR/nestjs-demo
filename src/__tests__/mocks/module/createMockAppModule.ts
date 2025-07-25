@@ -54,6 +54,7 @@ export const createMockAppModule = async (module?: Type<any>, opts?: TCreateMock
 		}).compile();
 	}
 
+	const appConfiguration = serverConfig();
 	const app = moduleFixture.createNestApplication({ bufferLogs: true });
 
 	const logger = app.get(WinstonAdapter); // Retrieve the custom logger from Nest's DI container
@@ -71,7 +72,7 @@ export const createMockAppModule = async (module?: Type<any>, opts?: TCreateMock
 		}),
 	);
 
-	app.enableCors(serverConfig().security.cors);
+	app.enableCors(appConfiguration.security.cors);
 
 	// Enable API versioning
 	app.enableVersioning({

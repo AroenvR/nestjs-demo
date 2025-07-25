@@ -1,4 +1,4 @@
-import { ILoggerConfig } from "../../common/utility/logging/ILoggerConfig";
+import { ILoggerConfig } from "src/infrastructure/configuration/interfaces/ILoggerConfig";
 import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { IPrefixedLogger } from "../../common/utility/logging/ILogger";
 

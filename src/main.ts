@@ -44,11 +44,12 @@ async function bootstrap() {
 	// !!! IF ANY CHANGES ARE MADE HERE !!!
 	// Please update the createMockAppModule file in the /src/__tests__/mocks/module directory.
 
+	const appConfiguration = serverConfig();
+
 	const app = await NestFactory.create(AppModule, {
 		bufferLogs: true,
 	});
 
-	// const logger = app.get(NestLogger); // Retrieve the custom logger from Nest's DI container
 	const logger = app.get(WinstonAdapter); // Retrieve the custom logger from Nest's DI container
 	app.useLogger(logger); // Set the custom logger for the entire application
 
@@ -65,12 +66,13 @@ async function bootstrap() {
 		}),
 	);
 
-	app.enableCors(serverConfig().security.cors);
+	// Enable CORS on the server
+	app.enableCors(appConfiguration.security.cors);
 
 	// Enable API versioning
 	app.enableVersioning({
 		type: VersioningType.URI, // Use URI versioning type
-		defaultVersion: "1", // Set the default version to '1'
+		defaultVersion: "1", // Set the default version to 'v1'
 		// Use the @Version decorator to specify the version of the controller or endpoint.
 	});
 
@@ -101,7 +103,9 @@ async function bootstrap() {
 
 	const PORT = process.env.NEST_PORT || 3069;
 	await app.listen(PORT);
+
 	logger.log("main", `API listening on port ${PORT}`);
+	logger.debug("main", `API configuration:`, appConfiguration);
 
 	/* 
 		Listen for shutdown signals to gracefully close the application

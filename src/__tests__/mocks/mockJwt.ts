@@ -10,8 +10,8 @@ const cookieSecret = process.env[securityConstants.refreshCookieEnvVar] || "cook
 const accessCookieSecret = process.env[securityConstants.accessCookieEnvVar] || "access_cookie_testing_secret";
 
 const tokenExpiry = serverConfig().security.bearer.expiry;
-const cookieExpiry = serverConfig().security.refresh_cookie.expiry;
-const accessCookieExpiry = serverConfig().security.access_cookie.expiry;
+const cookieExpiry = serverConfig().security.refreshCookie.expiry;
+const accessCookieExpiry = serverConfig().security.accessCookie.expiry;
 
 const user = MockUserEntity.get();
 

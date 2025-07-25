@@ -1,7 +1,7 @@
 import { WinstonAdapter } from "./WinstonAdapter";
-import { ILoggerConfig } from "../ILoggerConfig";
 import { CorrelationManager } from "../correlation/CorrelationManager";
 import { randomUUID } from "node:crypto";
+import { ILoggerConfig } from "../../../../infrastructure/configuration/interfaces/ILoggerConfig";
 
 // Mock Winston's createLogger and its methods
 const mockedLoggerMethods = {

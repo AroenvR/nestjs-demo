@@ -3,7 +3,7 @@ import { securitySchema } from "./schemas/securitySchema";
 import { databaseSchema } from "./schemas/databaseSchema";
 import { loggingSchema } from "./schemas/loggingSchema";
 import { miscellaneousSchema } from "./schemas/miscellaneousSchema";
-import { externalApiAdapterConfigSchema } from "../../external/IExternalConfig";
+import { externalApiAdapterConfigSchema } from "./schemas/externalApiAdapterConfigSchema";
 
 /**
  * JSON schema for the NestJS server.

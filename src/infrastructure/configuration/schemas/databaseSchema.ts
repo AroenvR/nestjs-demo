@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { DatabaseDrivers, SqliteDatabaseDrivers } from "../../../domain/database/TDatabaseConfig";
+import { DatabaseDrivers, SqliteDatabaseDrivers } from "../../../domain/database/DatabaseDrivers";
 
 /**
  * Joi schema for SQLite configuration.
@@ -26,6 +26,6 @@ const postgresConfigSchema = Joi.object({
 }).required();
 
 /**
- * Joi schema for TDatabaseConfig.
+ * Joi schema for the server's database configuration.
  */
 export const databaseSchema = Joi.alternatives().try(sqliteConfigSchema, postgresConfigSchema).required();

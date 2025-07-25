@@ -8,13 +8,14 @@ import {
 } from "../../common/utility/request_builder/RequestBuilder";
 import { ILogger } from "../../common/utility/logging/ILogger";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
-import { assertExternalConfigSchema, IExternalConfig } from "../IExternalConfig";
+import { IExternalConfig } from "../../infrastructure/configuration/interfaces/IExternalConfig";
 import { HttpExceptionMessages } from "../../common/enums/HttpExceptionMessages";
 import { IExternalApiAdapter } from "./IExternalApiAdapter";
 import { WinstonAdapter } from "../../common/utility/logging/adapters/WinstonAdapter";
 import { IHttpErrorObj } from "../../http_api/filters/IHttpErrorResponseObj";
 import { IExternalEventConsumerFactory } from "../events/IExternalEventConsumerFactory";
 import { IExternalEventConsumer } from "../events/IExternalEventConsumer";
+import { assertExternalConfigSchema } from "../../infrastructure/configuration/schemas/externalApiAdapterConfigSchema";
 
 /**
  * Abstract class for external API adapters.

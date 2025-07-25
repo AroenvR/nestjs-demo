@@ -3,7 +3,7 @@ import { AbstractExternalApiAdapter } from "./AbstractExternalApiAdapter";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { mockILogger, mockWinstonAdapter } from "../../__tests__/mocks/mockLogAdapter";
 import { MockConfigService } from "../../__tests__/mocks/service/MockConfigService";
-import { IExternalConfig } from "../IExternalConfig";
+import { IExternalConfig } from "../../infrastructure/configuration/interfaces/IExternalConfig";
 import { RequestBuilder } from "../../common/utility/request_builder/RequestBuilder";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { createMockAppModule } from "../../__tests__/mocks/module/createMockAppModule";

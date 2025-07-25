@@ -7,17 +7,17 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { IAccessCookie, IAccessToken, IBearerToken, ICreateAuthTokenData, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
 import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { ILogger } from "../../../common/utility/logging/ILogger";
-import {
-	IBearerAuthConfig,
-	IAccessCookieAuthConfig,
-	IRefreshCookieAuthConfig,
-	IServerConfig,
-} from "../../../infrastructure/configuration/IServerConfig";
+import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
 import { RefreshTokenEntity } from "../../../domain/refresh_token/RefreshTokenEntity";
 import { securityConstants } from "../../../common/constants/securityConstants";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
+import {
+	IAccessCookieAuthConfig,
+	IBearerAuthConfig,
+	IRefreshCookieAuthConfig,
+} from "../../../infrastructure/configuration/interfaces/ISecurityConfig";
 
 /**
  * A service class that provides methods for creating/managing access tokens and HTTP-only cookies.
@@ -65,7 +65,7 @@ export class TokenService {
 	public async createAccessCookie(data: ICreateAuthTokenData): Promise<string> {
 		this.logger.info(`Creating HTTP-only cookie for SSE endpoints.`);
 
-		const config = this.configService.get<IServerConfig["security"]>("security").access_cookie;
+		const config = this.configService.get<IServerConfig["security"]>("security").accessCookie;
 		const tokenInfo = this.createAccessTokenInfo(data, config);
 
 		const secret = this.configService.get<string>(securityConstants.accessCookieEnvVar);
@@ -80,7 +80,7 @@ export class TokenService {
 	public async createRefreshCookie(data: ICreateAuthTokenData): Promise<string> {
 		this.logger.info(`Creating HTTP-only cookie.`);
 
-		const config = this.configService.get<IServerConfig["security"]>("security").refresh_cookie;
+		const config = this.configService.get<IServerConfig["security"]>("security").refreshCookie;
 
 		const tokenInfo = await this.createHttpOnlyCookieInfo(config);
 		await this.createRefreshTokenEntity(data, tokenInfo);
@@ -107,16 +107,16 @@ export class TokenService {
 
 		const config = this.configService.get<IServerConfig["security"]>("security");
 
-		const refreshData = await this.createHttpOnlyCookieInfo(config.refresh_cookie);
+		const refreshData = await this.createHttpOnlyCookieInfo(config.refreshCookie);
 		const newTokenHash = this.encryptionUtils.sha256(JSON.stringify(refreshData));
-		tokenEntity.refresh(refreshData.jti, newTokenHash, config.refresh_cookie.expiry, config.bearer.expiry);
+		tokenEntity.refresh(refreshData.jti, newTokenHash, config.refreshCookie.expiry, config.bearer.expiry);
 
 		await this.entityManager.transaction(async (entityManager: EntityManager) => {
 			return entityManager.save(tokenEntity);
 		});
 
 		const secret = this.configService.get<string>(securityConstants.refreshCookieEnvVar);
-		return this.signToken(refreshData, config.refresh_cookie, secret);
+		return this.signToken(refreshData, config.refreshCookie, secret);
 	}
 
 	/**

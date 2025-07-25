@@ -5,7 +5,7 @@ import { AbstractExternalApiAdapter } from "./AbstractExternalApiAdapter";
 import { IServerConfig } from "../../infrastructure/configuration/IServerConfig";
 import { mockILogger, mockWinstonAdapter } from "../../__tests__/mocks/mockLogAdapter";
 import { MockConfigService } from "../../__tests__/mocks/service/MockConfigService";
-import { IExternalConfig } from "../IExternalConfig";
+import { IExternalConfig } from "../../infrastructure/configuration/interfaces/IExternalConfig";
 import { mockAndSpyFetchRequest, mapFetchRequestResponse } from "../../__tests__/helpers/mockAndSpyFetchRequest";
 import { RequestBuilder, TRequestBuilderMethods } from "../../common/utility/request_builder/RequestBuilder";
 import { MockCreateLoginDto } from "../../__tests__/mocks/dto/MockLoginDto";

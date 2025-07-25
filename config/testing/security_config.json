@@ -1,11 +1,11 @@
 {
-    "refresh_cookie": {
+    "refreshCookie": {
         "enabled": true,
         "version": 1,
         "secure": false,
         "expiry": 57600000
     },
-    "access_cookie": {
+    "accessCookie": {
         "enabled": true,
         "version": 1,
         "secure": false,

@@ -15,11 +15,12 @@ import { CreateLoginDto } from "../../../http_api/dtos/login/CreateLoginDto";
 import { MockCreateLoginDto } from "../../../__tests__/mocks/dto/MockLoginDto";
 import { IBearerToken, IHttpOnlyCookie } from "../../../common/interfaces/JwtInterfaces";
 import { parseSetCookie } from "../../../__tests__/helpers/parseSetCookie";
-import { IRefreshCookieAuthConfig, IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
+import { IServerConfig } from "../../../infrastructure/configuration/IServerConfig";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { CacheKeys } from "../../../common/enums/CacheKeys";
 import { AuthService } from "../../../application/services/auth/AuthService";
 import { HttpExceptionMessages } from "../../../common/enums/HttpExceptionMessages";
+import { IRefreshCookieAuthConfig } from "../../../infrastructure/configuration/interfaces/ISecurityConfig";
 
 const TEST_NAME = "AuthModule";
 describe(TEST_NAME, () => {
@@ -51,7 +52,7 @@ describe(TEST_NAME, () => {
 		userRepo = app.get(getRepositoryToken(UserEntity));
 
 		configService = app.get(ConfigService);
-		cookieConfig = configService.get<IServerConfig["security"]>("security").refresh_cookie;
+		cookieConfig = configService.get<IServerConfig["security"]>("security").refreshCookie;
 	});
 
 	beforeEach(async () => {

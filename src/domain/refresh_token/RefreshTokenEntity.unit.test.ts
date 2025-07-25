@@ -52,7 +52,7 @@ describe("RefreshTokenEntity.Unit", () => {
 		const newJti = randomUUID();
 		const newHash = "x".repeat(64);
 
-		const cookieExpiry = config.security.refresh_cookie.expiry;
+		const cookieExpiry = config.security.refreshCookie.expiry;
 		const tokenExpiry = config.security.bearer.expiry;
 
 		const refreshed = entity.refresh(newJti, newHash, cookieExpiry, tokenExpiry);
@@ -66,7 +66,7 @@ describe("RefreshTokenEntity.Unit", () => {
 	// --------------------------------------------------
 
 	it("Throws when refreshed too soon", () => {
-		const cookieExpiry = config.security.refresh_cookie.expiry;
+		const cookieExpiry = config.security.refreshCookie.expiry;
 		const tokenExpiry = config.security.bearer.expiry;
 
 		data.lastRefreshedAt = Date.now() - tokenExpiry + 100; // 100 milliseconds too early.
@@ -81,7 +81,7 @@ describe("RefreshTokenEntity.Unit", () => {
 	// --------------------------------------------------
 
 	it("Throws when cookie is expired", () => {
-		const cookieExpiry = config.security.refresh_cookie.expiry;
+		const cookieExpiry = config.security.refreshCookie.expiry;
 		const tokenExpiry = config.security.bearer.expiry;
 
 		data.createdAt = Date.now() - cookieExpiry - 5; // 5 milliseconds too late.

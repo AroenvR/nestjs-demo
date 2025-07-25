@@ -46,7 +46,7 @@ const loggerHTTPConfigSchema = Joi.object({
 });
 
 /**
- * Joi schema for ILoggerConfig.
+ * Joi schema for the server's logging configuration.
  */
 export const loggingSchema = Joi.object({
 	appName: Joi.string().required(),

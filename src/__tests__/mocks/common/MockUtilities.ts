@@ -1,8 +1,7 @@
 import { IUtilities } from "../../../common/utility/IUtilities";
 import { MockLogAdapter } from "./MockLogAdapter";
-import { IPrefixedLogger } from "../../../common/utility/logging/ILogger";
 import { EncryptionUtils } from "../../../common/utility/aes/EncryptionUtils";
-import { IRequestBuilder } from "../../../common/utility/request_builder/RequestBuilder";
+import { IRequestBuilder, RequestBuilder } from "../../../common/utility/request_builder/RequestBuilder";
 import { CacheManagerAdapter } from "../../../common/utility/cache/CacheManagerAdapter";
 import { MockEncryptionUtils } from "./MockEncryptionUtils";
 import { ConfigService } from "@nestjs/config";
@@ -11,26 +10,26 @@ import { serverConfig } from "../../../infrastructure/configuration/serverConfig
 import { WinstonAdapter } from "../../../common/utility/logging/adapters/WinstonAdapter";
 import { CronJobFactory } from "src/common/utility/Cron/CronJobFactory";
 
-class MockServerConfigService extends ConfigService {}
+class MockServerConfigService extends ConfigService<any> {}
 
 /**
  * MockUtilities provides a mocked implementation of the IUtilities interface for testing purposes.
  */
 export class MockUtilities implements IUtilities {
 	private readonly config: IServerConfig;
-	public readonly configService: ConfigService;
-	public readonly logAdapter: IPrefixedLogger;
+	public readonly configService: ConfigService<any>;
+	public readonly logAdapter: WinstonAdapter;
 	public readonly encryptionUtils: EncryptionUtils;
-	public readonly requestBuilder: IRequestBuilder;
+	public readonly requestBuilder: RequestBuilder;
 	public readonly cache: CacheManagerAdapter;
-	public readonly cronFactory: CronJobFactory;
+	public readonly cronJobFactory: CronJobFactory;
 
 	constructor(
 		_serverConfig?: IServerConfig,
-		_configService?: ConfigService,
-		_logAdapter?: IPrefixedLogger,
+		_configService?: ConfigService<any>,
+		_logAdapter?: WinstonAdapter,
 		_encryptionUtils?: EncryptionUtils,
-		_requestBuilder?: IRequestBuilder,
+		_requestBuilder?: RequestBuilder,
 		_cache?: CacheManagerAdapter,
 		_cronFactory?: CronJobFactory,
 	) {
@@ -41,18 +40,18 @@ export class MockUtilities implements IUtilities {
 		else this.configService = new MockServerConfigService(this.config);
 
 		if (_logAdapter) this.logAdapter = _logAdapter;
-		else this.logAdapter = new MockLogAdapter(this.config.logging);
+		else this.logAdapter = new MockLogAdapter(this.config.logging) as unknown as WinstonAdapter; // TODO: Fix this typing...
 
 		if (_encryptionUtils) this.encryptionUtils = _encryptionUtils;
 		else this.encryptionUtils = new MockEncryptionUtils(this.logAdapter as WinstonAdapter);
 
 		if (_requestBuilder) this.requestBuilder = _requestBuilder;
-		else this.requestBuilder = {} as IRequestBuilder; // TODO
+		else this.requestBuilder = {} as RequestBuilder; // TODO
 
 		if (_cache) this.cache = _cache;
 		else this.cache = {} as CacheManagerAdapter; // TODO
 
-		if (_cronFactory) this.cronFactory = _cronFactory;
-		else this.cronFactory = {} as CronJobFactory; // TODO
+		if (_cronFactory) this.cronJobFactory = _cronFactory;
+		else this.cronJobFactory = {} as CronJobFactory; // TODO
 	}
 }

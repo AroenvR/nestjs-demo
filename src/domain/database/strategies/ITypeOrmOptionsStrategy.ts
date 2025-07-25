@@ -1,4 +1,5 @@
-import { DatabaseDrivers, TDatabaseConfig } from "../TDatabaseConfig";
+import { TDatabaseConfig } from "../../../infrastructure/configuration/types/TDatabaseConfig";
+import { DatabaseDrivers } from "../DatabaseDrivers";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 /**

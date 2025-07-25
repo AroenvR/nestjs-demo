@@ -3,6 +3,7 @@ import { IPrefixedLogger } from "./logging/ILogger";
 import { EncryptionUtils } from "./aes/EncryptionUtils";
 import { CacheManagerAdapter } from "./cache/CacheManagerAdapter";
 import { IRequestBuilder } from "./request_builder/RequestBuilder";
+import { CronJobFactory } from "./Cron/CronJobFactory";
 
 /**
  * A collection of utility services used across the application.
@@ -17,4 +18,5 @@ export interface IUtilities {
 	requestBuilder: IRequestBuilder;
 	cache: CacheManagerAdapter; // TODO: Interface this
 	configService: ConfigService;
+	cronJobFactory: CronJobFactory;
 }

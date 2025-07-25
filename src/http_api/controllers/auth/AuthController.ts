@@ -80,7 +80,7 @@ export class AuthController {
 		if (!isTruthy(data)) throw new BadRequestException(`${this.name}: Create payload is empty.`);
 
 		const config = this.configService.getOrThrow<IServerConfig["security"]>("security");
-		if (!config?.bearer?.enabled && !config?.access_cookie?.enabled) {
+		if (!config?.bearer?.enabled && !config?.accessCookie?.enabled) {
 			throw new InternalServerErrorException(`${this.name}: Bearer tokens OR Bearer cookies must be configured.`);
 		}
 
@@ -90,23 +90,23 @@ export class AuthController {
 			roles: [], // TODO: Set user roles if applicable
 		};
 
-		if (config?.refresh_cookie?.enabled) {
+		if (config?.refreshCookie?.enabled) {
 			const httpOnlyCookie = await this.tokenService.createRefreshCookie(tokenData);
 			response.cookie(securityConstants.refreshCookieString, httpOnlyCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.refresh_cookie.secure,
-				maxAge: config.refresh_cookie.expiry,
+				secure: config.refreshCookie.secure,
+				maxAge: config.refreshCookie.expiry,
 			});
 		}
 
-		if (config?.access_cookie?.enabled) {
+		if (config?.accessCookie?.enabled) {
 			const accessCookie = await this.tokenService.createAccessCookie(tokenData);
 			response.cookie(securityConstants.accessCookieString, accessCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.access_cookie.secure,
-				maxAge: config.access_cookie.expiry,
+				secure: config.accessCookie.secure,
+				maxAge: config.accessCookie.expiry,
 			});
 		}
 
@@ -158,13 +158,13 @@ export class AuthController {
 		const config = this.configService.get<IServerConfig["security"]>("security");
 		const user = await this.authService.findUserByCookie(request.user);
 
-		if (config?.refresh_cookie.enabled) {
+		if (config?.refreshCookie.enabled) {
 			const refreshedCookie = await this.tokenService.rotateRefreshToken(request.user);
 			response.cookie(securityConstants.refreshCookieString, refreshedCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.refresh_cookie.secure,
-				maxAge: config.refresh_cookie.expiry,
+				secure: config.refreshCookie.secure,
+				maxAge: config.refreshCookie.expiry,
 			});
 		}
 
@@ -173,13 +173,13 @@ export class AuthController {
 			roles: [], // TODO: Set user roles if applicable
 		};
 
-		if (config?.access_cookie?.enabled) {
+		if (config?.accessCookie?.enabled) {
 			const accessCookie = await this.tokenService.createAccessCookie(tokenData);
 			response.cookie(securityConstants.accessCookieString, accessCookie, {
 				httpOnly: true,
 				sameSite: "strict",
-				secure: config.access_cookie.secure,
-				maxAge: config.access_cookie.expiry,
+				secure: config.accessCookie.secure,
+				maxAge: config.accessCookie.expiry,
 			});
 		}
 

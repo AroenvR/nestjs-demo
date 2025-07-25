@@ -3,20 +3,21 @@ import fs from "fs-extra";
 import { ConfigModule } from "@nestjs/config"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { IServerConfig } from "./IServerConfig";
 import { serverJsonSchema } from "./serverJsonSchema";
-import { DatabaseDrivers } from "../../domain/database/TDatabaseConfig";
+import { DatabaseDrivers } from "../../domain/database/DatabaseDrivers";
+import { taskManagerDefaultConfig } from "./interfaces/tasks/taskManagerDefaultConfig";
 
 /**
  * The application's default / fallback configuration settings.
  */
 const defaultConfig: IServerConfig = {
 	security: {
-		refresh_cookie: {
+		refreshCookie: {
 			enabled: false,
 			version: 1,
 			secure: false,
 			expiry: 57600000, // 16 hours in milliseconds
 		},
-		access_cookie: {
+		accessCookie: {
 			enabled: false,
 			version: 1,
 			secure: false,
@@ -67,6 +68,7 @@ const defaultConfig: IServerConfig = {
 			refreshThreshold: 30 * 1000, // Default to 30 seconds
 			nonBlocking: true,
 		},
+		tasks: taskManagerDefaultConfig,
 	},
 	external: [
 		{
@@ -89,7 +91,9 @@ export const serverConfig = (): IServerConfig => {
 	// Load the default configuration
 	const config = defaultConfig;
 
-	/* Attempt to load JSON configuration files based on the environment variables */
+	/* If any file is found at an environment-defined path, then it will go through a JSON schema */
+	/* If the JSON schema for the given file fails, then the fallback configuration will be used for that config */
+	/* The JSON schema's use some defaults as well, so check out the schema's for the second-level fallback config */
 
 	// Logging configuration
 	try {
@@ -117,7 +121,7 @@ export const serverConfig = (): IServerConfig => {
 		const securityConfig = fs.readFileSync(securityConfigPath, "utf8");
 		const security = JSON.parse(securityConfig);
 		config.security = security;
-		if (!config.security.bearer.enabled && !config.security.refresh_cookie.enabled)
+		if (!config.security.bearer.enabled && !config.security.refreshCookie.enabled)
 			throw new Error("serverConfig: No authentication scheme is enabled.");
 	} catch (error: Error | unknown) {
 		console.error(`serverConfig: Could not load security configuration, using fallback configuration: ${error}`);

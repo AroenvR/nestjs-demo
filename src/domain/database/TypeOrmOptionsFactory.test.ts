@@ -1,5 +1,6 @@
 import { TypeOrmOptionsFactory } from "./TypeOrmOptionsFactory";
-import { DatabaseDrivers, TDatabaseConfig } from "./TDatabaseConfig";
+import { DatabaseDrivers } from "./DatabaseDrivers";
+import { TDatabaseConfig } from "../../infrastructure/configuration/types/TDatabaseConfig";
 
 describe("TypeOrmOptionsFactory", () => {
 	let config: TDatabaseConfig;

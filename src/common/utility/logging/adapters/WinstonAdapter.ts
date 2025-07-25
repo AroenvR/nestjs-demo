@@ -2,9 +2,9 @@ import path from "path";
 import winston from "winston";
 import { createLogger, format, Logger, transports } from "winston";
 import { TransformableInfo } from "logform";
-import { ILoggerConfig } from "../ILoggerConfig";
 import { ICorrelationManager } from "../correlation/ICorrelationManager";
 import { ILogger, IPrefixedLogger, TLogMetadata } from "../ILogger";
+import { ILoggerConfig } from "../../../../infrastructure/configuration/interfaces/ILoggerConfig";
 
 /**
  * A custom adapter for integrating Winston with NestJS.

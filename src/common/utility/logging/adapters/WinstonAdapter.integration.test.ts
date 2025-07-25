@@ -1,10 +1,10 @@
 import path from "path";
 import fs from "fs-extra";
 import { WinstonAdapter } from "./WinstonAdapter";
-import { ILoggerConfig } from "../ILoggerConfig";
 import { wasLogged } from "../../../../__tests__/helpers/wasLogged";
 import { CorrelationManager } from "../correlation/CorrelationManager";
 import { randomUUID } from "crypto";
+import { ILoggerConfig } from "../../../../infrastructure/configuration/interfaces/ILoggerConfig";
 
 // logs
 const TEST_LOG_DIR = path.join(__dirname, "../", "../", "../", "../", "../", "logs");

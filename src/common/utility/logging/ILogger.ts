@@ -1,6 +1,6 @@
 import { LoggerService } from "@nestjs/common";
 import { ICorrelationManager } from "./correlation/ICorrelationManager";
-import { ILoggerConfig } from "./ILoggerConfig"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { ILoggerConfig } from "../../../infrastructure/configuration/interfaces/ILoggerConfig";
 
 /**
  * Type definition for metadata that can be attached to log messages.
